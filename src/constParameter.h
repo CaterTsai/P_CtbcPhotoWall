@@ -72,5 +72,5 @@ const int cDefaultPhotoListNum = (int)ceil(cWindowHeight / (float)cMinimumPhotoH
 const float cSelectAnimLength = 0.5f;
 const int cSelectWidth = cPhotoWallCategoryWidth * 0.25f;
 
-const int cCategoryNum = 1;
+const int cCategoryNum = 4;
 #pragma endregion

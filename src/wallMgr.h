@@ -24,7 +24,32 @@ private:
 	ePhotoPrimaryCategory	_eCategory;
 
 	vector<ofPtr<wallList>> _wallListMgr;
+
+
+#pragma region Select
+private:
+	void setupSelect();
+	void updateSelect(float delta);
+	void drawSelect();
+	void select(ofVec2f inputP, ofPtr<wallList>& selectList, ofVec2f pos);
+	void deselect();
+	void selectAnimationCheck();
+
+private:
+	enum eSelectState {
+		eDeselect = 0
+		,eMoveFront
+		,eSelect
+		,eMoveBack
+	}_eState;
+	ofVec2f _selectPosBackup;
+	ofxAnimatableFloat	_animSelectPosX;
 	ofPtr<wallList> _selectWallList;
+
+	std::function<void(void)> _afterSelect;
+#pragma endregion
+
+	
 
 #pragma region Input
 #ifdef USE_MOUSE

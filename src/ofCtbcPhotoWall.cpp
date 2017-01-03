@@ -52,7 +52,16 @@ void ofCtbcPhotoWall::setupWallMgr()
 			(ePhotoPrimaryCategory)idx_
 			,ofRectangle(idx_ * cPhotoWallCategoryWidth, 0, cPhotoWallCategoryWidth, cWindowHeight)
 		);
+		_photoWall[idx_].addWallList(40);
+		_photoWall[idx_].addWallList(40);
 		_photoWall[idx_].addWallList(80);
+		_photoWall[idx_].addWallList(40);
+		_photoWall[idx_].addWallList(40);
+		_photoWall[idx_].addWallList(40);
+		_photoWall[idx_].addWallList(80);
+		_photoWall[idx_].addWallList(40);
+		_photoWall[idx_].addWallList(40);
+		_photoWall[idx_].addWallList(40);
 	}
 }
 

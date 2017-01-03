@@ -34,6 +34,11 @@ void photoUnit::draw(ofVec2f pos)
 		ofFill();
 		ofRect(pos, _width, _height);
 	}
+
+	ofSetColor(0);
+	ofNoFill();
+	ofSetLineWidth(3);
+	ofRect(pos, _width, _height);
 	ofPopStyle();
 }
 

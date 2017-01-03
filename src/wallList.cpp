@@ -56,10 +56,6 @@ void wallList::touchDown(ofVec2f & pos)
 	{
 		select(pos);
 	}
-	else
-	{
-		deselect(pos);
-	}
 }
 
 //--------------------------------------
@@ -216,13 +212,13 @@ bool wallList::select(ofVec2f& pos)
 }
 
 //--------------------------------------
-bool wallList::deselect(ofVec2f& selectUnitPos)
+bool wallList::deselect()
 {
 	if (_eState == eSelect)
 	{
 		_eState = eZoomOut;
 		_animDrawWidth.animateTo(_baseWidth);
-		_centerVec.set(0.0f, ofRandom(-1, 1)>0 ? ofRandom(30.0, 80.0) : ofRandom(-80.0, -30.0));
+		
 		return true;
 	}
 	else
@@ -263,6 +259,7 @@ void wallList::checkAnimationState()
 			if (_animDrawWidth.hasFinishedAnimating() && _animDrawWidth.getPercentDone() == 1.0)
 			{
 				_eState = eDeselect;
+				_centerVec.set(0.0f, ofRandom(-1, 1)>0 ? ofRandom(30.0, 80.0) : ofRandom(-80.0, -30.0));
 			}
 			break;
 		}
@@ -274,7 +271,7 @@ void wallList::checkAnimationState()
 }
 #pragma endregion
 
-#pragma region WallUnil
+#pragma region WallUnit
 //--------------------------------------
 void wallList::setupWallUnit()
 {
@@ -298,6 +295,8 @@ void wallList::drawWallUnitUp()
 {
 	ofPushStyle();
 	ofVec2f wallPos_ = _centerUnitPos;
+	wallPos_.x -= _animDrawWidth.getCurrentValue() * 0.5f;
+
 	for (auto iter_ = _wallUnitList.rbegin(); iter_ != _wallUnitList.rend(); iter_++)
 	{
 		if (wallPos_.y < 0)
@@ -321,6 +320,7 @@ void wallList::drawWallUnitDown()
 {
 	ofPushStyle();
 	ofVec2f wallPos_ = _centerUnitPos;
+	wallPos_.x -= _animDrawWidth.getCurrentValue() * 0.5f;
 	for (auto& iter_ : _wallUnitList)
 	{	
 		iter_->draw(wallPos_);

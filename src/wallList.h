@@ -46,7 +46,7 @@ private:
 public:
 	bool getIsSelect();
 	bool select(ofVec2f& pos);
-	bool deselect(ofVec2f& pos);
+	bool deselect();
 private:
 	void setupAnimation(int width);
 	void updateAnimation(float delta);
