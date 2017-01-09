@@ -2,10 +2,11 @@
 
 #include "constParameter.h"
 
-class renderMgr : ofThread
+class photoRender : ofThread
 {
 private:
-	struct imgEntry {
+
+	struct photoEntry {
 		bool isThumbanil;
 		ofImage img;
 		string path;
@@ -15,22 +16,28 @@ private:
 public:
 	void setup(string thumbPath, string sourcePath);
 	void update();
+	
+private:	
+	void checkSetup();
+private:
+	bool _isSetup;
+	
 
-	void drawThumb(stPhotoHeader& photoheader, ofVec2f pos, float width, float height);
+#pragma region Photo
+public:
+	void drawThumb(stPhotoHeader& photoheader, ofVec3f pos, float width, float height);
 	void drawThumb(stPhotoHeader& photoheader, ofRectangle drawRect);
 	void drawImage(stPhotoHeader& photoheader, ofRectangle drawRect);
 
 private:
 	void updateImage();
 	void updateTexture(ofImage& img);
-	void insertToMap(map<int, imgEntry>& map, imgEntry& entry);
-	void checkSetup();
+	void insertToMap(map<int, photoEntry>& map, photoEntry& entry);
 private:
-	bool _isSetup;
 	string _thumbPath, _sourcePath;
-	queue<imgEntry> _imgNeedUpdate;
-	map<int, imgEntry>	_thumbMap;
-	map<int, imgEntry>	_sourceMap;
+	queue<photoEntry> _imgNeedUpdate;
+	map<int, photoEntry>	_thumbMap;
+	map<int, photoEntry>	_sourceMap;
 
 #pragma region Default
 private:
@@ -40,7 +47,8 @@ private:
 	map<ePhotoShape, ofImage>	_defalutThumb;
 #pragma endregion
 
-
+#pragma endregion
+	
 #pragma region Event
 public:
 	ofEvent<renderEvent>	onLoadFinish;
@@ -54,7 +62,7 @@ public:
 private:
 	virtual void threadedFunction() override;
 
-	queue<imgEntry>	_imgQueue;
+	queue<photoEntry>	_imgQueue;
 	ofMutex _mutex;
 
 	std::condition_variable	_condition;
@@ -65,20 +73,20 @@ private:
 //Singleton
 //-------------------
 private:
-	renderMgr();
-	~renderMgr() { 
+	photoRender();
+	~photoRender() { 
 		if (isThreadRunning())
 		{
 			stopThread();
 		}
 	};
-	void operator=(renderMgr const&) {};
+	void operator=(photoRender const&) {};
 
 public:
-	static renderMgr* GetInstance();
+	static photoRender* GetInstance();
 	static void Destroy();
 
 private:
-	static renderMgr *_pInstance;
+	static photoRender *_pInstance;
 #pragma endregion
 };

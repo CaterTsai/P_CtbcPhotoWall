@@ -8,5 +8,5 @@ using namespace std;
 
 namespace NAME_MGR
 {
-
+	CREATE_VALUE(I_Gradient);
 }

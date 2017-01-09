@@ -1,7 +1,7 @@
 #pragma once
 
 #include "constParameter.h"
-#include "renderMgr.h"
+#include "photoRender.h"
 
 class dataHolder
 {
@@ -17,6 +17,9 @@ private:
 	void setupCheck();
 	void loadPhotoHeader();
 	
+	void addPhotoMap(stPhotoHeader& photoHeader);
+	void addType2PhotoID(PHOTO_TYPE type, int photoid);
+	void addCategory2PhotoID(ePhotoPrimaryCategory, int photoid);
 
 private:
 	bool _isSetup;

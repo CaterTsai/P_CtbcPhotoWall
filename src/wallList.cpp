@@ -5,6 +5,7 @@ wallList::wallList(ePhotoPrimaryCategory eCategroy, int width, int height)
 	:_baseWidth(width)
 	,_displayheight(height)
 	, _eState(eDeselect)
+	, _selectId(-1)
 	,_centerUnitPos(0.0)
 	, _eCategroy(eCategroy)
 {
@@ -31,7 +32,7 @@ void wallList::update(float delta)
 }
 
 //--------------------------------------
-void wallList::draw(ofVec2f pos)
+void wallList::draw(ofVec3f pos)
 {
 	ofPushMatrix();
 	ofTranslate(pos);
@@ -72,7 +73,7 @@ void wallList::touchUp(ofVec2f & pos)
 void wallList::resetCenter()
 {
 	_centerUnitPos.set(0);
-	_centerVec.set(0.0f, ofRandom(-1, 1)>0?ofRandom(30.0, 80.0):ofRandom(-80.0, -30.0));
+	_centerVec.set(0.0f, ofRandom(-1, 1)>0?ofRandom(20.0, 60.0):ofRandom(-60.0, -20.0));
 	
 }
 
@@ -137,6 +138,7 @@ int wallList::touchCheckDown(float diff, ofVec2f & pos)
 		
 		if (diff >= posY_ && diff < (posY_ + height_))
 		{
+			iter_->onclick(pos);
 			_selectPos = _centerUnitPos;
 			_selectPos.y += posY_;
 			break;
@@ -218,7 +220,6 @@ bool wallList::deselect()
 	{
 		_eState = eZoomOut;
 		_animDrawWidth.animateTo(_baseWidth);
-		
 		return true;
 	}
 	else
@@ -258,7 +259,9 @@ void wallList::checkAnimationState()
 		{
 			if (_animDrawWidth.hasFinishedAnimating() && _animDrawWidth.getPercentDone() == 1.0)
 			{
+				_wallUnitList[_selectId]->onclick(ofVec2f(0));
 				_eState = eDeselect;
+				_selectId = -1;
 				_centerVec.set(0.0f, ofRandom(-1, 1)>0 ? ofRandom(30.0, 80.0) : ofRandom(-80.0, -30.0));
 			}
 			break;
@@ -269,6 +272,7 @@ void wallList::checkAnimationState()
 		}
 	}
 }
+
 #pragma endregion
 
 #pragma region WallUnit
@@ -297,6 +301,7 @@ void wallList::drawWallUnitUp()
 	ofVec2f wallPos_ = _centerUnitPos;
 	wallPos_.x -= _animDrawWidth.getCurrentValue() * 0.5f;
 
+	int idx_ = _wallUnitList.size() - 1;
 	for (auto iter_ = _wallUnitList.rbegin(); iter_ != _wallUnitList.rend(); iter_++)
 	{
 		if (wallPos_.y < 0)
@@ -309,7 +314,9 @@ void wallList::drawWallUnitUp()
 		{
 			continue;
 		}
-		(*iter_)->draw(wallPos_);
+		(*iter_)->draw(wallPos_, getIsSelect());
+		
+		idx_--;
 	}
 
 	ofPopStyle();
@@ -321,15 +328,18 @@ void wallList::drawWallUnitDown()
 	ofPushStyle();
 	ofVec2f wallPos_ = _centerUnitPos;
 	wallPos_.x -= _animDrawWidth.getCurrentValue() * 0.5f;
+	int idx_ = 0;
 	for (auto& iter_ : _wallUnitList)
 	{	
-		iter_->draw(wallPos_);
+		iter_->draw(wallPos_, getIsSelect());
+		
 		wallPos_.y += iter_->getHeight();
 
 		if (wallPos_.y > _displayheight)
 		{
 			break;
 		}
+		idx_++;
 	}
 
 	ofPopStyle();

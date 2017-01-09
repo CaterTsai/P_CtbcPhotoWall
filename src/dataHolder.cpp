@@ -74,43 +74,75 @@ void dataHolder::loadPhotoHeader()
 	_isSetup = true;
 
 	//Debug
-	int id_ = 0;
-	int photoType_ = 0;
-	for (int category = 0; category < 4; category++)
+	ofDirectory dir_("thumbnail");
+	dir_.allowExt("jpg");
+	dir_.listDir();
+	for (int idx_ = 0; idx_ < dir_.numFiles(); idx_++)
 	{
-		vector<int> photoIDCategoryList_;
-		for (int photoTypeIdx = 0; photoTypeIdx < 5; photoTypeIdx++)
-		{
-			photoType_ ++;
-			vector<int> photoIDTypeList_;
-			for (int idx_ = 0; idx_ < 100; idx_++)
-			{
-				stPhotoHeader header_;
-				header_.category = (ePhotoPrimaryCategory)category;
-				header_.shape = (ePhotoShape)(rand() % 4);
-				//header_.id = (category << 28) + (photoType_ << 20) + id_;
-				header_.id = id_;
-				header_.type = photoTypeIdx;
-				header_.thumbnailPath = "thumbnail/" + ofToString(id_, 6, '0') + ".jpg";
+		string fileName_ = dir_.getName(idx_);
+		int imageData_ = stoi(fileName_.substr(0, 10));
+		stPhotoHeader header_;
+		header_.id = imageData_ & PHOTO_ID_MASK;
+		header_.shape = (ePhotoShape)( (imageData_ & PHOTO_SHAPE_MASK) >> 16);
+		header_.type = (imageData_ & PHOTO_TYPE_MASK) >> 20;
+		header_.category = (ePhotoPrimaryCategory)((imageData_ & PHOTO_CATEGORY_MASK) >> 28);
+		header_.thumbnailPath = fileName_;
 
-				_photoMap.insert(make_pair(header_.id, header_));
-				renderMgr::GetInstance()->addImage(id_, header_.thumbnailPath, true);
+		addPhotoMap(header_);
 
-
-				photoIDTypeList_.push_back(header_.id);
-				photoIDCategoryList_.push_back(header_.id);
-
-				id_++;
-			}
-
-			_typeToPhotoID[photoType_] = photoIDTypeList_;
-		}
-		_categoryToPhotoID[(ePhotoPrimaryCategory)category] = photoIDCategoryList_;
+		
+		photoRender::GetInstance()->addImage(header_.id, header_.thumbnailPath, true);
 	}
 
-	renderMgr::GetInstance()->signal();
+	photoRender::GetInstance()->signal();
 }
 
+//--------------------------------------------------------------
+void dataHolder::addPhotoMap(stPhotoHeader & photoHeader)
+{
+	auto iter_ = _photoMap.find(photoHeader.id);
+
+	if (iter_ != _photoMap.end())
+	{
+		ofLog(OF_LOG_NOTICE,("addPhotoMap : photoid already exist"));
+	}
+	else
+	{
+		_photoMap.insert(make_pair(photoHeader.id, photoHeader));
+		addType2PhotoID(photoHeader.type, photoHeader.id);
+		addCategory2PhotoID(photoHeader.category, photoHeader.id);
+	}
+	
+}
+
+//--------------------------------------------------------------
+void dataHolder::addType2PhotoID(PHOTO_TYPE type, int photoid)
+{
+	auto iter_ = _typeToPhotoID.find(type);
+
+	if (iter_ == _typeToPhotoID.end())
+	{
+		vector<int> photoID_;
+		_typeToPhotoID.insert(make_pair(type, photoID_));
+		iter_ = _typeToPhotoID.find(type);
+	}
+
+	iter_->second.push_back(photoid);
+}
+
+//--------------------------------------------------------------
+void dataHolder::addCategory2PhotoID(ePhotoPrimaryCategory eCategory, int photoid)
+{
+	auto iter_ = _categoryToPhotoID.find(eCategory);
+
+	if (iter_ == _categoryToPhotoID.end())
+	{
+		vector<int> photoID_;
+		_categoryToPhotoID.insert(make_pair(eCategory, photoID_));
+		iter_ = _categoryToPhotoID.find(eCategory);
+	}
+	iter_->second.push_back(photoid);
+}
 
 #pragma region Singletion
 //--------------------------------------------------------------

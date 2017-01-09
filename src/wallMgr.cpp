@@ -44,6 +44,7 @@ void wallMgr::draw(ofVec2f pos)
 {
 	setupCheck();
 
+	ofPushStyle();
 	ofPushMatrix();
 	ofTranslate(pos);
 	ofVec2f drawPos_(0);
@@ -58,8 +59,48 @@ void wallMgr::draw(ofVec2f pos)
 		drawPos_.x += halfWidth_;
 	}
 
-	drawSelect();
 	ofPopMatrix();
+	ofPopStyle();
+}
+
+//--------------------------------
+void wallMgr::drawSelect(ofVec2f pos)
+{
+	setupCheck();
+	if (_selectWallList)
+	{
+		ofPushStyle();
+		ofPushMatrix();
+		ofTranslate(pos);
+		{
+			_selectWallList->draw(ofVec2f(_animSelectPosX.getCurrentValue(), 0));
+		}
+		ofPopMatrix();
+		ofPopStyle();
+	}
+}
+
+//--------------------------------
+void wallMgr::drawShadow(ofVec2f pos)
+{
+	setupCheck();
+	if (_selectWallList)
+	{
+		ofPushStyle();
+		ofPushMatrix();
+		ofTranslate(pos);
+		{
+			//Shadow
+			imageRender::GetInstance()->drawImage(
+				NAME_MGR::I_Gradient,
+				ofVec2f(_animSelectPosX.getCurrentValue() + (cSelectShdowWidth * -0.5), 0),
+				cSelectShdowWidth,
+				cWindowHeight
+			);
+		}
+		ofPopMatrix();
+		ofPopStyle();
+	}
 
 }
 
@@ -92,15 +133,6 @@ void wallMgr::setupSelect()
 void wallMgr::updateSelect(float delta)
 {
 	_animSelectPosX.update(delta);
-}
-
-//--------------------------------
-void wallMgr::drawSelect()
-{
-	if (_selectWallList)
-	{
-		_selectWallList->draw(ofVec2f(_animSelectPosX.getCurrentValue(), 0));
-	}
 }
 
 //--------------------------------

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "wallList.h"
+
+
 #include "ofxWinTouchHook.h"
 
 class wallMgr
@@ -12,6 +14,8 @@ public:
 	void setup(ePhotoPrimaryCategory category, ofRectangle wallRect);
 	void update(float delta);
 	void draw(ofVec2f pos);
+	void drawSelect(ofVec2f pos);
+	void drawShadow(ofVec2f pos);
 
 	void addWallList(int width);
 	
@@ -30,7 +34,6 @@ private:
 private:
 	void setupSelect();
 	void updateSelect(float delta);
-	void drawSelect();
 	void select(ofVec2f inputP, ofPtr<wallList>& selectList, ofVec2f pos);
 	void deselect();
 	void selectAnimationCheck();
@@ -49,7 +52,6 @@ private:
 	std::function<void(void)> _afterSelect;
 #pragma endregion
 
-	
 
 #pragma region Input
 #ifdef USE_MOUSE

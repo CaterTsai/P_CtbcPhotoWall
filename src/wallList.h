@@ -2,6 +2,7 @@
 
 #include "wallUnit.h"
 #include "dataHolder.h"
+#include "imageRender.h"
 #include "ofxAnimatableFloat.h"
 
 class wallList
@@ -11,7 +12,7 @@ public:
 	~wallList();
 
 	void update(float delta);
-	void draw(ofVec2f pos);
+	void draw(ofVec3f pos);
 	float getBaseWidth();
 	
 	
@@ -65,8 +66,7 @@ private:
 	ofVec2f _selectPos;
 	ofxAnimatableFloat	_animDrawWidth;
 #pragma endregion
-
-
+	
 #pragma region WallUnit
 	//WallUnit
 private:
@@ -86,8 +86,5 @@ private:
 	int _wallTotalHeight;
 	vector<ofPtr<wallUnit>>	_wallUnitList;
 #pragma endregion
-
-
-
 
 };

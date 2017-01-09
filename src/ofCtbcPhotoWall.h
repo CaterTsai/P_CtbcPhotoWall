@@ -2,7 +2,8 @@
 
 #include "constParameter.h"
 #include "dataHolder.h"
-#include "renderMgr.h"
+#include "photoRender.h"
+#include "imageRender.h"
 
 #include "wallMgr.h"
 class ofCtbcPhotoWall : public ofBaseApp{
@@ -16,6 +17,12 @@ public:
 		
 private:
 	float _timer;
+
+#pragma region Image Render
+private:
+	void setupImageRender(string path);
+#pragma endregion
+
 
 #pragma region Photo Wall
 public:

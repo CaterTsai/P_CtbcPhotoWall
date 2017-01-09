@@ -2,7 +2,7 @@
 
 #include "constParameter.h"
 #include "wallUnit.h"
-#include "renderMgr.h"
+#include "photoRender.h"
 
 class wallUnit
 {
@@ -14,7 +14,7 @@ public:
 	~wallUnit() {};
 
 	virtual void update(float delta, int width) {};
-	virtual void draw(ofVec2f pos) {};
+	virtual void draw(ofVec2f pos, bool isSelectList = false) {};
 	virtual void onclick(ofVec2f pos) {};
 	
 
@@ -39,7 +39,7 @@ public:
 	photoUnit(stPhotoHeader& photoIdx, int width);
 
 	void update(float delta, int width) override;
-	void draw(ofVec2f pos) override;
+	void draw(ofVec2f pos, bool isSelectList = false) override;
 	void onclick(ofVec2f pos) override;
 	int getHeight(int width) override;
 	stPhotoHeader& getPhotoHeader();

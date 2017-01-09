@@ -8,7 +8,7 @@ photoUnit::photoUnit(stPhotoHeader & photoIdx, int width)
 {
 	setRatio();
 	_width = width;
-	_height = width * _photoRatio;
+	_height = static_cast<int>(width * _photoRatio + 0.5f);
 }
 
 //--------------------------------------
@@ -22,23 +22,29 @@ void photoUnit::update(float delta, int width)
 }
 
 //--------------------------------------
-void photoUnit::draw(ofVec2f pos)
+void photoUnit::draw(ofVec2f pos, bool isSelectList)
 {
 	ofPushStyle();
 	ofSetColor(255);
-	renderMgr::GetInstance()->drawThumb(_photoIndex, pos, _width, _height);
+	ofVec2f drawPos_(pos);
+	drawPos_.x += (cPhotoUnitInterval) * 0.5;
+	drawPos_.y += (cPhotoUnitInterval) * 0.5;
+	photoRender::GetInstance()->drawThumb(_photoIndex, drawPos_, _width - cPhotoUnitInterval, _height - cPhotoUnitInterval);
 
-	if (_isClick)
+
+	if (isSelectList && !_isClick)
 	{
-		ofSetColor(255, 0, 0, 200);
+		ofSetColor(cSelectCoverColor, cSelectCoverAlpha);
 		ofFill();
-		ofRect(pos, _width, _height);
+		ofRect(drawPos_, _width - cPhotoUnitInterval, _height - cPhotoUnitInterval);
 	}
 
-	ofSetColor(0);
-	ofNoFill();
-	ofSetLineWidth(3);
-	ofRect(pos, _width, _height);
+	//if (_isClick)
+	//{
+	//	ofSetColor(255, 0, 0, 200);
+	//	ofFill();
+	//	ofRect(drawPos_, _width - cPhotoUnitInterval, _height - cPhotoUnitInterval);
+	//}
 	ofPopStyle();
 }
 
@@ -46,6 +52,7 @@ void photoUnit::draw(ofVec2f pos)
 void photoUnit::onclick(ofVec2f pos)
 {
 	_isClick = !_isClick;
+
 }
 
 //--------------------------------------

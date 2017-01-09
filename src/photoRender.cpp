@@ -1,7 +1,7 @@
-#include "renderMgr.h"
+#include "photoRender.h"
 
 //--------------------------------------------------------------
-void renderMgr::setup(string thumbPath, string sourcePath)
+void photoRender::setup(string thumbPath, string sourcePath)
 {
 	_thumbPath = thumbPath;
 	_sourcePath = sourcePath;
@@ -12,13 +12,22 @@ void renderMgr::setup(string thumbPath, string sourcePath)
 }
 
 //--------------------------------------------------------------
-void renderMgr::update()
+void photoRender::update()
 {
 	updateImage();
 }
 
 //--------------------------------------------------------------
-void renderMgr::drawThumb(stPhotoHeader & photoheader, ofVec2f pos, float width, float height)
+void photoRender::checkSetup()
+{
+	if (!_isSetup)
+	{
+		throw std::runtime_error(("checkSetup : need call setup"));
+	}
+}
+
+//--------------------------------------------------------------
+void photoRender::drawThumb(stPhotoHeader & photoheader, ofVec3f pos, float width, float height)
 {
 	checkSetup();
 	auto Iter_ = _thumbMap.find(photoheader.id);
@@ -34,13 +43,13 @@ void renderMgr::drawThumb(stPhotoHeader & photoheader, ofVec2f pos, float width,
 }
 
 //--------------------------------------------------------------
-void renderMgr::drawThumb(stPhotoHeader& photoheader, ofRectangle drawRect)
+void photoRender::drawThumb(stPhotoHeader& photoheader, ofRectangle drawRect)
 {
 	drawThumb(photoheader, drawRect.getPosition(), drawRect.getWidth(), drawRect.getHeight());
 }
 
 //--------------------------------------------------------------
-void renderMgr::drawImage(stPhotoHeader& photoheader, ofRectangle drawRect)
+void photoRender::drawImage(stPhotoHeader& photoheader, ofRectangle drawRect)
 {
 	checkSetup();
 	auto Iter_ = _sourceMap.find(photoheader.id);
@@ -56,30 +65,30 @@ void renderMgr::drawImage(stPhotoHeader& photoheader, ofRectangle drawRect)
 }
 
 //--------------------------------------------------------------
-void renderMgr::updateImage()
+void photoRender::updateImage()
 {
 	if (!_imgNeedUpdate.empty())
 	{
 		lock();
-		auto imgEntry_ = _imgNeedUpdate.front();
+		auto photoEntry_ = _imgNeedUpdate.front();
 		_imgNeedUpdate.pop();
 		unlock();
 
-		updateTexture(imgEntry_.img);
+		updateTexture(photoEntry_.img);
 
-		if (imgEntry_.isThumbanil)
+		if (photoEntry_.isThumbanil)
 		{
-			insertToMap(_thumbMap, imgEntry_);
+			insertToMap(_thumbMap, photoEntry_);
 		}
 		else
 		{
-			insertToMap(_sourceMap, imgEntry_);
+			insertToMap(_sourceMap, photoEntry_);
 		}
 	}
 }
 
 //--------------------------------------------------------------
-void renderMgr::updateTexture(ofImage & img)
+void photoRender::updateTexture(ofImage & img)
 {
 	const ofPixels& pix = img.getPixelsRef();
 	img.getTextureReference().allocate(
@@ -93,7 +102,7 @@ void renderMgr::updateTexture(ofImage & img)
 }
 
 //--------------------------------------------------------------
-void renderMgr::insertToMap(map<int, imgEntry>& map, imgEntry& entry)
+void photoRender::insertToMap(map<int, photoEntry>& map, photoEntry& entry)
 {
 	if (map.find(entry.photoId) == map.end())
 	{
@@ -101,18 +110,11 @@ void renderMgr::insertToMap(map<int, imgEntry>& map, imgEntry& entry)
 	}
 }
 
-//--------------------------------------------------------------
-void renderMgr::checkSetup()
-{
-	if (!_isSetup)
-	{
-		throw std::runtime_error(("checkSetup : need call setup"));
-	}
-}
+
 
 #pragma region Default
 //--------------------------------------------------------------
-void renderMgr::setupDefault()
+void photoRender::setupDefault()
 {
 	ofImage nh_, nv_, wh_, wv_;
 	bool result_ = true;
@@ -127,12 +129,12 @@ void renderMgr::setupDefault()
 		_defalutThumb[ePhotoNormalVertical] = nv_;
 		_defalutThumb[ePhotoWideHorizontal] = wh_;
 		_defalutThumb[ePhotoWideVertical] = wv_;
-		ofLog(OF_LOG_NOTICE, "[renderMgr::setupDefault]Load default success");
+		ofLog(OF_LOG_NOTICE, "[photoRender::setupDefault]Load default success");
 	}	
 }
 
 //--------------------------------------------------------------
-void renderMgr::drawDefault(ePhotoShape eShape, ofVec2f pos, float width, float height)
+void photoRender::drawDefault(ePhotoShape eShape, ofVec2f pos, float width, float height)
 {
 	_defalutThumb[eShape].draw(pos, width, height);
 }
@@ -142,31 +144,38 @@ void renderMgr::drawDefault(ePhotoShape eShape, ofVec2f pos, float width, float 
 #pragma region Thread
 
 //--------------------------------------------------------------
-void renderMgr::addImage(int id, string path, bool isThumb)
+void photoRender::addImage(int id, string path, bool isThumb)
 {
-	imgEntry entry_;
+	photoEntry entry_;
 	entry_.isThumbanil = isThumb;
-	entry_.path = path;
+	if (isThumb)
+	{
+		entry_.path = _thumbPath + path;
+	}
+	else
+	{
+		entry_.path = _sourcePath + path;
+	}	
 	entry_.photoId = id;
 
 	_imgQueue.push(entry_);
 }
 
 //--------------------------------------------------------------
-void renderMgr::signal()
+void photoRender::signal()
 {
 	_condition.notify_all();
 }
 
 //--------------------------------------------------------------
-void renderMgr::threadedFunction()
+void photoRender::threadedFunction()
 {
 	while (isThreadRunning())
 	{
 		if (!_imgQueue.empty())
 		{
 			lock();
-			imgEntry imgEntry_ = _imgQueue.front();
+			photoEntry imgEntry_ = _imgQueue.front();
 			_imgQueue.pop();
 			unlock();
 
@@ -195,22 +204,22 @@ void renderMgr::threadedFunction()
 
 #pragma region Singleton
 //--------------------------------------------------------------
-renderMgr::renderMgr()
+photoRender::photoRender()
 {}
 
 //--------------------------------------------------------------
-renderMgr* renderMgr::_pInstance = nullptr;
-renderMgr * renderMgr::GetInstance()
+photoRender* photoRender::_pInstance = nullptr;
+photoRender * photoRender::GetInstance()
 {
 	if (_pInstance == nullptr)
 	{
-		_pInstance = new renderMgr();
+		_pInstance = new photoRender();
 	}
 	return _pInstance;
 }
 
 //--------------------------------------------------------------
-void renderMgr::Destroy()
+void photoRender::Destroy()
 {
 	if (_pInstance == nullptr)
 	{

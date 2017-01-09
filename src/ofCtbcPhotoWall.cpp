@@ -7,10 +7,18 @@ void ofCtbcPhotoWall::setup()
 	ofSetVerticalSync(true);
 	ofSetFrameRate(60);
 
+	
+	photoRender::GetInstance()->setup("thumbnail/", "");
 	dataHolder::GetInstance()->setup("");
-	renderMgr::GetInstance()->setup("", "");
+	setupImageRender("images/");
 	
+#ifndef _DEBUG
+	ofSetWindowPosition(0, 0);
+#endif // !_DEBUG
+
+
 	
+
 	setupWallMgr();
 	_timer = ofGetElapsedTimef();
 }
@@ -21,7 +29,7 @@ void ofCtbcPhotoWall::update()
 	float delta_ = ofGetElapsedTimef() - _timer;
 	_timer += delta_;
 
-	renderMgr::GetInstance()->update();
+	photoRender::GetInstance()->update();
 
 	updateWallMgr(delta_);
 
@@ -40,7 +48,20 @@ void ofCtbcPhotoWall::keyPressed(int key)
 
 }
 
+#pragma region Image Render
+void ofCtbcPhotoWall::setupImageRender(string path)
+{
+	imageRender::GetInstance()->setup(path);
+
+	imageRender::GetInstance()->addImage(NAME_MGR::I_Gradient, "gradient.png");
+	
+}
+#pragma endregion
+
+
+
 #pragma region Photo Wall
+
 //--------------------------------------------------------------
 void ofCtbcPhotoWall::setupWallMgr()
 {
@@ -52,16 +73,27 @@ void ofCtbcPhotoWall::setupWallMgr()
 			(ePhotoPrimaryCategory)idx_
 			,ofRectangle(idx_ * cPhotoWallCategoryWidth, 0, cPhotoWallCategoryWidth, cWindowHeight)
 		);
-		_photoWall[idx_].addWallList(40);
-		_photoWall[idx_].addWallList(40);
+		//_photoWall[idx_].addWallList(40);
+		//_photoWall[idx_].addWallList(40);
+		//_photoWall[idx_].addWallList(80);
+		//_photoWall[idx_].addWallList(40);
+		//_photoWall[idx_].addWallList(40);
+		//_photoWall[idx_].addWallList(40);
+		//_photoWall[idx_].addWallList(80);
+		//_photoWall[idx_].addWallList(40);
+		//_photoWall[idx_].addWallList(40);
+		//_photoWall[idx_].addWallList(40);
+
 		_photoWall[idx_].addWallList(80);
-		_photoWall[idx_].addWallList(40);
-		_photoWall[idx_].addWallList(40);
-		_photoWall[idx_].addWallList(40);
 		_photoWall[idx_].addWallList(80);
-		_photoWall[idx_].addWallList(40);
-		_photoWall[idx_].addWallList(40);
-		_photoWall[idx_].addWallList(40);
+		_photoWall[idx_].addWallList(160);
+		_photoWall[idx_].addWallList(80);
+		_photoWall[idx_].addWallList(80);
+		_photoWall[idx_].addWallList(80);
+		_photoWall[idx_].addWallList(160);
+		_photoWall[idx_].addWallList(80);
+		_photoWall[idx_].addWallList(80);
+		_photoWall[idx_].addWallList(80);
 	}
 }
 
@@ -84,6 +116,22 @@ void ofCtbcPhotoWall::drawWallMgr()
 		_photoWall[idx_].draw(drawPos_);
 		drawPos_.x += cPhotoWallCategoryWidth;
 	}
+
+	drawPos_.set(0);
+	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
+	{
+		_photoWall[idx_].drawShadow(drawPos_);
+		drawPos_.x += cPhotoWallCategoryWidth;
+	}
+
+	drawPos_.set(0);
+	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
+	{
+		_photoWall[idx_].drawSelect(drawPos_);
+		drawPos_.x += cPhotoWallCategoryWidth;
+	}
+
+
 }
 	
 #pragma endregion
