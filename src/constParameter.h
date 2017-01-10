@@ -80,4 +80,6 @@ const int cSelectWidth = cPhotoWallCategoryWidth * 0.2f;
 const int cSelectShdowWidth = cSelectWidth * 3.0;
 const int cCategoryNum = 4;
 
+//UI
+
 #pragma endregion
