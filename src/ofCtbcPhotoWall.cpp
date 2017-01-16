@@ -10,15 +10,15 @@ void ofCtbcPhotoWall::setup()
 	
 	photoRender::GetInstance()->setup("thumbnail/", "");
 	dataHolder::GetInstance()->setup("");
+	fontMgr::GetInstance()->setup("fonts/");
 	setupImageRender("images/");
-	
+	setupAudio();
+
 #ifndef _DEBUG
 	ofSetWindowPosition(0, 0);
 #endif // !_DEBUG
 
-
-	
-
+	AudioMgr::GetInstance()->playAudio(NAME_MGR::BGM_1);
 	setupWallMgr();
 	_timer = ofGetElapsedTimef();
 }
@@ -32,7 +32,6 @@ void ofCtbcPhotoWall::update()
 	photoRender::GetInstance()->update();
 
 	updateWallMgr(delta_);
-
 	ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
 
@@ -49,20 +48,36 @@ void ofCtbcPhotoWall::keyPressed(int key)
 	{
 		case 'q':
 		{
-			_wallState = ePhotoWall_BlurOut;
-			_blurLevel.animateTo(0.0f);
+			outIdle();
 			break;
 		}
 		case 'w':
 		{
-			_wallState = ePhotoWall_BlurIn;
-			_blurLevel.animateTo(1.0f);
+			inIdle();
+			break;
+		}
+		case 'e':
+		{
+			mainUIout();
+			break;
+		}
+		case '1':
+		{
+			AudioMgr::GetInstance()->stopAudio(NAME_MGR::BGM_2);
+			AudioMgr::GetInstance()->playAudio(NAME_MGR::BGM_1);
+			break;
+		}
+		case '2':
+		{
+			AudioMgr::GetInstance()->stopAudio(NAME_MGR::BGM_1);
+			AudioMgr::GetInstance()->playAudio(NAME_MGR::BGM_2);
 			break;
 		}
 	}
 }
 
 #pragma region Image Render
+//--------------------------------------------------------------
 void ofCtbcPhotoWall::setupImageRender(string path)
 {
 	imageRender::GetInstance()->setup(path);
@@ -70,9 +85,17 @@ void ofCtbcPhotoWall::setupImageRender(string path)
 	imageRender::GetInstance()->addImage(NAME_MGR::I_Gradient, "gradient.png");
 	
 }
+
 #pragma endregion
 
-
+#pragma region Audio Manager
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::setupAudio()
+{
+	AudioMgr::GetInstance()->addBGM(NAME_MGR::BGM_1, "sounds/bgm1.mp3");
+	AudioMgr::GetInstance()->addBGM(NAME_MGR::BGM_2, "sounds/bgm2.mp3");
+}
+#pragma endregion
 
 #pragma region Photo Wall
 
@@ -102,6 +125,11 @@ void ofCtbcPhotoWall::setupWallMgr()
 
 
 	setupWallBlur();
+	setupIdleVideo("videos/idle.avi");
+
+	_blurLevel.reset(1.0f);
+	_wallState = ePhotoWall_Idle;
+	_idleVideo.play();
 }
 
 //--------------------------------------------------------------
@@ -113,6 +141,7 @@ void ofCtbcPhotoWall::updateWallMgr(float delta)
 	}
 	
 	updateWallBlur(delta);
+	updateIdleVideo();
 }
 
 //--------------------------------------------------------------
@@ -132,7 +161,71 @@ void ofCtbcPhotoWall::drawWallMgr()
 		ofFill();
 		ofRect(0, 0, cWindowWidth, cWindowHeight);
 
+
+		drawIdleVideo();
 		ofPopStyle();
+	}
+}
+
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::enableWallInput()
+{
+	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
+	{
+		_photoWall[idx_].enableInput();
+	}
+}
+
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::disbleWallInput()
+{
+	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
+	{
+		_photoWall[idx_].disableInput();
+	}
+}
+
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::inIdle()
+{
+	if (_wallState == ePhotoWall_Play)
+	{
+		mainUIout();
+		_idleVideo.play();
+		_idleVideo.setFrame(0);
+		_idleVideo.update();
+
+		_wallState = ePhotoWall_BlurIn;
+		_blurLevel.animateTo(1.0f);
+	}
+}
+
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::outIdle()
+{
+	if (_wallState == ePhotoWall_Idle)
+	{
+		_wallState = ePhotoWall_BlurOut;
+		_blurLevel.animateTo(0.0f);
+		disbleWallInput();
+	}
+}
+
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::mainUIin()
+{
+	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
+	{
+		_photoWall[idx_].mainUIin();
+	}
+}
+
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::mainUIout()
+{
+	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
+	{
+		_photoWall[idx_].mainUIout();
 	}
 }
 
@@ -147,10 +240,7 @@ void ofCtbcPhotoWall::setupWallBlur()
 	}
 
 	_blurLevel.setDuration(1.0f);
-	_blurLevel.setRepeatType(AnimRepeat::PLAY_ONCE);
-	_blurLevel.reset(1.0f);
-
-	_wallState = ePhotoWall_Idle;
+	_blurLevel.setRepeatType(AnimRepeat::PLAY_ONCE);	
 }
 
 //--------------------------------------------------------------
@@ -170,6 +260,11 @@ void ofCtbcPhotoWall::updateWallBlur(float delta)
 			if (_blurLevel.hasFinishedAnimating() && _blurLevel.getPercentDone() == 1.0f)
 			{
 				_wallState = ePhotoWall_Play;
+				
+				_idleVideo.stop();
+				mainUIin();
+				enableWallInput();
+				
 			}
 			break;
 		}
@@ -215,8 +310,39 @@ void ofCtbcPhotoWall::drawPhotoWall()
 		_photoWall[idx_].drawSelect(drawPos_);
 		drawPos_.x += cPhotoWallCategoryWidth;
 	}
-
 	ofPopStyle();
 }
+
+#pragma region Idle Video
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::setupIdleVideo(string path)
+{
+	if (!_idleVideo.load(path))
+	{
+		ofLog(OF_LOG_ERROR, "[ofCtbcPhotoWall::setupIdleVideo]load video faield");
+	}
+	_idleVideo.setLoopState(ofLoopType::OF_LOOP_NORMAL);
+}
+
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::updateIdleVideo()
+{
+	if (_wallState != ePhotoWall_Play && _idleVideo.isLoaded())
+	{
+		_idleVideo.update();
+	}
+}
+
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::drawIdleVideo()
+{
+	if (_wallState != ePhotoWall_Play && _idleVideo.isLoaded())
+	{
+		ofSetColor(255, _blurLevel.getCurrentValue() * 255);
+		_idleVideo.draw(0, 0);
+	}
+}
+#pragma endregion
+
 #pragma endregion
 

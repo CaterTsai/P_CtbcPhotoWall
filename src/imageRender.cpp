@@ -4,6 +4,7 @@
 void imageRender::setup(string imgFolderPath)
 {
 	_imgPath = imgFolderPath;
+	_isSetup = true;
 }
 
 
@@ -58,6 +59,7 @@ void imageRender::drawImage(string name, ofRectangle rect)
 #pragma region Singleton
 //--------------------------------------------------------------
 imageRender::imageRender()
+	:_isSetup(false)
 {}
 
 //--------------------------------------------------------------

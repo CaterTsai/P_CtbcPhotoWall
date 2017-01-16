@@ -6,6 +6,11 @@
 #include "imageRender.h"
 #include "blurShader.h"
 #include "wallMgr.h"
+#include "fontMgr.h"
+
+#include "ofxDSHapVideoPlayer.h"
+#include "AudioMgr.h"
+
 class ofCtbcPhotoWall : public ofBaseApp{
 
 public:
@@ -22,18 +27,30 @@ private:
 private:
 	void setupImageRender(string path);
 #pragma endregion
-
-
+	
+#pragma region Audio Manager
+public:
+	void setupAudio();
+#pragma endregion
+	
 #pragma region Photo Wall
 public:
 	void setupWallMgr();
 	void updateWallMgr(float delta);
 	void drawWallMgr();
 
+	void enableWallInput();
+	void disbleWallInput();
+
+	void inIdle();
+	void outIdle();
+
+	void mainUIin();
+	void mainUIout();
+
 private:
 	void setupWallBlur();
 	void updateWallBlur(float delta);
-
 	void drawPhotoWall();
 
 private:
@@ -47,6 +64,25 @@ private:
 	wallMgr	_photoWall[cCategoryNum];
 	blurShader _blur;
 	ofxAnimatableFloat	_blurLevel;
+
+#pragma region Idle Video
+private:
+	void setupIdleVideo(string path);
+	void updateIdleVideo();
+	void drawIdleVideo();
+private:
+	ofxDSHapVideoPlayer	_idleVideo;
+
 #pragma endregion
+
+
+#pragma endregion
+
+
+
+#pragma region Debug
+
+#pragma endregion
+
 
 };

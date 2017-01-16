@@ -6,7 +6,7 @@ int main( ){
 
 	//ofSetupOpenGL(cWindowWidth,cWindowHeight,OF_WINDOW);			// <-------- setup the GL context
 	ofGLWindowSettings settings;
-	settings.setGLVersion(3, 2);
+	//settings.setGLVersion(3, 2);
 	settings.width = cWindowWidth;
 	settings.height = cWindowHeight;
 	settings.windowMode = OF_WINDOW;

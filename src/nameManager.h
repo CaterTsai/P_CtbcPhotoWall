@@ -9,4 +9,7 @@ using namespace std;
 namespace NAME_MGR
 {
 	CREATE_VALUE(I_Gradient);
+
+	CREATE_VALUE(BGM_1);
+	CREATE_VALUE(BGM_2);
 }

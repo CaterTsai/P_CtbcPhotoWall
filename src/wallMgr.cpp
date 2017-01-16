@@ -5,6 +5,7 @@ wallMgr::wallMgr()
 	:_isSetup(false)
 	, _selectWallList(nullptr)
 	, _eState(eDeselect)
+	, _eWallState(eWallIdle)
 {
 	
 }
@@ -20,8 +21,10 @@ void wallMgr::setup(ePhotoPrimaryCategory category, ofRectangle wallRect)
 {
 	_eCategory = category;
 	_wallRect = wallRect;
-	enableInput();
 	setupSelect();
+
+	_mainUI.setup("config/mainUIText.xml", category);
+
 	_isSetup = true;
 }
 
@@ -35,6 +38,7 @@ void wallMgr::update(float delta)
 		iter_->update(delta);
 	}
 	updateSelect(delta);
+	_mainUI.update(delta);
 
 	selectAnimationCheck();
 }
@@ -59,6 +63,7 @@ void wallMgr::draw(ofVec2f pos)
 		drawPos_.x += halfWidth_;
 	}
 
+	drawUI();
 	ofPopMatrix();
 	ofPopStyle();
 }
@@ -70,6 +75,7 @@ void wallMgr::drawSelect(ofVec2f pos)
 	if (_selectWallList)
 	{
 		ofPushStyle();
+		ofSetColor(255);
 		ofPushMatrix();
 		ofTranslate(pos);
 		{
@@ -119,6 +125,28 @@ void wallMgr::setupCheck()
 		throw std::runtime_error(("setupCheck : need setup"));
 	}
 }
+
+#pragma region UI
+//--------------------------------
+void wallMgr::mainUIin()
+{
+	_mainUI.open();
+	_eWallState = eWallMainUI;
+}
+
+//--------------------------------
+void wallMgr::mainUIout()
+{
+	_mainUI.close();
+}
+
+//--------------------------------
+void wallMgr::drawUI()
+{
+	_mainUI.draw(ofVec2f(cPhotoWallCategoryWidth * 0.5, cWindowHeight * 0.5));
+}
+#pragma endregion
+
 
 #pragma region Select
 //--------------------------------
@@ -225,7 +253,7 @@ void wallMgr::mouseDragged(ofMouseEventArgs& e)
 //--------------------------------
 void wallMgr::mousePressed(ofMouseEventArgs& e)
 {
-	if (_wallRect.inside(e))
+	if (_eWallState == eWallPhoto && _wallRect.inside(e))
 	{
 		ofVec2f inputPos_ = e;
 		inputPos_.x -= _wallRect.x;
@@ -243,6 +271,11 @@ void wallMgr::mousePressed(ofMouseEventArgs& e)
 			}
 			startPos_ += width_;
 		}
+	}
+	else if(_eWallState == eWallMainUI && _wallRect.inside(e))
+	{
+		mainUIout();
+		_eWallState = eWallPhoto;
 	}
 }
 

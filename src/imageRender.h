@@ -2,7 +2,7 @@
 
 #include "constParameter.h"
 
-class imageRender : public ofThread
+class imageRender
 {
 public:
 	void setup(string imgFolderPath);
@@ -30,12 +30,7 @@ private:
 //-------------------
 private:
 	imageRender();
-	~imageRender() {
-		if (isThreadRunning())
-		{
-			stopThread();
-		}
-	};
+	~imageRender() {};
 	void operator=(imageRender const&) {};
 
 public:

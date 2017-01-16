@@ -64,8 +64,7 @@ const int cWindowWidth = 3840;
 const int cWindowHeight = 1620;
 
 //Wall
-//const int cMinimumPhotoWidth = 80;
-//const int cMinimumPhotoHeight = 45;
+
 const int cPhotoWallCategoryWidth = 960;
 
 const int cMinimumPhotoWidth = (int)cPhotoWallCategoryWidth / 12.0;
@@ -81,5 +80,13 @@ const int cSelectShdowWidth = cSelectWidth * 3.0;
 const int cCategoryNum = 4;
 
 //UI
+const int cMainUIWidth = cPhotoWallCategoryWidth * 0.74;
+const int cMainUIHeight = cMainUIWidth * 0.4;
+const int cMainUIAlpha = 255 * 1.0;
 
+const int cMainUIUnitWidth = cMainUIWidth * 0.85;
+const int cMainUIUnitHeight = cMainUIHeight;
+const int cMainUIUnitMinWidth = cMainUIWidth * 0.15;
+const int cMainUIUnitMinHeight = cMainUIHeight * 0.334;
+const int cMainUIFontSize = cMainUIHeight * 0.22;
 #pragma endregion

@@ -51,6 +51,7 @@ void blurShader::begin(float blurLevel)
 	_blurLevel = MIN(MAX(blurLevel, 0.0f), 1.5f);
 
 	_fboBlurOnePass.begin();
+	ofClear(ofColor(0));
 	_shaderBlurX.begin();
 	_shaderBlurY.setUniform1f("blurAmnt", _blurLevel);
 }
@@ -73,6 +74,7 @@ void blurShader::end()
 	_fboBlurOnePass.end();
 	
 	_fboBlurTwoPass.begin();
+	ofClear(ofColor(0));
 	_shaderBlurY.begin();
 	_shaderBlurY.setUniform1f("blurAmnt", _blurLevel);
 	{
