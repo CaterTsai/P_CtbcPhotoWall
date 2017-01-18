@@ -1,5 +1,5 @@
 #include "mainUI.h"
-
+#include "wallMgr.h"
 #pragma region CLASS baseUnit
 //--------------------------------------------------------------
 mainUI::baseUnit::baseUnit(ofImage& zhText, ofImage& enText, ofColor c)
@@ -157,10 +157,11 @@ void mainUI::baseUnit::directClose()
 //-----------------------------------------------------------------------------
 mainUI::mainUI()
 	:_setup(false)
+	, _parentWallMgr(nullptr)
 {}
 
 //-----------------------------------------------------------------------------
-void mainUI::setup(string xmlPath, ePhotoPrimaryCategory eCategory)
+void mainUI::setup(wallMgr* wallMgr, string xmlPath, ePhotoPrimaryCategory eCategory)
 {
 	_font.setGlobalDpi(72);
 	_font.setLetterSpacing(1.2);
@@ -172,6 +173,8 @@ void mainUI::setup(string xmlPath, ePhotoPrimaryCategory eCategory)
 	_miniPos.set(cMainUIWidth * -0.5 + cMainUIUnitWidth + cMainUIUnitMinWidth * -0.5, cMainUIHeight * -0.5 + cMainUIUnitMinHeight * 0.5);
 
 	_setup = loadXml(xmlPath);
+
+	_parentWallMgr = wallMgr;
 }
 
 //-----------------------------------------------------------------------------
@@ -441,3 +444,24 @@ ofColor mainUI::getBPColor(ePhotoPrimaryCategory category)
 	}
 	return returnColor_;
 }
+
+#pragma region Input
+//--------------------------------------
+void mainUI::setupInput()
+{
+	inputEventMgr::GetInstance()->registerInputEvent(this, eInputMainUI);
+}
+
+//--------------------------------------
+void mainUI::inputPress(ofVec2f pos)
+{
+	_parentWallMgr->mainUIout();
+}
+	
+
+//--------------------------------------
+ofRectangle mainUI::getInputArea()
+{
+	return ofRectangle();
+}
+#pragma endregion

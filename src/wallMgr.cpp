@@ -5,6 +5,7 @@ wallMgr::wallMgr()
 	:_isSetup(false)
 	, _selectWallList(nullptr)
 	, _eWallState(eWallIdle)
+	
 {
 	
 }
@@ -21,7 +22,7 @@ void wallMgr::setup(ePhotoPrimaryCategory category, ofRectangle wallRect)
 	_eCategory = category;
 	_wallRect = wallRect;
 
-	_mainUI.setup("config/mainUIText.xml", category);
+	_mainUI.setup(this, "config/mainUIText.xml", category);
 
 	_isSetup = true;
 }
@@ -119,6 +120,7 @@ void wallMgr::addWallList(int width)
 	_wallListMgr.push_back(ofPtr<wallList>(new wallList(this, _eCategory, rect_)));
 }
 
+//--------------------------------
 int wallMgr::getWallRectWidth()
 {
 	return _wallRect.getWidth();
@@ -145,18 +147,40 @@ int wallMgr::getListTotalWidth()
 	return totalWidth_;
 }
 
+//--------------------------------
+void wallMgr::enableWallListInput()
+{
+	for (auto& iter_ : _wallListMgr)
+	{
+		iter_->enableInput();
+	}
+}
+
+//--------------------------------
+void wallMgr::disableWallListInput()
+{
+	for (auto& iter_ : _wallListMgr)
+	{
+		iter_->disableInput();
+	}
+}
+
 #pragma region UI
 //--------------------------------
 void wallMgr::mainUIin()
 {
 	_mainUI.open();
 	_eWallState = eWallMainUI;
+	enableInput();
 }
 
 //--------------------------------
 void wallMgr::mainUIout()
 {
 	_mainUI.close();
+	_eWallState = eWallPhoto;
+	disableInput();
+	enableWallListInput();
 }
 
 //--------------------------------
@@ -175,74 +199,52 @@ void wallMgr::selectCheck(wallList* selectList)
 	if (!_selectWallList)
 	{
 		_selectWallList = selectList;
+		selectList->disableInput();
+		selectList->enableInput(true);
 	}
 	else
 	{	
 		if (_selectWallList != selectList)
 		{
+			_selectWallList->disableInput();
+			_selectWallList->enableInput();
 			_selectWallList->deselect();
+
 			_selectWallList = selectList;
+			selectList->disableInput();
+			selectList->enableInput(true);
 		}
 	}
 }
+
 #pragma endregion
 
 #pragma region Input
-#ifdef USE_MOUSE
-//--------------------------------
-void wallMgr::mouseDragged(ofMouseEventArgs& e)
+//--------------------------------------
+void wallMgr::enableInput()
 {
+	inputEventMgr::GetInstance()->registerInputEvent(this, eInputWallMgr);
 }
 
-//--------------------------------
-void wallMgr::mousePressed(ofMouseEventArgs& e)
+//--------------------------------------
+void wallMgr::disableInput()
 {
-	if(_eWallState == eWallMainUI && _wallRect.inside(e))
+	inputEventMgr::GetInstance()->unregisterInputEvent(this);
+}
+
+//--------------------------------------
+void wallMgr::inputPress(ofVec2f pos)
+{
+	if (_eWallState == eWallMainUI)
 	{
 		mainUIout();
-		_eWallState = eWallPhoto;
 	}
 }
 
-//--------------------------------
-void wallMgr::mouseReleased(ofMouseEventArgs& e)
+//--------------------------------------
+ofRectangle wallMgr::getInputArea()
 {
-}
-
-#else
-//--------------------------------
-void wallMgr::touchDown(ofTouchEventArgs& e)
-{
-}
-
-//--------------------------------
-void wallMgr::touchMoved(ofTouchEventArgs& e)
-{
-}
-
-//--------------------------------
-void wallMgr::touchUp(ofTouchEventArgs& e)
-{
-}
-#endif // USE_MOUSE
-//--------------------------------
-void wallMgr::enableInput()
-{
-#ifdef USE_MOUSE
-	ofRegisterMouseEvents(this);
-#else
-	ofxRegisterWinTouchEvents(this);
-#endif // USE_MOUSE
-}
-
-//--------------------------------
-void wallMgr::disableInput()
-{
-#ifdef USE_MOUSE
-	ofUnregisterMouseEvents(this);
-#else
-	ofxUnregisterWinTouchEvents(this);
-#endif // USE_MOUSE
+	return _wallRect;
 }
 #pragma endregion
 

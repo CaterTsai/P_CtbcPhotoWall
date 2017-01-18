@@ -5,7 +5,7 @@
 
 #include "ofxWinTouchHook.h"
 
-class wallMgr
+class wallMgr : public inputEvent
 {
 public:
 	wallMgr();
@@ -18,11 +18,15 @@ public:
 	void drawShadow();
 
 	void addWallList(int width);
-	
 	int getWallRectWidth();
+
 private:
 	void setupCheck();
 	int getListTotalWidth();
+
+	void enableWallListInput();
+	void disableWallListInput();
+	
 private:
 	enum eWallState
 	{
@@ -48,30 +52,20 @@ private:
 #pragma region Select
 public:
 	void selectCheck(wallList* selectList);
+
+
+private:
 	wallList* _selectWallList;
 #pragma endregion
 
 #pragma region Input
-#ifdef USE_MOUSE
-public:
-	void mouseDragged(ofMouseEventArgs& e);
-	void mousePressed(ofMouseEventArgs& e);
-	void mouseReleased(ofMouseEventArgs& e);
-	void mouseMoved(ofMouseEventArgs& e) {};
-	void mouseScrolled(ofMouseEventArgs& e) {};
-	void mouseEntered(ofMouseEventArgs& e) {};
-	void mouseExited(ofMouseEventArgs& e) {};
-	
-#else
-public:
-	void touchDown(ofTouchEventArgs& e);
-	void touchMoved(ofTouchEventArgs& e);
-	void touchUp(ofTouchEventArgs& e);
-#endif // USE_MOUSE
-	
-public:
+private:
 	void enableInput();
 	void disableInput();
+	void inputPress(ofVec2f pos) override;
+	ofRectangle	getInputArea() override;
 #pragma endregion
+
+
 
 };

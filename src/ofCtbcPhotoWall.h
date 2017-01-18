@@ -39,9 +39,6 @@ public:
 	void updateWallMgr(float delta);
 	void drawWallMgr();
 
-	void enableWallInput();
-	void disbleWallInput();
-
 	void inIdle();
 	void outIdle();
 

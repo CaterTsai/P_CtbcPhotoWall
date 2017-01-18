@@ -43,6 +43,7 @@ enum eInputSystemLevel : int
 	eInputTop = 0
 	,eInputMainUI
 	,eInputWallUI
+	,eInputWallMgr
 	,eInputWallSelectList
 	,eInputWallList
 };

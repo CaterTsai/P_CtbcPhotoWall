@@ -167,23 +167,6 @@ void ofCtbcPhotoWall::drawWallMgr()
 	}
 }
 
-//--------------------------------------------------------------
-void ofCtbcPhotoWall::enableWallInput()
-{
-	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
-	{
-		_photoWall[idx_].enableInput();
-	}
-}
-
-//--------------------------------------------------------------
-void ofCtbcPhotoWall::disbleWallInput()
-{
-	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
-	{
-		_photoWall[idx_].disableInput();
-	}
-}
 
 //--------------------------------------------------------------
 void ofCtbcPhotoWall::inIdle()
@@ -207,7 +190,7 @@ void ofCtbcPhotoWall::outIdle()
 	{
 		_wallState = ePhotoWall_BlurOut;
 		_blurLevel.animateTo(0.0f);
-		disbleWallInput();
+		
 	}
 }
 
@@ -263,8 +246,6 @@ void ofCtbcPhotoWall::updateWallBlur(float delta)
 				
 				_idleVideo.stop();
 				mainUIin();
-				enableWallInput();
-				
 			}
 			break;
 		}

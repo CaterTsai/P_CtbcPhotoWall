@@ -22,7 +22,7 @@ public:
 	
 private:
 	ePhotoPrimaryCategory _eCategroy;
-	ofRectangle	_drawArea;
+	ofRectangle	_baseArea;
 	wallMgr*	_parent;
 #pragma region Center
 //Center
@@ -89,8 +89,10 @@ private:
 #pragma endregion
 
 #pragma region Input
+public:
+	void enableInput(bool isSelect = false);
+	void disableInput();
 private:
-	void setupInput();
 	void inputPress(ofVec2f pos) override;
 	void inputDrag(ofVec2f delta) override;
 	void inputRelease(ofVec2f pos) override;

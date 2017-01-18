@@ -2,18 +2,16 @@
 #include "wallMgr.h"
 //--------------------------------------
 wallList::wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle drawArea)
-	:_drawArea(drawArea)
+	:_baseArea(drawArea)
 	,_eState(eDeselect)
 	, _selectId(-1)
 	,_centerUnitPos(0.0)
 	, _eCategroy(eCategroy)
 	,_parent(parent)
 {
-	setupAnimation(drawArea.getCenter().x, _drawArea.getWidth());
+	setupAnimation(drawArea.getCenter().x, _baseArea.getWidth());
 	addWallUnits();
-	resetCenter();
-	setupInput();
-	
+	resetCenter();	
 }
 
 //--------------------------------------
@@ -59,13 +57,13 @@ void wallList::draw(ofVec2f pos)
 //--------------------------------------
 float wallList::getBaseWidth()
 {
-	return _drawArea.getWidth();
+	return _baseArea.getWidth();
 }
 
 //--------------------------------------
 int wallList::getListPosX()
 {
-	return _drawArea.getCenter().x;
+	return _baseArea.getCenter().x;
 }
 
 #pragma region Center
@@ -223,7 +221,7 @@ bool wallList::deselect()
 	{
 		_eState = eZoomOut;
 		_animDrawPosX.animateTo(getListPosX());
-		_animDrawWidth.animateTo(_drawArea.getWidth());
+		_animDrawWidth.animateTo(_baseArea.getWidth());
 		return true;
 	}
 	else
@@ -305,7 +303,7 @@ void wallList::setupWallUnit()
 {
 	for (auto& Iter_ : _wallUnitList)
 	{
-		Iter_->update(0, _drawArea.getWidth());
+		Iter_->update(0, _baseArea.getWidth());
 	}
 }
 
@@ -334,7 +332,7 @@ void wallList::drawWallUnitUp()
 		}
 
 		wallPos_.y -= (*iter_)->getHeight();
-		if (wallPos_.y >= _drawArea.getHeight())
+		if (wallPos_.y >= _baseArea.getHeight())
 		{
 			continue;
 		}
@@ -359,7 +357,7 @@ void wallList::drawWallUnitDown()
 		
 		wallPos_.y += iter_->getHeight();
 
-		if (wallPos_.y > _drawArea.getHeight())
+		if (wallPos_.y > _baseArea.getHeight())
 		{
 			break;
 		}
@@ -422,10 +420,24 @@ void wallList::updateWallTotalHeight()
 
 #pragma region Input
 //--------------------------------------
-void wallList::setupInput()
+void wallList::enableInput(bool isSelect)
 {
-	inputEventMgr::GetInstance()->registerInputEvent(this, eInputWallList);
+	if (isSelect)
+	{
+		inputEventMgr::GetInstance()->registerInputEvent(this, eInputWallSelectList);
+	}
+	else
+	{
+		inputEventMgr::GetInstance()->registerInputEvent(this, eInputWallList);
+	}
 }
+
+//--------------------------------------
+void wallList::disableInput()
+{
+	inputEventMgr::GetInstance()->unregisterInputEvent(this);
+}
+
 
 //--------------------------------------
 void wallList::inputPress(ofVec2f pos)
@@ -450,7 +462,8 @@ void wallList::inputRelease(ofVec2f pos)
 //--------------------------------------
 ofRectangle wallList::getInputArea()
 {
-	return ofRectangle(ofVec2f(_drawArea.getX(), _drawArea.getTop()), _drawArea.getWidth(), _drawArea.getHeight());
+	ofVec2f pos_((_animDrawPosX.getCurrentValue() - _animDrawWidth.getCurrentValue() * 0.5), 0);
+	return ofRectangle(pos_, _animDrawWidth.getCurrentValue(), _baseArea.getHeight());
 }
 #pragma endregion
 

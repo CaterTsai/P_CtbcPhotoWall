@@ -301,3 +301,8 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+/P_CtbcPhotoWall.vcxproj.filters
+/P_CtbcPhotoWall.vcxproj
+/P_CtbcPhotoWall.sln
+/icon.rc
+/addons.make

@@ -1,11 +1,13 @@
 #pragma once
 
 #include "constParameter.h"
+#include "inputEventMgr.h"
 #include "ofxAnimatableFloat.h"
 #include "ofxXmlSettings.h"
 #include "ofxTrueTypeFontUC.h"
 
-class mainUI
+class wallMgr;
+class mainUI : public inputEvent
 {
 #pragma region CLASS baseUnit
 private:
@@ -43,7 +45,7 @@ private:
 	
 public:
 	mainUI();
-	void setup(string xmlPath, ePhotoPrimaryCategory eCategory);
+	void setup(wallMgr* wallMgr, string xmlPath, ePhotoPrimaryCategory eCategory);
 	void update(float delta);
 	void draw(ofVec2f pos);
 
@@ -79,4 +81,12 @@ private:
 	ePhotoPrimaryCategory	_category;
 	ofxAnimatableFloat	_animMiniPosX[3];
 	map<ePhotoPrimaryCategory, baseUnit>	_mainUIMap;
+	wallMgr* _parentWallMgr;
+#pragma region Input
+private:
+	void setupInput();
+	void inputPress(ofVec2f pos) override;
+	ofRectangle	getInputArea() override;
+#pragma endregion
+
 };
