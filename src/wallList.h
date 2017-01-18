@@ -3,32 +3,29 @@
 #include "wallUnit.h"
 #include "dataHolder.h"
 #include "imageRender.h"
-#include "ofxAnimatableFloat.h"
+#include "inputEventMgr.h"
 
-class wallList
+#include "ofxAnimatableFloat.h"
+class wallMgr;
+class wallList : public inputEvent
 {
 public:
-	wallList(ePhotoPrimaryCategory eCategroy, int width, int height);
+	wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle drawArea);
 	~wallList();
 
 	void update(float delta);
-	void draw(ofVec3f pos);
+	void draw();
+	void draw(ofVec2f pos);
 	float getBaseWidth();
 	
+	int getListPosX();
 	
 private:
 	ePhotoPrimaryCategory _eCategroy;
-	
-	int _baseWidth;
-	const int _displayheight;
-
+	ofRectangle	_drawArea;
+	wallMgr*	_parent;
 #pragma region Center
 //Center
-public:
-	void touchDown(ofVec2f& pos);
-	void touchMoved(ofVec2f& delta);
-	void touchUp(ofVec2f& pos);
-
 private:
 	void resetCenter();
 	void updateCenter(float delta);
@@ -48,11 +45,15 @@ public:
 	bool getIsSelect();
 	bool select(ofVec2f& pos);
 	bool deselect();
+
 private:
-	void setupAnimation(int width);
+	void setupAnimation(int posX, int width);
 	void updateAnimation(float delta);
+	
 	void checkAnimationState();
 	
+	int getAnimMoveX();
+
 private:
 	enum selectState {
 		eDeselect = 0
@@ -64,7 +65,7 @@ private:
 	bool _selectUp;
 	int _selectId;
 	ofVec2f _selectPos;
-	ofxAnimatableFloat	_animDrawWidth;
+	ofxAnimatableFloat	_animDrawPosX, _animDrawWidth;
 #pragma endregion
 	
 #pragma region WallUnit
@@ -86,5 +87,15 @@ private:
 	int _wallTotalHeight;
 	vector<ofPtr<wallUnit>>	_wallUnitList;
 #pragma endregion
+
+#pragma region Input
+private:
+	void setupInput();
+	void inputPress(ofVec2f pos) override;
+	void inputDrag(ofVec2f delta) override;
+	void inputRelease(ofVec2f pos) override;
+	ofRectangle	getInputArea() override; 
+#pragma endregion
+
 
 };

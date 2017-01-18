@@ -13,15 +13,16 @@ public:
 
 	void setup(ePhotoPrimaryCategory category, ofRectangle wallRect);
 	void update(float delta);
-	void draw(ofVec2f pos);
-	void drawSelect(ofVec2f pos);
-	void drawShadow(ofVec2f pos);
+	void draw();
+	void drawSelect();
+	void drawShadow();
 
 	void addWallList(int width);
 	
+	int getWallRectWidth();
 private:
 	void setupCheck();
-
+	int getListTotalWidth();
 private:
 	enum eWallState
 	{
@@ -45,25 +46,9 @@ private:
 #pragma endregion
 	
 #pragma region Select
-private:
-	void setupSelect();
-	void updateSelect(float delta);
-	void select(ofVec2f inputP, ofPtr<wallList>& selectList, ofVec2f pos);
-	void deselect();
-	void selectAnimationCheck();
-
-private:
-	enum eSelectState {
-		eDeselect = 0
-		,eMoveFront
-		,eSelect
-		,eMoveBack
-	}_eState;
-	ofVec2f _selectPosBackup;
-	ofxAnimatableFloat	_animSelectPosX;
-	ofPtr<wallList> _selectWallList;
-
-	std::function<void(void)> _afterSelect;
+public:
+	void selectCheck(wallList* selectList);
+	wallList* _selectWallList;
 #pragma endregion
 
 #pragma region Input

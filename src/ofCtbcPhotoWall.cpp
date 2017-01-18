@@ -11,6 +11,8 @@ void ofCtbcPhotoWall::setup()
 	photoRender::GetInstance()->setup("thumbnail/", "");
 	dataHolder::GetInstance()->setup("");
 	fontMgr::GetInstance()->setup("fonts/");
+	inputEventMgr::GetInstance()->enableInput();
+
 	setupImageRender("images/");
 	setupAudio();
 
@@ -28,8 +30,6 @@ void ofCtbcPhotoWall::update()
 {
 	float delta_ = ofGetElapsedTimef() - _timer;
 	_timer += delta_;
-
-	photoRender::GetInstance()->update();
 
 	updateWallMgr(delta_);
 	ofSetWindowTitle(ofToString(ofGetFrameRate()));
@@ -290,25 +290,21 @@ void ofCtbcPhotoWall::drawPhotoWall()
 {
 	ofPushStyle();
 	ofSetColor(255);
-	ofVec2f drawPos_(0);
+	
 	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
 	{
-		_photoWall[idx_].draw(drawPos_);
-		drawPos_.x += cPhotoWallCategoryWidth;
+		_photoWall[idx_].draw();
 	}
 
-	drawPos_.set(0);
 	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
 	{
-		_photoWall[idx_].drawShadow(drawPos_);
-		drawPos_.x += cPhotoWallCategoryWidth;
+		_photoWall[idx_].drawShadow();
 	}
 
-	drawPos_.set(0);
+	
 	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
 	{
-		_photoWall[idx_].drawSelect(drawPos_);
-		drawPos_.x += cPhotoWallCategoryWidth;
+		_photoWall[idx_].drawSelect();
 	}
 	ofPopStyle();
 }

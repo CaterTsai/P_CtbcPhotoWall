@@ -38,6 +38,15 @@ enum ePhotoShape : int
 
 };
 
+enum eInputSystemLevel : int
+{
+	eInputTop = 0
+	,eInputMainUI
+	,eInputWallUI
+	,eInputWallSelectList
+	,eInputWallList
+};
+
 #pragma endregion
 
 #pragma region Struct
@@ -63,8 +72,10 @@ struct stPhotoData
 const int cWindowWidth = 3840;
 const int cWindowHeight = 1620;
 
-//Wall
+//input event manager
+const int cInputEventLevel = 10;
 
+//Wall
 const int cPhotoWallCategoryWidth = 960;
 
 const int cMinimumPhotoWidth = (int)cPhotoWallCategoryWidth / 12.0;
@@ -77,7 +88,7 @@ const float cSelectCoverAlpha = 255 * 0.8;
 const float cSelectAnimLength = 0.5f;
 const int cSelectWidth = cPhotoWallCategoryWidth * 0.2f;
 const int cSelectShdowWidth = cSelectWidth * 3.0;
-const int cCategoryNum = 4;
+const int cCategoryNum = 1;
 
 //UI
 const int cMainUIWidth = cPhotoWallCategoryWidth * 0.74;

@@ -6,15 +6,16 @@ void photoRender::setup(string thumbPath, string sourcePath)
 	_thumbPath = thumbPath;
 	_sourcePath = sourcePath;
 	startThread();
-	setupDefault();
-
+	setupDefault();	
+	ofAddListener(ofEvents().update, this, &photoRender::update);
 	_isSetup = true;
 }
 
 //--------------------------------------------------------------
-void photoRender::update()
+void photoRender::update(ofEventArgs&)
 {
 	updateImage();
+	
 }
 
 //--------------------------------------------------------------

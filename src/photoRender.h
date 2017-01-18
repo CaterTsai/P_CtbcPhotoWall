@@ -15,7 +15,7 @@ private:
 
 public:
 	void setup(string thumbPath, string sourcePath);
-	void update();
+	void update(ofEventArgs&);
 	
 private:	
 	void checkSetup();

@@ -30,8 +30,7 @@ void photoUnit::draw(ofVec2f pos, bool isSelectList)
 	drawPos_.x += (cPhotoUnitInterval) * 0.5;
 	drawPos_.y += (cPhotoUnitInterval) * 0.5;
 	photoRender::GetInstance()->drawThumb(_photoIndex, drawPos_, _width - cPhotoUnitInterval, _height - cPhotoUnitInterval);
-
-
+	
 	if (isSelectList && !_isClick)
 	{
 		ofSetColor(cSelectCoverColor, cSelectCoverAlpha);
@@ -39,12 +38,6 @@ void photoUnit::draw(ofVec2f pos, bool isSelectList)
 		ofRect(drawPos_, _width - cPhotoUnitInterval, _height - cPhotoUnitInterval);
 	}
 
-	//if (_isClick)
-	//{
-	//	ofSetColor(255, 0, 0, 200);
-	//	ofFill();
-	//	ofRect(drawPos_, _width - cPhotoUnitInterval, _height - cPhotoUnitInterval);
-	//}
 	ofPopStyle();
 }
 

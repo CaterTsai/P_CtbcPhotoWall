@@ -4,7 +4,6 @@
 wallMgr::wallMgr()
 	:_isSetup(false)
 	, _selectWallList(nullptr)
-	, _eState(eDeselect)
 	, _eWallState(eWallIdle)
 {
 	
@@ -21,7 +20,6 @@ void wallMgr::setup(ePhotoPrimaryCategory category, ofRectangle wallRect)
 {
 	_eCategory = category;
 	_wallRect = wallRect;
-	setupSelect();
 
 	_mainUI.setup("config/mainUIText.xml", category);
 
@@ -37,30 +35,25 @@ void wallMgr::update(float delta)
 	{
 		iter_->update(delta);
 	}
-	updateSelect(delta);
 	_mainUI.update(delta);
-
-	selectAnimationCheck();
 }
 
 //--------------------------------
-void wallMgr::draw(ofVec2f pos)
+void wallMgr::draw()
 {
 	setupCheck();
 
 	ofPushStyle();
+	ofSetColor(255);
 	ofPushMatrix();
-	ofTranslate(pos);
+	ofTranslate(_wallRect.getPosition());
 	ofVec2f drawPos_(0);
 	for (auto& iter_ : _wallListMgr)
-	{		
-		int halfWidth_ = iter_->getBaseWidth() * 0.5f;
-		drawPos_.x += halfWidth_;
+	{
 		if (!iter_->getIsSelect())
 		{
-			iter_->draw(drawPos_);
-		}
-		drawPos_.x += halfWidth_;
+			iter_->draw();
+		}	
 	}
 
 	drawUI();
@@ -69,52 +62,66 @@ void wallMgr::draw(ofVec2f pos)
 }
 
 //--------------------------------
-void wallMgr::drawSelect(ofVec2f pos)
+void wallMgr::drawSelect()
 {
 	setupCheck();
-	if (_selectWallList)
+
+	ofPushStyle();
+	ofSetColor(255);
+	ofPushMatrix();
+	ofTranslate(_wallRect.getPosition());
+	ofVec2f drawPos_(0);
+	for (auto& iter_ : _wallListMgr)
 	{
-		ofPushStyle();
-		ofSetColor(255);
-		ofPushMatrix();
-		ofTranslate(pos);
+		if (iter_->getIsSelect())
 		{
-			_selectWallList->draw(ofVec2f(_animSelectPosX.getCurrentValue(), 0));
+			iter_->draw();
 		}
-		ofPopMatrix();
-		ofPopStyle();
 	}
+
+	drawUI();
+	ofPopMatrix();
+	ofPopStyle();
 }
 
 //--------------------------------
-void wallMgr::drawShadow(ofVec2f pos)
+void wallMgr::drawShadow()
 {
 	setupCheck();
-	if (_selectWallList)
+	ofPushStyle();
+	ofSetColor(255);
+	ofPushMatrix();
+	ofTranslate(_wallRect.getPosition());
+	ofVec2f drawPos_(0);
+	for (auto& iter_ : _wallListMgr)
 	{
-		ofPushStyle();
-		ofPushMatrix();
-		ofTranslate(pos);
+		if (iter_->getIsSelect())
 		{
 			//Shadow
 			imageRender::GetInstance()->drawImage(
 				NAME_MGR::I_Gradient,
-				ofVec2f(_animSelectPosX.getCurrentValue() + (cSelectShdowWidth * -0.5), 0),
+				ofVec2f(iter_->getListPosX() - cSelectShdowWidth * 0.5f, 0),
 				cSelectShdowWidth,
 				cWindowHeight
 			);
 		}
-		ofPopMatrix();
-		ofPopStyle();
 	}
-
+	ofPopMatrix();
+	ofPopStyle();
 }
 
 //--------------------------------
 void wallMgr::addWallList(int width)
 {
 	setupCheck();
-	_wallListMgr.push_back(ofPtr<wallList>(new wallList(_eCategory, width, _wallRect.getHeight())));
+	int posX_ = getListTotalWidth();
+	ofRectangle	rect_(posX_, 0, width, _wallRect.getHeight());
+	_wallListMgr.push_back(ofPtr<wallList>(new wallList(this, _eCategory, rect_)));
+}
+
+int wallMgr::getWallRectWidth()
+{
+	return _wallRect.getWidth();
 }
 
 //--------------------------------
@@ -124,6 +131,18 @@ void wallMgr::setupCheck()
 	{
 		throw std::runtime_error(("setupCheck : need setup"));
 	}
+}
+
+//--------------------------------
+int wallMgr::getListTotalWidth()
+{
+	int totalWidth_ = 0;
+	for (auto& iter_ : _wallListMgr)
+	{
+		totalWidth_ += iter_->getBaseWidth();
+	}
+
+	return totalWidth_;
 }
 
 #pragma region UI
@@ -149,95 +168,20 @@ void wallMgr::drawUI()
 
 
 #pragma region Select
-//--------------------------------
-void wallMgr::setupSelect()
-{
-	_animSelectPosX.setDuration(cSelectAnimLength);
-	_animSelectPosX.setRepeatType(AnimRepeat::PLAY_ONCE);
-
-}
 
 //--------------------------------
-void wallMgr::updateSelect(float delta)
-{
-	_animSelectPosX.update(delta);
-}
-
-//--------------------------------
-void wallMgr::select(ofVec2f inputP, ofPtr<wallList>& selectList, ofVec2f pos)
+void wallMgr::selectCheck(wallList* selectList)
 {	
-	if (_eState == eDeselect && !_selectWallList)
+	if (!_selectWallList)
 	{
 		_selectWallList = selectList;
-		_selectPosBackup = pos;
-
-		float halfSelectWidth_ = cSelectWidth * 0.5f;
-		int moveX_ = pos.x;
-		if ((moveX_ + halfSelectWidth_) > _wallRect.getWidth())
-		{
-			moveX_ = _wallRect.getWidth() - halfSelectWidth_;
-		}
-		else if (moveX_ - halfSelectWidth_ < 0)
-		{
-			moveX_ = halfSelectWidth_;
-		}
-
-		_animSelectPosX.animateFromTo(pos.x, moveX_);
-		_eState = eMoveFront;
-
-		selectList->touchDown(inputP);
 	}
-	else if (_eState == eSelect && _selectWallList)
-	{
-		if (_selectWallList.get() != selectList.get())
+	else
+	{	
+		if (_selectWallList != selectList)
 		{
-			_afterSelect = [=]() {
-				ofPtr<wallList> nextWallList = selectList;
-				ofVec2f nextP = pos;
-				ofVec2f nextInput = inputP;
-				select(inputP, nextWallList, nextP);
-			};
-
-			deselect();
-		}
-	}
-
-}
-
-//--------------------------------
-void wallMgr::deselect()
-{
-	_animSelectPosX.animateTo(_selectPosBackup.x);
-	_selectWallList->deselect();
-	_eState = eMoveBack;
-}
-
-//--------------------------------
-void wallMgr::selectAnimationCheck()
-{
-	switch (_eState)
-	{
-		case eMoveFront:
-		{
-			if (_animSelectPosX.hasFinishedAnimating() && _animSelectPosX.getPercentDone() == 1.0f)
-			{
-				_eState = eSelect;
-			}
-			break;
-		}
-		case eMoveBack:
-		{
-			if (_animSelectPosX.hasFinishedAnimating() && _animSelectPosX.getPercentDone() == 1.0f)
-			{
-				_eState = eDeselect;
-				_selectWallList.reset();
-
-				if (_afterSelect)
-				{
-					_afterSelect();
-				}
-			}
-			break;
+			_selectWallList->deselect();
+			_selectWallList = selectList;
 		}
 	}
 }
@@ -253,26 +197,7 @@ void wallMgr::mouseDragged(ofMouseEventArgs& e)
 //--------------------------------
 void wallMgr::mousePressed(ofMouseEventArgs& e)
 {
-	if (_eWallState == eWallPhoto && _wallRect.inside(e))
-	{
-		ofVec2f inputPos_ = e;
-		inputPos_.x -= _wallRect.x;
-
-		int startPos_ = 0;
-		for (auto& iter_ : _wallListMgr)
-		{
-			int width_ = iter_->getBaseWidth();
-			if (inputPos_.x >= startPos_ && inputPos_.x < (startPos_ + width_))
-			{
-				ofVec2f selectPos_(startPos_ + width_ * 0.5f, 0);
-							
-				select(e, iter_, selectPos_);
-				break;
-			}
-			startPos_ += width_;
-		}
-	}
-	else if(_eWallState == eWallMainUI && _wallRect.inside(e))
+	if(_eWallState == eWallMainUI && _wallRect.inside(e))
 	{
 		mainUIout();
 		_eWallState = eWallPhoto;
@@ -320,3 +245,4 @@ void wallMgr::disableInput()
 #endif // USE_MOUSE
 }
 #pragma endregion
+
