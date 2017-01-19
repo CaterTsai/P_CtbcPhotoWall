@@ -85,7 +85,7 @@ private:
 #pragma region Input
 private:
 	void setupInput();
-	void inputPress(ofVec2f pos) override;
+	void inputRelease(inputEventArgs e) override;
 	ofRectangle	getInputArea() override;
 #pragma endregion
 

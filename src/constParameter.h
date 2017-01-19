@@ -72,13 +72,16 @@ struct stPhotoData
 #pragma region const parameter
 const int cWindowWidth = 3840;
 const int cWindowHeight = 1620;
+const int cPhotoWallCategoryWidth = 960;
 
 //input event manager
 const int cInputEventLevel = 10;
+const float cInputHoldLimit = 0.5f;
+const float cInputTriggerDiffLimit = cPhotoWallCategoryWidth * 0.05f;
 
 //Wall
-const int cPhotoWallCategoryWidth = 960;
-
+const float cWallListMoveVecRatio = 5.0f;
+const float cWallListMoveVecMax = 80.0f;
 const int cMinimumPhotoWidth = (int)cPhotoWallCategoryWidth / 12.0;
 const int cMinimumPhotoHeight = (int)cMinimumPhotoWidth * 9.0/16.0;
 const int cPhotoUnitInterval = 5;

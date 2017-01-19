@@ -15,7 +15,7 @@ public:
 
 	virtual void update(float delta, int width) {};
 	virtual void draw(ofVec2f pos, bool isSelectList = false) {};
-	virtual void onclick(ofVec2f pos) {};
+	virtual void onclick(ofVec2f pos = ofVec2f(0)) {};
 	
 
 	virtual eWallUnitType getUnitType() { return _unitType; };

@@ -453,7 +453,7 @@ void mainUI::setupInput()
 }
 
 //--------------------------------------
-void mainUI::inputPress(ofVec2f pos)
+void mainUI::inputRelease(inputEventArgs e)
 {
 	_parentWallMgr->mainUIout();
 }

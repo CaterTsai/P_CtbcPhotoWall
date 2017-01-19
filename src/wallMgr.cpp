@@ -233,7 +233,7 @@ void wallMgr::disableInput()
 }
 
 //--------------------------------------
-void wallMgr::inputPress(ofVec2f pos)
+void wallMgr::inputRelease(inputEventArgs e)
 {
 	if (_eWallState == eWallMainUI)
 	{

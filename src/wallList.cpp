@@ -3,8 +3,7 @@
 //--------------------------------------
 wallList::wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle drawArea)
 	:_baseArea(drawArea)
-	,_eState(eDeselect)
-	, _selectId(-1)
+	,_eSelectState(eDeselect)
 	,_centerUnitPos(0.0)
 	, _eCategroy(eCategroy)
 	,_parent(parent)
@@ -25,9 +24,10 @@ void wallList::update(float delta)
 {
 	updateAnimation(delta);
 	updateWallUnit(delta);
-	updateCenter(delta);
+	getIsSelect()? updateSelectCenter(delta):updateCenter(delta);
 
-	checkAnimationState();
+	checkSelectState();
+	checkSelectDrapState();
 }
 
 //--------------------------------------
@@ -35,18 +35,6 @@ void wallList::draw()
 {
 	ofPushMatrix();
 	ofTranslate(_animDrawPosX.getCurrentValue(), 0);
-
-	drawWallUnitUp();
-	drawWallUnitDown();
-
-	ofPopMatrix();
-}
-
-//--------------------------------------
-void wallList::draw(ofVec2f pos)
-{
-	ofPushMatrix();
-	ofTranslate(pos);
 
 	drawWallUnitUp();
 	drawWallUnitDown();
@@ -73,39 +61,59 @@ void wallList::resetCenter()
 {
 	_centerUnitPos.set(0);
 	_centerVec.set(0.0f, ofRandom(-1, 1)>0?ofRandom(20.0, 60.0):ofRandom(-60.0, -20.0));
-	
+	_centerBaseVec = _centerVec;
 }
 
 //--------------------------------------
 void wallList::updateCenter(float delta)
 {
-	if (getIsSelect())
+
+	if (abs(_centerVec.y) > abs(_centerBaseVec.y))
 	{
-		if (_eState == eZoomIn || _eState == eZoomOut)
-		{
-			_centerUnitPos.y = getCenterUnitPosYFromSelect();
-		}
+		_centerVec.y *= 0.96;
+	}
+
+	float diff_ = _centerVec.y * delta;
+	int height_ = (*_wallUnitList.begin())->getHeight();
+	_centerUnitPos.y += diff_;
+
+	fixCenterUnitPos();
+}
+
+//--------------------------------------
+void wallList::updateSelectCenter(float delta)
+{
+	if (_eSelectState == eZoomIn || _eSelectState == eZoomOut)
+	{
+		_centerUnitPos.y = getCenterUnitPosYFromSelect();
 	}
 	else
 	{
-		float diff_ = _centerVec.y * delta;
-		int height_ = (*_wallUnitList.begin())->getHeight();
-		_centerUnitPos.y += diff_;
-
-		if (_centerUnitPos.y > _wallTotalHeight)
+		if (_eSelectDrapState == eMove)
 		{
-			_centerUnitPos.y = _centerUnitPos.y - _wallTotalHeight;
-		}
-		else if (_centerUnitPos.y < -height_)
-		{
-			_centerUnitPos.y = _wallTotalHeight + _centerUnitPos.y;
+			_centerUnitPos.y = _animMoveSelect.getCurrentValue();
 		}
 	}
 }
 
 //--------------------------------------
-int wallList::touchCheckUp(float diff, ofVec2f & pos)
+wallUnitInfo wallList::foundWallUnit(ofVec2f pos, bool nearest)
 {
+	int diff_ = pos.y - _centerUnitPos.y;
+	if (diff_ >= 0)
+	{
+		return nearest ? foundUnitDownNearest(diff_) : foundUnitDown(diff_);
+	}
+	else
+	{
+		return nearest ? foundUnitUpNearest(abs(diff_)) : foundUnitUp(abs(diff_));
+	}
+}
+
+//--------------------------------------
+wallUnitInfo wallList::foundUnitUp(float diff)
+{
+	wallUnitInfo val_;
 	int posY_ = 0;
 	
 	int idx_ = _wallUnitList.size() - 1;
@@ -115,20 +123,21 @@ int wallList::touchCheckUp(float diff, ofVec2f & pos)
 		
 		if (diff >= posY_ && diff < (posY_ + height_))
 		{
-			(*iter_)->onclick(pos);
-			_selectPos = _centerUnitPos;
-			_selectPos.y -= (posY_ + height_);
+			val_.pos = _centerUnitPos;
+			val_.pos.y -= (posY_ + height_);
 			break;
 		}
 		posY_ += height_;
 		idx_--;
 	}
-	return idx_;
+	val_.id = idx_;
+	return val_;
 }
 
 //--------------------------------------
-int wallList::touchCheckDown(float diff, ofVec2f & pos)
+wallUnitInfo wallList::foundUnitDown(float diff)
 {
+	wallUnitInfo val_;
 	int posY_ = 0;
 	int idx_ = 0;
 	for (auto& iter_ : _wallUnitList)
@@ -137,15 +146,81 @@ int wallList::touchCheckDown(float diff, ofVec2f & pos)
 		
 		if (diff >= posY_ && diff < (posY_ + height_))
 		{
-			iter_->onclick(pos);
-			_selectPos = _centerUnitPos;
-			_selectPos.y += posY_;
+			val_.pos = _centerUnitPos;
+			val_.pos.y += posY_;
 			break;
 		}
 		posY_ += height_;
 		idx_++;
 	}
-	return idx_;
+	val_.id = idx_;
+	return val_;
+}
+
+//--------------------------------------
+wallUnitInfo wallList::foundUnitUpNearest(float diff)
+{
+	wallUnitInfo val_;
+	int posY_ = 0;
+	int minDist_ = diff;
+	int minID_ = 0;
+
+	int idx_ = _wallUnitList.size() - 1;
+	for (auto& iter_ = _wallUnitList.rbegin(); iter_ != _wallUnitList.rend(); iter_++)
+	{
+		int height_ = (*iter_)->getHeight();
+		int dist_ = abs(diff - (posY_ + height_));
+		if (dist_ > minDist_)
+		{
+			val_.pos = _centerUnitPos;
+			val_.pos.y -= posY_;
+			val_.id = minID_;
+			break;
+		}
+		else
+		{
+			minDist_ = dist_;
+			minID_ = idx_;
+		}
+		posY_ += height_;
+		idx_--;
+	}
+	return val_;
+}
+
+//--------------------------------------
+wallUnitInfo wallList::foundUnitDownNearest(float diff)
+{
+	wallUnitInfo val_;
+	int minDist_ = INT_MAX;
+	int minID_ = -1;
+
+	int posY_ = 0;
+	int idx_ = 0;
+	int height_ = 0;
+	for (auto& iter_ : _wallUnitList)
+	{	
+		int dist_ = abs(diff - posY_);
+		if (dist_ > minDist_)
+		{
+			val_.id = minID_;
+			val_.pos = _centerUnitPos;
+			val_.pos.y += (posY_ - height_);
+			break;
+		}
+		else
+		{
+			minDist_ = dist_;
+			minID_ = idx_;
+		}
+
+		height_ = iter_->getHeight();
+		posY_ += height_;
+		
+		idx_++;
+	}
+	
+	return val_;
 }
 
 //--------------------------------------
@@ -153,21 +228,34 @@ int wallList::getCenterUnitPosYFromSelect()
 {
 	//TODO : Performance Point
 	int returnVal_ = 0;
-	if (_selectUp)
+	if (_selectWallUnit.pos.y < _centerUnitPos.y)
 	{
-		for (int idx_ = _selectId; idx_ < _wallUnitList.size(); idx_++)
+		for (int idx_ = _selectWallUnit.id; idx_ < _wallUnitList.size(); idx_++)
 		{
 			returnVal_ += _wallUnitList[idx_]->getHeight();
 		}
 	}
 	else
 	{
-		for (int idx_ = 0; idx_ < _selectId; idx_++)
+		for (int idx_ = 0; idx_ < _selectWallUnit.id; idx_++)
 		{
 			returnVal_ -= _wallUnitList[idx_]->getHeight();
 		}
 	}
-	return (_selectPos.y + returnVal_);
+	return (_selectWallUnit.pos.y + returnVal_);
+}
+
+//--------------------------------------
+void wallList::fixCenterUnitPos()
+{
+	if (_centerUnitPos.y > _wallTotalHeight)
+	{
+		_centerUnitPos.y = _centerUnitPos.y - _wallTotalHeight;
+	}
+	else if (_centerUnitPos.y < -(*_wallUnitList.begin())->getHeight())
+	{
+		_centerUnitPos.y = _wallTotalHeight + _centerUnitPos.y;
+	}
 }
 
 #pragma endregion
@@ -176,32 +264,19 @@ int wallList::getCenterUnitPosYFromSelect()
 //--------------------------------------
 bool wallList::getIsSelect()
 {
-	return (_eState != eDeselect);
+	return (_eSelectState != eDeselect);
 }
 
 //--------------------------------------
 bool wallList::select(ofVec2f& pos)
 {
-	if (_eState == eDeselect)
+	if (_eSelectState == eDeselect)
 	{	
-		//wall unit check
-		int diff_ = pos.y - _centerUnitPos.y;
-		ofVec2f centerMove_;
-		if (diff_ >= 0)
-		{
-			_selectUp = false;
-			_selectId = touchCheckDown(diff_, pos);
-		}
-		else
-		{
-			_selectUp = true;
-			diff_ = abs(diff_);
-			_selectId = touchCheckUp(diff_, pos);
-		}
-		_centerUnitPosBackup = _centerUnitPos;
+		_selectWallUnit = foundWallUnit(pos);
+		_wallUnitList[_selectWallUnit.id]->onclick(pos);
 
 		//trigger animation
-		_eState = eZoomIn;
+		_eSelectState = eZoomIn;
 
 		_animDrawPosX.animateTo(getAnimMoveX());
 		_animDrawWidth.animateTo(cSelectWidth);
@@ -217,9 +292,9 @@ bool wallList::select(ofVec2f& pos)
 //--------------------------------------
 bool wallList::deselect()
 {
-	if (_eState == eSelect)
+	if (_eSelectState == eSelect)
 	{
-		_eState = eZoomOut;
+		_eSelectState = eZoomOut;
 		_animDrawPosX.animateTo(getListPosX());
 		_animDrawWidth.animateTo(_baseArea.getWidth());
 		return true;
@@ -239,6 +314,9 @@ void wallList::setupAnimation(int posX, int width)
 	_animDrawWidth.setDuration(cSelectAnimLength);
 	_animDrawWidth.setRepeatType(AnimRepeat::PLAY_ONCE);
 	_animDrawWidth.reset(width);
+
+	_animMoveSelect.setDuration(0.2);
+	_animMoveSelect.setRepeatType(AnimRepeat::PLAY_ONCE);
 }
 
 //--------------------------------------
@@ -246,18 +324,19 @@ void wallList::updateAnimation(float delta)
 {
 	_animDrawWidth.update(delta);
 	_animDrawPosX.update(delta);
+	_animMoveSelect.update(delta);
 }
 
 //--------------------------------------
-void wallList::checkAnimationState()
+void wallList::checkSelectState()
 {
-	switch (_eState)
+	switch (_eSelectState)
 	{
 		case eZoomIn:
 		{
 			if (_animDrawWidth.hasFinishedAnimating() && _animDrawWidth.getPercentDone() == 1.0)
 			{
-				_eState = eSelect;
+				_eSelectState = eSelect;
 			}
 			break;
 		}
@@ -265,10 +344,11 @@ void wallList::checkAnimationState()
 		{
 			if (_animDrawWidth.hasFinishedAnimating() && _animDrawWidth.getPercentDone() == 1.0)
 			{
-				_wallUnitList[_selectId]->onclick(ofVec2f(0));
-				_eState = eDeselect;
-				_selectId = -1;
-				_centerVec.set(0.0f, ofRandom(-1, 1)>0 ? ofRandom(30.0, 80.0) : ofRandom(-80.0, -30.0));
+				_wallUnitList[_selectWallUnit.id]->onclick();
+				_eSelectState = eDeselect;
+				_selectWallUnit.id = -1;
+				_centerVec.set(0.0f, ofRandom(-1, 1)>0 ? ofRandom(30.0, 60.0) : ofRandom(-60.0, -30.0));
+				_centerBaseVec = _centerVec;
 			}
 			break;
 		}
@@ -276,6 +356,16 @@ void wallList::checkAnimationState()
 		{
 			break;
 		}
+	}
+}
+
+//--------------------------------------
+void wallList::checkSelectDrapState()
+{
+	if (_eSelectDrapState == eMove && _animMoveSelect.hasFinishedAnimating() && _animMoveSelect.getPercentDone() == 1.0)
+	{
+		_eSelectDrapState = eStable;
+		_wallUnitList[_selectWallUnit.id]->onclick();
 	}
 }
 
@@ -293,6 +383,18 @@ int wallList::getAnimMoveX()
 		moveX_ = halfSelectWidth_;
 	}
 	return moveX_;
+}
+
+//--------------------------------------
+void wallList::fitSelectPos()
+{
+	auto nearestWallUnit_ = foundWallUnit(_selectWallUnit.pos, true);
+	_selectWallUnit.id = nearestWallUnit_.id;
+	float diffY_ = nearestWallUnit_.pos.y - _selectWallUnit.pos.y;
+
+	_animMoveSelect.reset(_centerUnitPos.y);
+	_animMoveSelect.animateTo(_centerUnitPos.y - diffY_);
+	_eSelectDrapState = eMove;
 }
 
 #pragma endregion
@@ -438,25 +540,49 @@ void wallList::disableInput()
 	inputEventMgr::GetInstance()->unregisterInputEvent(this);
 }
 
-
 //--------------------------------------
-void wallList::inputPress(ofVec2f pos)
+void wallList::inputPress(inputEventArgs e)
 {
-	if (!getIsSelect())
+	_centerVec.set(0);
+
+	if (getIsSelect())
 	{
-		select(pos);
-		_parent->selectCheck(this);
+		_wallUnitList[_selectWallUnit.id]->onclick();
+		_eSelectDrapState = eDrap;
 	}
 }
 
 //--------------------------------------
-void wallList::inputDrag(ofVec2f delta)
+void wallList::inputDrag(inputEventArgs e)
 {
+	if (_eSelectState != eZoomIn && _eSelectState != eZoomOut)
+	{
+		_centerUnitPos.y += e.delta.y;
+	}
 }
 
 //--------------------------------------
-void wallList::inputRelease(ofVec2f pos)
+void wallList::inputRelease(inputEventArgs e)
 {
+	if (e.holdTime <= cInputHoldLimit && abs(e.diffPos.y) < cInputTriggerDiffLimit)
+	{
+		if (!getIsSelect())
+		{
+			select(e.pos);
+			_parent->selectCheck(this);
+		}
+	}
+	else
+	{
+		if (!getIsSelect())
+		{
+			_centerVec = e.delta * ofGetFrameRate() * 0.5;
+		}
+		else
+		{
+			fitSelectPos();
+		}
+	}
 }
 
 //--------------------------------------

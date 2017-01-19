@@ -3,7 +3,6 @@
 #include "wallList.h"
 #include "mainUI.h"
 
-#include "ofxWinTouchHook.h"
 
 class wallMgr : public inputEvent
 {
@@ -62,7 +61,7 @@ private:
 private:
 	void enableInput();
 	void disableInput();
-	void inputPress(ofVec2f pos) override;
+	void inputRelease(inputEventArgs e) override;
 	ofRectangle	getInputArea() override;
 #pragma endregion
 

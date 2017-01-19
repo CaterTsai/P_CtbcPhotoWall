@@ -41,6 +41,18 @@ void inputEventMgr::unregisterInputEvent(inputEvent * input)
 //--------------------------------
 void inputEventMgr::mouseDragged(ofMouseEventArgs& e)
 {
+	if (_pressObj)
+	{
+		inputEventArgs args_;
+		ofVec2f delta_ = e - _dragPos;
+		_dragPos = e;
+		_delta = delta_;
+		args_.pos = e;
+		args_.delta = delta_;
+		args_.holdTime = ofGetElapsedTimef() - _pressTime;
+
+		_pressObj->inputDrag(args_);
+	}
 }
 
 //--------------------------------
@@ -54,7 +66,13 @@ void inputEventMgr::mousePressed(ofMouseEventArgs& e)
 			auto inputArea_ = iter_->getInputArea();
 			if (inputArea_.inside(e))
 			{
-				iter_->inputPress(e);
+				inputEventArgs args_;
+				args_.pos = e;
+				iter_->inputPress(args_);
+
+				_pressObj = iter_;
+				_dragPos = _pressPos = e;
+				_pressTime = ofGetElapsedTimef();
 				isTrigger_ = true;
 				break;
 			}
@@ -70,6 +88,21 @@ void inputEventMgr::mousePressed(ofMouseEventArgs& e)
 //--------------------------------
 void inputEventMgr::mouseReleased(ofMouseEventArgs& e)
 {
+	if (_pressObj)
+	{
+		inputEventArgs args_;
+		args_.pos = e;
+		args_.delta = _delta;
+		args_.holdTime = ofGetElapsedTimef() - _pressTime;
+		args_.diffPos = e - _pressPos;
+		_pressObj->inputRelease(args_);
+
+		_pressPos.set(0);
+		_dragPos.set(0);
+		_pressObj = nullptr;
+		_pressTime = 0.0f;
+		_delta.set(0);
+	}
 }
 
 #else
@@ -109,11 +142,12 @@ void inputEventMgr::disableInput()
 }
 #pragma endregion
 
-
-
 #pragma region Singleton
 //--------------------------------------------------------------
 inputEventMgr::inputEventMgr()
+	:_pressObj(nullptr)
+	, _pressPos(0)
+	, _pressTime(0.0f)
 {}
 
 //--------------------------------------------------------------

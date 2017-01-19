@@ -1,13 +1,31 @@
 #pragma once
 
 #include "constParameter.h"
+#include "ofxWinTouchHook.h"
+
+struct inputEventArgs
+{
+	inputEventArgs()
+	{
+		clear();
+	}
+	void clear()
+	{
+		pos.set(0);
+		delta.set(0);
+		holdTime = 0.0f;
+		diffPos.set(0);
+	}
+	ofVec2f pos, delta, diffPos;
+	float holdTime;
+};
 
 class inputEvent
 {
 public:
-	virtual void inputPress(ofVec2f pos) {};
-	virtual void inputDrag(ofVec2f delta) {};
-	virtual void inputRelease(ofVec2f pos) {};
+	virtual void inputPress(inputEventArgs e) {};
+	virtual void inputDrag(inputEventArgs e) {};
+	virtual void inputRelease(inputEventArgs e) {};
 	virtual ofRectangle	getInputArea() { return ofRectangle(); };
 };
 
@@ -20,7 +38,9 @@ private:
 
 private:
 	list<inputEvent*>	_inputEventMap[cInputEventLevel];
-
+	inputEvent*	_pressObj;
+	ofVec2f _pressPos, _dragPos, _delta;
+	float _pressTime;
 #pragma region Input
 #ifdef USE_MOUSE
 public:

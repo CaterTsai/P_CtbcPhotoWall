@@ -7,6 +7,17 @@
 
 #include "ofxAnimatableFloat.h"
 class wallMgr;
+
+struct wallUnitInfo
+{
+	wallUnitInfo()
+		:id(-1)
+		,pos(0)
+	{}
+	int id;
+	ofVec2f pos;
+};
+
 class wallList : public inputEvent
 {
 public:
@@ -15,7 +26,6 @@ public:
 
 	void update(float delta);
 	void draw();
-	void draw(ofVec2f pos);
 	float getBaseWidth();
 	
 	int getListPosX();
@@ -29,14 +39,20 @@ private:
 private:
 	void resetCenter();
 	void updateCenter(float delta);
-	int touchCheckUp(float diff, ofVec2f& pos);
-	int touchCheckDown(float diff, ofVec2f& pos);
+	void updateSelectCenter(float delta);
+	
+	wallUnitInfo foundWallUnit(ofVec2f pos, bool nearest = false);
+	wallUnitInfo foundUnitUp(float diff);
+	wallUnitInfo foundUnitDown(float diff);
+	wallUnitInfo foundUnitUpNearest(float diff);
+	wallUnitInfo foundUnitDownNearest(float diff);
 
 	int getCenterUnitPosYFromSelect();
-
+	void fixCenterUnitPos();
+	
 private:
-	ofVec2f _centerVec, _centerAcc;
-	ofVec2f _centerUnitPos, _centerUnitPosBackup;
+	ofVec2f _centerVec, _centerBaseVec;
+	ofVec2f _centerUnitPos;
 	
 #pragma endregion
 
@@ -50,22 +66,27 @@ private:
 	void setupAnimation(int posX, int width);
 	void updateAnimation(float delta);
 	
-	void checkAnimationState();
-	
+	void checkSelectState();
+	void checkSelectDrapState();
 	int getAnimMoveX();
-
+	void fitSelectPos();
 private:
 	enum selectState {
 		eDeselect = 0
 		,eZoomIn
 		,eSelect
 		,eZoomOut
-	}_eState;
+	}_eSelectState;
 
-	bool _selectUp;
-	int _selectId;
-	ofVec2f _selectPos;
-	ofxAnimatableFloat	_animDrawPosX, _animDrawWidth;
+	enum selectDrapState {
+		eStable	=	0
+		,eDrap
+		,eMove
+	}_eSelectDrapState;
+
+	wallUnitInfo _selectWallUnit;
+	ofxAnimatableFloat _animDrawPosX, _animDrawWidth;
+	ofxAnimatableFloat _animMoveSelect;
 #pragma endregion
 	
 #pragma region WallUnit
@@ -93,9 +114,9 @@ public:
 	void enableInput(bool isSelect = false);
 	void disableInput();
 private:
-	void inputPress(ofVec2f pos) override;
-	void inputDrag(ofVec2f delta) override;
-	void inputRelease(ofVec2f pos) override;
+	void inputPress(inputEventArgs e) override;
+	void inputDrag(inputEventArgs e) override;
+	void inputRelease(inputEventArgs e) override;
 	ofRectangle	getInputArea() override; 
 #pragma endregion
 
