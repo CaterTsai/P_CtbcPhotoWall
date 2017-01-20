@@ -15,8 +15,8 @@ public:
 
 	virtual void update(float delta, int width) {};
 	virtual void draw(ofVec2f pos, bool isSelectList = false) {};
-	virtual void onclick(ofVec2f pos = ofVec2f(0)) {};
-	
+	virtual void setClick(bool val, ofVec2f pos = ofVec2f(0)) {};
+	virtual bool getClick() { return _isClick; };
 
 	virtual eWallUnitType getUnitType() { return _unitType; };
 
@@ -40,7 +40,7 @@ public:
 
 	void update(float delta, int width) override;
 	void draw(ofVec2f pos, bool isSelectList = false) override;
-	void onclick(ofVec2f pos) override;
+	void setClick(bool val, ofVec2f pos) override;
 	int getHeight(int width) override;
 	stPhotoHeader& getPhotoHeader();
 private:

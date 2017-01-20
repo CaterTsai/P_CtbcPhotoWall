@@ -75,8 +75,6 @@ private:
 
 #pragma endregion
 
-
-
 #pragma region Debug
 
 #pragma endregion

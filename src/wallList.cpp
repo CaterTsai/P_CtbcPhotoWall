@@ -24,7 +24,7 @@ void wallList::update(float delta)
 {
 	updateAnimation(delta);
 	updateWallUnit(delta);
-	getIsSelect()? updateSelectCenter(delta):updateCenter(delta);
+	getIsDeselect()? updateCenter(delta): updateSelectCenter(delta);
 
 	checkSelectState();
 	checkSelectDrapState();
@@ -264,7 +264,13 @@ void wallList::fixCenterUnitPos()
 //--------------------------------------
 bool wallList::getIsSelect()
 {
-	return (_eSelectState != eDeselect);
+	return (_eSelectState == eSelect);
+}
+
+//--------------------------------------
+bool wallList::getIsDeselect()
+{
+	return (_eSelectState == eDeselect);
 }
 
 //--------------------------------------
@@ -273,7 +279,7 @@ bool wallList::select(ofVec2f& pos)
 	if (_eSelectState == eDeselect)
 	{	
 		_selectWallUnit = foundWallUnit(pos);
-		_wallUnitList[_selectWallUnit.id]->onclick(pos);
+		_wallUnitList[_selectWallUnit.id]->setClick(true, pos);
 
 		//trigger animation
 		_eSelectState = eZoomIn;
@@ -344,7 +350,7 @@ void wallList::checkSelectState()
 		{
 			if (_animDrawWidth.hasFinishedAnimating() && _animDrawWidth.getPercentDone() == 1.0)
 			{
-				_wallUnitList[_selectWallUnit.id]->onclick();
+				_wallUnitList[_selectWallUnit.id]->setClick(false);
 				_eSelectState = eDeselect;
 				_selectWallUnit.id = -1;
 				_centerVec.set(0.0f, ofRandom(-1, 1)>0 ? ofRandom(30.0, 60.0) : ofRandom(-60.0, -30.0));
@@ -365,7 +371,7 @@ void wallList::checkSelectDrapState()
 	if (_eSelectDrapState == eMove && _animMoveSelect.hasFinishedAnimating() && _animMoveSelect.getPercentDone() == 1.0)
 	{
 		_eSelectDrapState = eStable;
-		_wallUnitList[_selectWallUnit.id]->onclick();
+		_wallUnitList[_selectWallUnit.id]->setClick(true);
 	}
 }
 
@@ -438,7 +444,7 @@ void wallList::drawWallUnitUp()
 		{
 			continue;
 		}
-		(*iter_)->draw(wallPos_, getIsSelect());
+		(*iter_)->draw(wallPos_, !getIsDeselect());
 		
 		idx_--;
 	}
@@ -455,7 +461,7 @@ void wallList::drawWallUnitDown()
 	int idx_ = 0;
 	for (auto& iter_ : _wallUnitList)
 	{	
-		iter_->draw(wallPos_, getIsSelect());
+		iter_->draw(wallPos_, !getIsDeselect());
 		
 		wallPos_.y += iter_->getHeight();
 
@@ -547,8 +553,8 @@ void wallList::inputPress(inputEventArgs e)
 
 	if (getIsSelect())
 	{
-		_wallUnitList[_selectWallUnit.id]->onclick();
-		_eSelectDrapState = eDrap;
+		
+		
 	}
 }
 
@@ -558,6 +564,12 @@ void wallList::inputDrag(inputEventArgs e)
 	if (_eSelectState != eZoomIn && _eSelectState != eZoomOut)
 	{
 		_centerUnitPos.y += e.delta.y;
+
+		if (getIsSelect() && abs(e.diffPos.y) > cInputTriggerDiffLimit && _wallUnitList[_selectWallUnit.id]->getClick())
+		{
+			_wallUnitList[_selectWallUnit.id]->setClick(false);
+			_eSelectDrapState = eDrap;
+		}
 	}
 }
 
@@ -566,19 +578,29 @@ void wallList::inputRelease(inputEventArgs e)
 {
 	if (e.holdTime <= cInputHoldLimit && abs(e.diffPos.y) < cInputTriggerDiffLimit)
 	{
-		if (!getIsSelect())
+		if (getIsDeselect())
 		{
 			select(e.pos);
 			_parent->selectCheck(this);
 		}
+		
+		if (getIsSelect())
+		{
+			if (_eSelectDrapState == eDrap)
+			{
+				fitSelectPos();
+			}
+			_parent->selectCheck(this);
+		}
+		
 	}
 	else
 	{
-		if (!getIsSelect())
+		if (getIsDeselect())
 		{
 			_centerVec = e.delta * ofGetFrameRate() * 0.5;
 		}
-		else
+		if (getIsSelect())
 		{
 			fitSelectPos();
 		}
@@ -589,6 +611,7 @@ void wallList::inputRelease(inputEventArgs e)
 ofRectangle wallList::getInputArea()
 {
 	ofVec2f pos_((_animDrawPosX.getCurrentValue() - _animDrawWidth.getCurrentValue() * 0.5), 0);
+	pos_.x += _parent->getWallRectPos().x;
 	return ofRectangle(pos_, _animDrawWidth.getCurrentValue(), _baseArea.getHeight());
 }
 #pragma endregion

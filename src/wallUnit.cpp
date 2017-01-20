@@ -42,10 +42,9 @@ void photoUnit::draw(ofVec2f pos, bool isSelectList)
 }
 
 //--------------------------------------
-void photoUnit::onclick(ofVec2f pos)
+void photoUnit::setClick(bool val, ofVec2f pos)
 {
-	_isClick = !_isClick;
-
+	_isClick = val;
 }
 
 //--------------------------------------

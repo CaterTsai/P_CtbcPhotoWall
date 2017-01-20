@@ -6,8 +6,7 @@ void ofCtbcPhotoWall::setup()
 	ofBackground(0);
 	ofSetVerticalSync(true);
 	ofSetFrameRate(60);
-
-	
+		
 	photoRender::GetInstance()->setup("thumbnail/", "");
 	dataHolder::GetInstance()->setup("");
 	fontMgr::GetInstance()->setup("fonts/");
@@ -20,7 +19,7 @@ void ofCtbcPhotoWall::setup()
 	ofSetWindowPosition(0, 0);
 #endif // !_DEBUG
 
-	AudioMgr::GetInstance()->playAudio(NAME_MGR::BGM_1);
+	AudioMgr::GetInstance()->playAudio(NAME_MGR::BGM);
 	setupWallMgr();
 	_timer = ofGetElapsedTimef();
 }
@@ -61,18 +60,6 @@ void ofCtbcPhotoWall::keyPressed(int key)
 			mainUIout();
 			break;
 		}
-		case '1':
-		{
-			AudioMgr::GetInstance()->stopAudio(NAME_MGR::BGM_2);
-			AudioMgr::GetInstance()->playAudio(NAME_MGR::BGM_1);
-			break;
-		}
-		case '2':
-		{
-			AudioMgr::GetInstance()->stopAudio(NAME_MGR::BGM_1);
-			AudioMgr::GetInstance()->playAudio(NAME_MGR::BGM_2);
-			break;
-		}
 	}
 }
 
@@ -83,6 +70,15 @@ void ofCtbcPhotoWall::setupImageRender(string path)
 	imageRender::GetInstance()->setup(path);
 
 	imageRender::GetInstance()->addImage(NAME_MGR::I_Gradient, "gradient.png");
+
+	imageRender::GetInstance()->addImage(NAME_MGR::I_BtnZH1, "btnZH_1.png");
+	imageRender::GetInstance()->addImage(NAME_MGR::I_BtnEN1, "btnEN_1.png");
+	imageRender::GetInstance()->addImage(NAME_MGR::I_BtnZH2, "btnZH_2.png");
+	imageRender::GetInstance()->addImage(NAME_MGR::I_BtnEN2, "btnEN_2.png");
+	imageRender::GetInstance()->addImage(NAME_MGR::I_BtnZH3, "btnZH_3.png");
+	imageRender::GetInstance()->addImage(NAME_MGR::I_BtnEN3, "btnEN_3.png");
+	imageRender::GetInstance()->addImage(NAME_MGR::I_BtnZH4, "btnZH_4.png");
+	imageRender::GetInstance()->addImage(NAME_MGR::I_BtnEN4, "btnEN_4.png");
 	
 }
 
@@ -92,8 +88,7 @@ void ofCtbcPhotoWall::setupImageRender(string path)
 //--------------------------------------------------------------
 void ofCtbcPhotoWall::setupAudio()
 {
-	AudioMgr::GetInstance()->addBGM(NAME_MGR::BGM_1, "sounds/bgm1.mp3");
-	AudioMgr::GetInstance()->addBGM(NAME_MGR::BGM_2, "sounds/bgm2.mp3");
+	AudioMgr::GetInstance()->addBGM(NAME_MGR::BGM, "sounds/bgm.wav");
 }
 #pragma endregion
 
@@ -107,20 +102,18 @@ void ofCtbcPhotoWall::setupWallMgr()
 	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
 	{
 		_photoWall[idx_].setup(
-			(ePhotoPrimaryCategory)idx_
+			(ePhotoPrimaryCategory)(cCategoryNum - idx_ - 1)
 			,ofRectangle(idx_ * cPhotoWallCategoryWidth, 0, cPhotoWallCategoryWidth, cWindowHeight)
 		);
 
-		_photoWall[idx_].addWallList(80);
-		_photoWall[idx_].addWallList(80);
-		_photoWall[idx_].addWallList(160);
-		_photoWall[idx_].addWallList(80);
-		_photoWall[idx_].addWallList(80);
-		_photoWall[idx_].addWallList(80);
-		_photoWall[idx_].addWallList(160);
-		_photoWall[idx_].addWallList(80);
-		_photoWall[idx_].addWallList(80);
-		_photoWall[idx_].addWallList(80);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth * 2);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth * 2);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
 	}
 
 

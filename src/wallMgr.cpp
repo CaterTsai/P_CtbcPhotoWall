@@ -5,7 +5,7 @@ wallMgr::wallMgr()
 	:_isSetup(false)
 	, _selectWallList(nullptr)
 	, _eWallState(eWallIdle)
-	
+	, _isDisplayZH(true)
 {
 	
 }
@@ -22,7 +22,7 @@ void wallMgr::setup(ePhotoPrimaryCategory category, ofRectangle wallRect)
 	_eCategory = category;
 	_wallRect = wallRect;
 
-	_mainUI.setup(this, "config/mainUIText.xml", category);
+	_mainUI.setup(this, ofVec2f(cPhotoWallCategoryWidth * 0.5, cWindowHeight * 0.5), "config/mainUIText.xml", category);
 
 	_isSetup = true;
 }
@@ -51,7 +51,7 @@ void wallMgr::draw()
 	ofVec2f drawPos_(0);
 	for (auto& iter_ : _wallListMgr)
 	{
-		if (!iter_->getIsSelect())
+		if (iter_->getIsDeselect())
 		{
 			iter_->draw();
 		}	
@@ -74,7 +74,7 @@ void wallMgr::drawSelect()
 	ofVec2f drawPos_(0);
 	for (auto& iter_ : _wallListMgr)
 	{
-		if (iter_->getIsSelect())
+		if (!iter_->getIsDeselect())
 		{
 			iter_->draw();
 		}
@@ -115,9 +115,14 @@ void wallMgr::drawShadow()
 void wallMgr::addWallList(int width)
 {
 	setupCheck();
-	int posX_ = getListTotalWidth();
-	ofRectangle	rect_(posX_, 0, width, _wallRect.getHeight());
+	ofRectangle	rect_(getListTotalWidth(), 0, width, _wallRect.getHeight());
 	_wallListMgr.push_back(ofPtr<wallList>(new wallList(this, _eCategory, rect_)));
+}
+
+//--------------------------------
+ofVec2f wallMgr::getWallRectPos()
+{
+	return _wallRect.getPosition();
 }
 
 //--------------------------------
@@ -183,10 +188,15 @@ void wallMgr::mainUIout()
 	enableWallListInput();
 }
 
+void wallMgr::changeLanguage()
+{
+	_isDisplayZH ^= true;
+}
+
 //--------------------------------
 void wallMgr::drawUI()
 {
-	_mainUI.draw(ofVec2f(cPhotoWallCategoryWidth * 0.5, cWindowHeight * 0.5));
+	_mainUI.draw(_isDisplayZH);
 }
 #pragma endregion
 
@@ -204,12 +214,11 @@ void wallMgr::selectCheck(wallList* selectList)
 	}
 	else
 	{	
+		_selectWallList->disableInput();
+		_selectWallList->enableInput();
+		_selectWallList->deselect();
 		if (_selectWallList != selectList)
 		{
-			_selectWallList->disableInput();
-			_selectWallList->enableInput();
-			_selectWallList->deselect();
-
 			_selectWallList = selectList;
 			selectList->disableInput();
 			selectList->enableInput(true);

@@ -2,10 +2,12 @@
 #include "wallMgr.h"
 #pragma region CLASS baseUnit
 //--------------------------------------------------------------
-mainUI::baseUnit::baseUnit(ofImage& zhText, ofImage& enText, ofColor c)
+mainUI::baseUnit::baseUnit(ofImage& zhText, ofRectangle& zhRect, ofImage& enText, ofRectangle& enRect, ofColor c)
 	:_color(c)
-	,_textZH(zhText)
+	, _textZH(zhText)
+	, _textRectZH(zhRect)
 	,_textEN(enText)
+	, _textRectEN(enRect)
 	, _eState(eClose)
 {
 	_animTextWidth.setDuration(0.2);
@@ -73,9 +75,10 @@ void mainUI::baseUnit::draw(ofVec2f pos, int width, int height, bool displayZH)
 	ofPushMatrix();
 	ofTranslate(pos);
 	{
-		float textWidth_ = height * (_textZH.getWidth() / _textZH.getHeight());
-		float textDrawWidth_ = textWidth_ * _animTextWidth.getCurrentValue();
-		float textDrawHeight_ = height;
+		float ratio_ = displayZH ? (_textRectZH.getHeight() / _textRectZH.getWidth()) :(_textRectEN.getHeight() / _textRectEN.getWidth());
+		float textHeight_ = width * 0.7 * ratio_;
+		float textDrawWidth_ = width * 0.7* _animTextWidth.getCurrentValue();
+		float textDrawHeight_ = textHeight_;
 		float bpDrawWidth_ = width * _animBackplaneWidth.getCurrentValue();
 		int textDrawX_ = (textDrawWidth_ * -0.5);
 		int bpDrawX_ = (bpDrawWidth_ * -0.5);
@@ -161,20 +164,31 @@ mainUI::mainUI()
 {}
 
 //-----------------------------------------------------------------------------
-void mainUI::setup(wallMgr* wallMgr, string xmlPath, ePhotoPrimaryCategory eCategory)
+void mainUI::setup(wallMgr* wallMgr, ofVec2f drawPos, string xmlPath, ePhotoPrimaryCategory eCategory)
 {
 	_font.setGlobalDpi(72);
 	_font.setLetterSpacing(1.2);
 	_font.loadFont("fonts/black.otf", cMainUIFontSize);
+
+	_fontEN.setGlobalDpi(72);
+	
+	_fontEN.loadFont("fonts/english.TTF", cMainUIFontSize);
+	_fontEN.setSpaceSize(0.5);
 	_category = eCategory;
 
 	setupMiniAnim();
+	_animBtn.setDuration(0.4f);
+	_animBtn.setRepeatType(PLAY_ONCE);
+	_animBtn.reset(0.0);
+
 	_mainPos.set(cMainUIWidth * -0.5 + cMainUIUnitWidth * 0.5, cMainUIHeight * -0.5 + cMainUIUnitHeight * 0.5);
 	_miniPos.set(cMainUIWidth * -0.5 + cMainUIUnitWidth + cMainUIUnitMinWidth * -0.5, cMainUIHeight * -0.5 + cMainUIUnitMinHeight * 0.5);
-
+	_btnPos.set(cMainUIWidth * -0.5, cMainUIHeight * -0.5);
 	_setup = loadXml(xmlPath);
 
 	_parentWallMgr = wallMgr;
+	_centerPos = drawPos;
+
 }
 
 //-----------------------------------------------------------------------------
@@ -194,11 +208,12 @@ void mainUI::update(float delta)
 	{
 		iter_.update(delta);
 	}
+	_animBtn.update(delta);
 	animStateCheck();
 }
 
 //-----------------------------------------------------------------------------
-void mainUI::draw(ofVec2f pos)
+void mainUI::draw(bool isZH)
 {
 	if (!_setup)
 	{
@@ -207,11 +222,12 @@ void mainUI::draw(ofVec2f pos)
 
 	ofPushStyle();
 	ofPushMatrix();
-	ofTranslate(pos);
+	ofTranslate(_centerPos);
 	{
 		ofSetColor(255);
-		drawMini();
-		drawMain();
+		drawMini(isZH);
+		drawMain(isZH);
+		drawBtn(isZH);
 
 	}
 	ofPopMatrix();
@@ -239,18 +255,19 @@ void mainUI::close()
 		return;
 	}
 
+	disableInput();
 	_eUIState = eUIMiniOut;
 	miniOut();
 }
 
 //-----------------------------------------------------------------------------
-void mainUI::drawMain()
+void mainUI::drawMain(bool isZH)
 {	
-	_mainUIMap[_category].draw(_mainPos, cMainUIUnitWidth, cMainUIUnitHeight);
+	_mainUIMap[_category].draw(_mainPos, cMainUIUnitWidth, cMainUIUnitHeight, isZH);
 }
 
 //-----------------------------------------------------------------------------
-void mainUI::drawMini()
+void mainUI::drawMini(bool isZH)
 {	
 	int idx_ = 0;
 	for (auto& iter_ : _mainUIMap)
@@ -260,10 +277,30 @@ void mainUI::drawMini()
 		if (iter_.first != _category)
 		{
 			categoryPos_.x += _animMiniPosX[idx_].getCurrentValue() * cMainUIUnitMinWidth;
-			iter_.second.draw(categoryPos_, cMainUIUnitMinWidth, cMainUIUnitMinHeight);
+			iter_.second.draw(categoryPos_, cMainUIUnitMinWidth, cMainUIUnitMinHeight, isZH);
 			idx_++;
 		}
 	}
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::drawBtn(bool isZH)
+{
+	float _animVal = _animBtn.getCurrentValue();
+	ofPushMatrix();
+	ofTranslate(_btnPos);
+	ofRotateZ(_animVal * 360.0);
+	{
+		int drawWidth_ = cMainUIBtnWidth * _animVal;
+		int drawHeight_ = cMainUIBtnHeight * _animVal;
+		imageRender::GetInstance()->drawImage(
+			getBtnName(_category, isZH), 
+			ofVec2f(drawWidth_ * -0.5f, drawHeight_ * -0.5f),
+			drawWidth_,
+			drawHeight_
+		);
+	}
+	ofPopMatrix();
 }
 
 //-----------------------------------------------------------------------------
@@ -287,6 +324,8 @@ void mainUI::miniIn()
 	_animMiniPosX[0].animateTo(1.0f);
 	_animMiniPosX[1].animateToAfterDelay(1.0f, 0.1f);
 	_animMiniPosX[2].animateToAfterDelay(1.0f, 0.2f);
+
+	_animBtn.animateTo(1.0f);
 }
 
 //-----------------------------------------------------------------------------
@@ -299,6 +338,8 @@ void mainUI::miniOut()
 	_animMiniPosX[0].animateTo(0.0f);
 	_animMiniPosX[1].animateToAfterDelay(0.0f, 0.1f);
 	_animMiniPosX[2].animateToAfterDelay(0.0f, 0.2f);
+
+	_animBtn.animateTo(0.0f);
 }
 
 //-----------------------------------------------------------------------------
@@ -327,6 +368,7 @@ void mainUI::animStateCheck()
 			if (_animMiniPosX[2].hasFinishedAnimating() && _animMiniPosX[2].getPercentDone() == 1.0)
 			{
 				_eUIState = eUIOpen;
+				enableInput();
 			}
 			break;
 		}
@@ -375,10 +417,11 @@ bool mainUI::loadXml(string xmlPath)
 		string en_ = xml_.getValue("mainUIText:en", "", idx_);
 
 		ofImage enImage_, zhImage_;
-		createTextImg(en_, enImage_);
-		createTextImg(zh_, zhImage_);
+		ofRectangle enRect_, zhRect_;
+		createTextImgEN(en_, enImage_, enRect_);
+		createTextImg(zh_, zhImage_, zhRect_);
 
-		baseUnit newUnit_(zhImage_, enImage_, getBPColor(type_));
+		baseUnit newUnit_(zhImage_, zhRect_, enImage_, enRect_, getBPColor(type_));
 		_mainUIMap.insert(make_pair(type_, newUnit_));
 
 	}
@@ -386,28 +429,54 @@ bool mainUI::loadXml(string xmlPath)
 }
 
 //-----------------------------------------------------------------------------
-void mainUI::createTextImg(string text, ofImage& img)
+void mainUI::createTextImg(string text, ofImage& img, ofRectangle& textRect)
 {
 	img.clear();
 	
-	auto msgRect_ = _font.getStringBoundingBox(text, 0, 0);
+	textRect = _font.getStringBoundingBox(text, 0, 0);
 
 	ofFbo	_canvas;
-	_canvas.allocate(cMainUIUnitWidth, cMainUIUnitHeight, GL_RGBA);
-	
+	_canvas.allocate(textRect.getWidth(), textRect.getHeight(), GL_RGBA);
+
 	_canvas.begin();
 	{
 		ofClear(0);
 		ofPushMatrix();
-		ofTranslate(cMainUIUnitWidth * 0.5, cMainUIUnitHeight * 0.5);
+
 		ofSetColor(255);
-		_font.drawString(text, msgRect_.getWidth() * -0.5f, msgRect_.getHeight() * 0.5f);
+		_font.drawString(text, -textRect.x, -textRect.y);
 		ofPopMatrix();
 	}
 	_canvas.end();
 
 	ofPixels pixel_;
-	_canvas.readToPixels(pixel_);	
+	_canvas.readToPixels(pixel_);
+	img.setFromPixels(pixel_);
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::createTextImgEN(string text, ofImage& img, ofRectangle& textRect)
+{
+	img.clear();
+
+	textRect = _fontEN.getStringBoundingBox(text, 0, 0);
+	
+	ofFbo	_canvas;
+	_canvas.allocate(textRect.getWidth(), textRect.getHeight(), GL_RGBA);
+
+	_canvas.begin();
+	{
+		ofClear(0);
+		ofPushMatrix();
+		
+		ofSetColor(255);
+		_fontEN.drawString(text, -textRect.x, -textRect.y);
+		ofPopMatrix();
+	}
+	_canvas.end();
+
+	ofPixels pixel_;
+	_canvas.readToPixels(pixel_);
 	img.setFromPixels(pixel_);
 }
 
@@ -445,23 +514,75 @@ ofColor mainUI::getBPColor(ePhotoPrimaryCategory category)
 	return returnColor_;
 }
 
+//-----------------------------------------------------------------------------
+string mainUI::getBtnName(ePhotoPrimaryCategory category, bool isZH)
+{
+	string btnName_ = "";
+	switch (category)
+	{
+	case ePhotoCategory_1:
+	{
+		btnName_ = isZH ? NAME_MGR::I_BtnEN1 : NAME_MGR::I_BtnZH1;
+		break;
+	}
+	case ePhotoCategory_2:
+	{
+		btnName_ = isZH ? NAME_MGR::I_BtnEN2 : NAME_MGR::I_BtnZH2;
+		break;
+	}
+	case ePhotoCategory_3:
+	{
+		btnName_ = isZH ? NAME_MGR::I_BtnEN3 : NAME_MGR::I_BtnZH3;
+		break;
+	}
+	case ePhotoCategory_4:
+	{
+		btnName_ = isZH ? NAME_MGR::I_BtnEN4 : NAME_MGR::I_BtnZH4;
+		break;
+	}
+	default:
+	{
+		btnName_ = "";
+	}
+	}
+	return btnName_;
+}
+
 #pragma region Input
 //--------------------------------------
-void mainUI::setupInput()
+void mainUI::enableInput()
 {
 	inputEventMgr::GetInstance()->registerInputEvent(this, eInputMainUI);
 }
 
 //--------------------------------------
+void mainUI::disableInput()
+{
+	inputEventMgr::GetInstance()->unregisterInputEvent(this);
+}
+
+//--------------------------------------
 void mainUI::inputRelease(inputEventArgs e)
 {
-	_parentWallMgr->mainUIout();
-}
+	ofVec2f pos_ = e.pos - (_parentWallMgr->getWallRectPos() + _centerPos);
 	
+	if (pos_.distance(_btnPos) < (cMainUIBtnWidth * 0.5))
+	{
+		_parentWallMgr->changeLanguage();
+	}
+	else
+	{
+		_parentWallMgr->mainUIout();
+	}
+	
+}
 
 //--------------------------------------
 ofRectangle mainUI::getInputArea()
 {
-	return ofRectangle();
+	ofRectangle inputArea_;
+	inputArea_.setFromCenter(_parentWallMgr->getWallRectPos() + _centerPos, cMainUIWidth, cMainUIHeight);
+	inputArea_.scaleFromCenter(1.15);
+	return inputArea_;
 }
 #pragma endregion

@@ -2,6 +2,7 @@
 
 #include "constParameter.h"
 #include "inputEventMgr.h"
+#include "imageRender.h"
 #include "ofxAnimatableFloat.h"
 #include "ofxXmlSettings.h"
 #include "ofxTrueTypeFontUC.h"
@@ -14,10 +15,10 @@ private:
 	class baseUnit {
 	public:
 		baseUnit() {};
-		baseUnit(ofImage& znText, ofImage& enText, ofColor c);
+		baseUnit(ofImage& zhText, ofRectangle& zhRect, ofImage& enText, ofRectangle& enRect, ofColor c);
 
 		void update(float delta);
-		void draw(ofVec2f pos, int width, int height, bool displayZN = true);
+		void draw(ofVec2f pos, int width, int height, bool displayZH = true);
 
 		void open();
 		void close();
@@ -39,22 +40,24 @@ private:
 
 		ofColor _color;
 		ofImage _textZH, _textEN;
+		ofRectangle	_textRectZH, _textRectEN;
 		ofxAnimatableFloat	_animTextWidth, _animBackplaneWidth;
 	};
 #pragma endregion
 	
 public:
 	mainUI();
-	void setup(wallMgr* wallMgr, string xmlPath, ePhotoPrimaryCategory eCategory);
+	void setup(wallMgr* wallMgr, ofVec2f drawPos, string xmlPath, ePhotoPrimaryCategory eCategory);
 	void update(float delta);
-	void draw(ofVec2f pos);
+	void draw(bool isZH);
 
 	void open();
 	void close();
 
 private:
-	void drawMain();
-	void drawMini();
+	void drawMain(bool isZH);
+	void drawMini(bool isZH);
+	void drawBtn(bool isZH);
 
 	void setupMiniAnim();
 	void miniIn();
@@ -62,9 +65,11 @@ private:
 
 	void animStateCheck();
 	bool loadXml(string xmlPath);
-	void createTextImg(string text, ofImage& img);
+	void createTextImg(string text, ofImage& img, ofRectangle& textRect);
+	void createTextImgEN(string text, ofImage& img, ofRectangle& textRect);
 
 	static ofColor getBPColor(ePhotoPrimaryCategory category);
+	static string getBtnName(ePhotoPrimaryCategory category, bool isZH);
 private:
 	enum eUIState
 	{
@@ -76,15 +81,18 @@ private:
 		,eUIMainOut
 	}_eUIState;
 	bool _setup;
-	ofxTrueTypeFontUC _font;
-	ofVec2f _mainPos, _miniPos;
+	ofxTrueTypeFontUC _font, _fontEN;
+	ofVec2f _centerPos, _mainPos, _miniPos, _btnPos;
 	ePhotoPrimaryCategory	_category;
 	ofxAnimatableFloat	_animMiniPosX[3];
+	ofxAnimatableFloat	_animBtn;
 	map<ePhotoPrimaryCategory, baseUnit>	_mainUIMap;
 	wallMgr* _parentWallMgr;
+
 #pragma region Input
 private:
-	void setupInput();
+	void enableInput();
+	void disableInput();
 	void inputRelease(inputEventArgs e) override;
 	ofRectangle	getInputArea() override;
 #pragma endregion

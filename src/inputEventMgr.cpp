@@ -48,6 +48,7 @@ void inputEventMgr::mouseDragged(ofMouseEventArgs& e)
 		_dragPos = e;
 		_delta = delta_;
 		args_.pos = e;
+		args_.diffPos = e - _pressPos;
 		args_.delta = delta_;
 		args_.holdTime = ofGetElapsedTimef() - _pressTime;
 

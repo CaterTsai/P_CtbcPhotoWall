@@ -59,6 +59,7 @@ private:
 #pragma region animation
 public:
 	bool getIsSelect();
+	bool getIsDeselect();
 	bool select(ofVec2f& pos);
 	bool deselect();
 

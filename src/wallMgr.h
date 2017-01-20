@@ -17,6 +17,8 @@ public:
 	void drawShadow();
 
 	void addWallList(int width);
+
+	ofVec2f getWallRectPos();
 	int getWallRectWidth();
 
 private:
@@ -42,9 +44,12 @@ private:
 public:
 	void mainUIin();
 	void mainUIout();
+
+	void changeLanguage();
 private:
 	void drawUI();
 private:
+	bool _isDisplayZH;
 	mainUI	_mainUI;
 #pragma endregion
 	
