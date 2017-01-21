@@ -2,10 +2,10 @@
 
 #include "constParameter.h"
 #include "inputEventMgr.h"
+#include "fontMgr.h"
 #include "imageRender.h"
 #include "ofxAnimatableFloat.h"
 #include "ofxXmlSettings.h"
-#include "ofxTrueTypeFontUC.h"
 
 class wallMgr;
 class mainUI : public inputEvent
@@ -81,7 +81,6 @@ private:
 		,eUIMainOut
 	}_eUIState;
 	bool _setup;
-	ofxTrueTypeFontUC _font, _fontEN;
 	ofVec2f _centerPos, _mainPos, _miniPos, _btnPos;
 	ePhotoPrimaryCategory	_category;
 	ofxAnimatableFloat	_animMiniPosX[3];

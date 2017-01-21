@@ -3,16 +3,27 @@
 //-----------------------------------------------------------------------------
 void fontMgr::setup(string fontPath)
 {
-	ofxTrueTypeFontUC regularfont_, blackfont_;
-
 	_isSetup = true;
 
-	regularfont_.setGlobalDpi(72);
-	_isSetup &= regularfont_.loadFont(fontPath + "regular.otf", 20);
+	_fontList[eFontMainUIZH].setGlobalDpi(72);
+	_fontList[eFontMainUIZH].setLetterSpacing(1.2f);
+	_isSetup &= _fontList[eFontMainUIZH].loadFont(fontPath + "black.otf", cMainUIFontSize);
 
-	blackfont_.setGlobalDpi(72);
-	_isSetup &= blackfont_.loadFont(fontPath + "black.otf", 20);
+	_fontList[eFontMainUIEN].setGlobalDpi(72);
+	_fontList[eFontMainUIEN].setSpaceSize(0.5);
+	_isSetup &= _fontList[eFontMainUIEN].loadFont(fontPath + "english.TTF", cMainUIFontENSize);
 
+	_fontList[eFontTextUIZH].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontTextUIZH].loadFont(fontPath + "regular.otf", 20);
+
+	_fontList[eFontTextUIEN].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontTextUIEN].loadFont(fontPath + "regular.otf", 20);
+
+	_fontList[eFontMenuUIZH].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontMenuUIZH].loadFont(fontPath + "regular.otf", 20);
+
+	_fontList[eFontMenuUIEN].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontMenuUIEN].loadFont(fontPath + "regular.otf", 20);
 	if (!_isSetup)
 	{
 		ofLog(OF_LOG_ERROR, "[fontMgr::setup]load font failed");
@@ -23,45 +34,58 @@ void fontMgr::setup(string fontPath)
 //-----------------------------------------------------------------------------
 void fontMgr::drawString(eFontType type, string msg, ofVec2f pos)
 {
-	auto iter_ = _fontMap.find(type);
-	if (iter_ != _fontMap.end())
+	if (!_isSetup)
 	{
-		iter_->second.drawString(msg, pos.x, pos.y);
+		return;
 	}
-	
+
+	try
+	{
+		_fontList.at(type).drawString(msg, pos.x, pos.y);
+	}
+	catch (const std::exception& e)
+	{
+		ofLog(OF_LOG_ERROR, "[fontMgr::drawString]failed");
+	}	
 }
 
-//-----------------------------------------------------------------------------
-void fontMgr::setFontSize(eFontType type, int size)
-{
-	auto iter_ = _fontMap.find(type);
-	if (iter_ != _fontMap.end())
-	{
-		if (iter_->second.getFontSize() != size)
-		{
-			iter_->second.reloadFont(size);
-		}
-	}
-}
 
 //-----------------------------------------------------------------------------
 void fontMgr::setFontLetterSpace(eFontType type, float size)
 {
-	auto iter_ = _fontMap.find(type);
-	if (iter_ != _fontMap.end())
+	if (!_isSetup)
 	{
-		iter_->second.setLetterSpacing(size);
+		return;
+	}
+
+	try
+	{
+		_fontList.at(type).setLetterSpacing(size);
+	}
+	catch (const std::exception& e)
+	{
+		ofLog(OF_LOG_ERROR, "[fontMgr::setFontLetterSpace]failed");
 	}
 }
 
 //-----------------------------------------------------------------------------
 ofRectangle fontMgr::getStringBoundingBox(eFontType type, string msg)
 {
-	auto iter_ = _fontMap.find(type);
-	if (iter_ != _fontMap.end())
+	if (!_isSetup)
 	{
-		return iter_->second.getStringBoundingBox(msg, 0, 0);
+		return ofRectangle();
 	}
+
+	ofRectangle stringBoundingBox_;
+	try
+	{
+		stringBoundingBox_ = _fontList.at(type).getStringBoundingBox(msg, 0, 0);
+	}
+	catch (const std::exception& e)
+	{
+		ofLog(OF_LOG_ERROR, "[fontMgr::setFontLetterSpace]failed");
+	}
+	return stringBoundingBox_;
 }
 
 //-----------------------------------------------------------------------------

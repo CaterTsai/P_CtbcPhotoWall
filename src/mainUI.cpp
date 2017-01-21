@@ -166,14 +166,7 @@ mainUI::mainUI()
 //-----------------------------------------------------------------------------
 void mainUI::setup(wallMgr* wallMgr, ofVec2f drawPos, string xmlPath, ePhotoPrimaryCategory eCategory)
 {
-	_font.setGlobalDpi(72);
-	_font.setLetterSpacing(1.2);
-	_font.loadFont("fonts/black.otf", cMainUIFontSize);
 
-	_fontEN.setGlobalDpi(72);
-	
-	_fontEN.loadFont("fonts/english.TTF", cMainUIFontSize);
-	_fontEN.setSpaceSize(0.5);
 	_category = eCategory;
 
 	setupMiniAnim();
@@ -433,8 +426,7 @@ void mainUI::createTextImg(string text, ofImage& img, ofRectangle& textRect)
 {
 	img.clear();
 	
-	textRect = _font.getStringBoundingBox(text, 0, 0);
-
+	textRect = fontMgr::GetInstance()->getStringBoundingBox(eFontType::eFontMainUIZH, text);
 	ofFbo	_canvas;
 	_canvas.allocate(textRect.getWidth(), textRect.getHeight(), GL_RGBA);
 
@@ -444,7 +436,7 @@ void mainUI::createTextImg(string text, ofImage& img, ofRectangle& textRect)
 		ofPushMatrix();
 
 		ofSetColor(255);
-		_font.drawString(text, -textRect.x, -textRect.y);
+		fontMgr::GetInstance()->drawString(eFontType::eFontMainUIZH, text, ofVec2f(-textRect.x, -textRect.y));
 		ofPopMatrix();
 	}
 	_canvas.end();
@@ -459,7 +451,8 @@ void mainUI::createTextImgEN(string text, ofImage& img, ofRectangle& textRect)
 {
 	img.clear();
 
-	textRect = _fontEN.getStringBoundingBox(text, 0, 0);
+	textRect = fontMgr::GetInstance()->getStringBoundingBox(eFontType::eFontMainUIEN, text);
+
 	
 	ofFbo	_canvas;
 	_canvas.allocate(textRect.getWidth(), textRect.getHeight(), GL_RGBA);
@@ -470,7 +463,7 @@ void mainUI::createTextImgEN(string text, ofImage& img, ofRectangle& textRect)
 		ofPushMatrix();
 		
 		ofSetColor(255);
-		_fontEN.drawString(text, -textRect.x, -textRect.y);
+		fontMgr::GetInstance()->drawString(eFontType::eFontMainUIEN, text, ofVec2f(-textRect.x, -textRect.y));
 		ofPopMatrix();
 	}
 	_canvas.end();

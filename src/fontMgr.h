@@ -1,27 +1,30 @@
 #pragma once
 
-#include "ofMain.h"
+#include "constParameter.h"
 #include "ofxTrueTypeFontUC.h"
 
-enum eFontType
+enum eFontType : int
 {
-	eFontRegular = 0
-	,eFontBlack
+	eFontMainUIZH = 0
+	,eFontMainUIEN
+	,eFontTextUIZH
+	,eFontTextUIEN
+	,eFontMenuUIZH
+	,eFontMenuUIEN
+	,eFontNum
 };
 
 class fontMgr
 {
 public:
-	void setup(string fontPath);
-	
+	void setup(string fontPath);	
 	
 	void drawString(eFontType type, string msg, ofVec2f pos);
-	void setFontSize(eFontType type, int size);
 	void setFontLetterSpace(eFontType type, float spaceSize);
 	ofRectangle getStringBoundingBox(eFontType type, string msg);
 private:
 	bool _isSetup;
-	map<eFontType, ofxTrueTypeFontUC>	_fontMap;
+	array<ofxTrueTypeFontUC, eFontNum>	_fontList;
 
 public:
 	static string ws2s(const wstring& wstr);

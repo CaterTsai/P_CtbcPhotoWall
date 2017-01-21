@@ -70,9 +70,9 @@ struct stPhotoData
 #pragma endregion
 
 #pragma region const parameter
-const int cWindowWidth = 3840;
-const int cWindowHeight = 1620;
-const int cPhotoWallCategoryWidth = 960;
+const int cWindowWidth = 1920;
+const int cWindowHeight = cWindowWidth * 0.421875;
+const int cPhotoWallCategoryWidth = cWindowWidth * 0.25;
 
 //input event manager
 const int cInputEventLevel = 10;
@@ -92,7 +92,7 @@ const float cSelectCoverAlpha = 255 * 0.8;
 const float cSelectAnimLength = 0.5f;
 const int cSelectWidth = cPhotoWallCategoryWidth * 0.4f;
 const int cSelectShdowWidth = cSelectWidth * 3.0;
-const int cCategoryNum = 4;
+const int cCategoryNum = 1;
 
 //UI
 const int cMainUIWidth = cPhotoWallCategoryWidth * 0.74;
