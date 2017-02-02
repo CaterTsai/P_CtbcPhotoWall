@@ -9,6 +9,8 @@ enum eFontType : int
 	,eFontMainUIEN
 	,eFontTextUIZH
 	,eFontTextUIEN
+	,eFontTextUIContextZH
+	,eFontTextUIContextEN
 	,eFontMenuUIZH
 	,eFontMenuUIEN
 	,eFontNum
@@ -22,12 +24,14 @@ public:
 	void drawString(eFontType type, string msg, ofVec2f pos);
 	void setFontLetterSpace(eFontType type, float spaceSize);
 	ofRectangle getStringBoundingBox(eFontType type, string msg);
+	vector<int> getEachWordWidth(eFontType type, string msg);
 private:
 	bool _isSetup;
 	array<ofxTrueTypeFontUC, eFontNum>	_fontList;
 
 public:
 	static string ws2s(const wstring& wstr);
+	static wstring s2ws(const string& str);
 
 #pragma region Singleton
 //-------------------

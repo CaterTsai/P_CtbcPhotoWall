@@ -42,7 +42,7 @@ enum eInputSystemLevel : int
 {
 	eInputTop = 0
 	,eInputMainUI
-	,eInputWallUI
+	,eInputTextUI
 	,eInputWallMgr
 	,eInputWallSelectList
 	,eInputWallList
@@ -70,7 +70,7 @@ struct stPhotoData
 #pragma endregion
 
 #pragma region const parameter
-const int cWindowWidth = 1920;
+const int cWindowWidth = 3840;
 const int cWindowHeight = cWindowWidth * 0.421875;
 const int cPhotoWallCategoryWidth = cWindowWidth * 0.25;
 
@@ -81,7 +81,8 @@ const float cInputTriggerDiffLimit = cPhotoWallCategoryWidth * 0.05f;
 
 //Wall
 const float cWallListMoveVecRatio = 5.0f;
-const float cWallListMoveVecMax = 80.0f;
+const float cWallListMoveVecMax = 40.0f;
+const float cWallListMoveVecMin = 10.0f;
 const int cMinimumPhotoWidth = (int)cPhotoWallCategoryWidth / 10.0;
 const int cMinimumPhotoHeight = (int)cMinimumPhotoWidth * 9.0/16.0;
 const int cPhotoUnitInterval = 5;
@@ -92,9 +93,9 @@ const float cSelectCoverAlpha = 255 * 0.8;
 const float cSelectAnimLength = 0.5f;
 const int cSelectWidth = cPhotoWallCategoryWidth * 0.4f;
 const int cSelectShdowWidth = cSelectWidth * 3.0;
-const int cCategoryNum = 1;
+const int cCategoryNum = 4;
 
-//UI
+//Main UI
 const int cMainUIWidth = cPhotoWallCategoryWidth * 0.74;
 const int cMainUIHeight = cMainUIWidth * 0.4;
 const int cMainUIAlpha = 255 * 0.8;
@@ -106,7 +107,15 @@ const int cMainUIUnitMinHeight = cMainUIHeight * 0.334;
 const int cMainUIBtnWidth = cMainUIWidth * 0.15;
 const int cMainUIBtnHeight = cMainUIBtnWidth;
 const int cMainUIFontSize = cMainUIHeight * 0.22;
-const int cMainUIFontENSize = cMainUIHeight * 0.1;
+const int cMainUIFontENSize = cMainUIHeight * 0.22;
+
+//Text UI
+const int cTextUIWidth = cSelectWidth;
+const int cTextUIHeight = cTextUIWidth * 0.5f;
+const int cTextUIContextLimitWidth = cTextUIWidth * 0.9f;
+const int cTextUIFontSize = cTextUIWidth * 0.1f;
+const int cTextUIContextFontSize = cTextUIFontSize * 0.5f;
+const int cTextUIAnimDuration = 0.5f;
 
 
 #pragma endregion

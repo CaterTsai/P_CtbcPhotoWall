@@ -14,10 +14,16 @@ void fontMgr::setup(string fontPath)
 	_isSetup &= _fontList[eFontMainUIEN].loadFont(fontPath + "english.TTF", cMainUIFontENSize);
 
 	_fontList[eFontTextUIZH].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontTextUIZH].loadFont(fontPath + "regular.otf", 20);
+	_isSetup &= _fontList[eFontTextUIZH].loadFont(fontPath + "regular.otf", cTextUIFontSize);
 
 	_fontList[eFontTextUIEN].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontTextUIEN].loadFont(fontPath + "regular.otf", 20);
+	_isSetup &= _fontList[eFontTextUIEN].loadFont(fontPath + "regular.otf", cTextUIFontSize);
+
+	_fontList[eFontTextUIContextZH].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontTextUIContextZH].loadFont(fontPath + "regular.otf", cTextUIContextFontSize);
+
+	_fontList[eFontTextUIContextEN].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontTextUIContextEN].loadFont(fontPath + "regular.otf", cTextUIContextFontSize);
 
 	_fontList[eFontMenuUIZH].setGlobalDpi(72);
 	_isSetup &= _fontList[eFontMenuUIZH].loadFont(fontPath + "regular.otf", 20);
@@ -83,18 +89,42 @@ ofRectangle fontMgr::getStringBoundingBox(eFontType type, string msg)
 	}
 	catch (const std::exception& e)
 	{
-		ofLog(OF_LOG_ERROR, "[fontMgr::setFontLetterSpace]failed");
+		ofLog(OF_LOG_ERROR, "[fontMgr::getStringBoundingBox]failed");
 	}
 	return stringBoundingBox_;
 }
 
 //-----------------------------------------------------------------------------
+vector<int> fontMgr::getEachWordWidth(eFontType type, string msg)
+{
+	vector<int> eachWordWidth_;
+	try
+	{
+		_fontList.at(type).getEachWordWidth(msg, eachWordWidth_);
+	}
+	catch (const std::exception&)
+	{
+		ofLog(OF_LOG_ERROR, "[fontMgr::getStringBoundingBox]failed");
+	}
+	return eachWordWidth_;
+}
+
+//-----------------------------------------------------------------------------
 string fontMgr::ws2s(const wstring & wstr)
 {
-	int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, 0);
+	int size_needed = WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, 0);
 	string strTo(size_needed, 0);
-	WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, 0);
+	WideCharToMultiByte(CP_ACP, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, 0);
 	return strTo;
+}
+
+//--------------------------------------------------------------
+wstring fontMgr::s2ws(const string & str)
+{
+	int size_needed = MultiByteToWideChar(CP_ACP, 0, &str[0], (int)str.size(), NULL, 0);
+	wstring wstrTo(size_needed, 0);
+	MultiByteToWideChar(CP_ACP, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
+	return wstrTo;
 }
 
 #pragma region Singleton

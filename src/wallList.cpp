@@ -49,9 +49,15 @@ float wallList::getBaseWidth()
 }
 
 //--------------------------------------
-int wallList::getListPosX()
+int wallList::getBasePosX()
 {
 	return _baseArea.getCenter().x;
+}
+
+//--------------------------------------
+int wallList::getDrawPosX()
+{
+	return _animDrawPosX.getCurrentValue();
 }
 
 #pragma region Center
@@ -60,7 +66,7 @@ int wallList::getListPosX()
 void wallList::resetCenter()
 {
 	_centerUnitPos.set(0);
-	_centerVec.set(0.0f, ofRandom(-1, 1)>0?ofRandom(20.0, 60.0):ofRandom(-60.0, -20.0));
+	_centerVec.set(0.0f, ofRandom(-1, 1)>0?ofRandom(cWallListMoveVecMin, cWallListMoveVecMax):ofRandom(-cWallListMoveVecMax, -cWallListMoveVecMin));
 	_centerBaseVec = _centerVec;
 }
 
@@ -301,7 +307,7 @@ bool wallList::deselect()
 	if (_eSelectState == eSelect)
 	{
 		_eSelectState = eZoomOut;
-		_animDrawPosX.animateTo(getListPosX());
+		_animDrawPosX.animateTo(getBasePosX());
 		_animDrawWidth.animateTo(_baseArea.getWidth());
 		return true;
 	}
@@ -310,6 +316,33 @@ bool wallList::deselect()
 		return false;
 	}
 }
+
+//--------------------------------------
+int wallList::getSelectPhotoID()
+{
+	if (getIsDeselect())
+	{
+		return -1;
+	}
+	else
+	{
+		auto selectUnit_ = dynamic_cast<photoUnit*>(_wallUnitList[_selectWallUnit.id].get());
+		return selectUnit_->getPhotoHeader().id;
+	}
+}
+
+//--------------------------------------
+int wallList::getSelectBottomPosY()
+{
+	int rVal_ = 0;
+
+	if (getIsSelect())
+	{
+		rVal_ = _selectWallUnit.pos.y + _wallUnitList[_selectWallUnit.id]->getHeight();
+	}
+	return rVal_;
+}
+
 //--------------------------------------
 void wallList::setupAnimation(int posX, int width)
 {
@@ -323,6 +356,7 @@ void wallList::setupAnimation(int posX, int width)
 
 	_animMoveSelect.setDuration(0.2);
 	_animMoveSelect.setRepeatType(AnimRepeat::PLAY_ONCE);
+	_animMoveSelect.setCurve(AnimCurve::BOUNCY);
 }
 
 //--------------------------------------
@@ -343,6 +377,7 @@ void wallList::checkSelectState()
 			if (_animDrawWidth.hasFinishedAnimating() && _animDrawWidth.getPercentDone() == 1.0)
 			{
 				_eSelectState = eSelect;
+				_parent->textUIin();
 			}
 			break;
 		}
@@ -353,7 +388,7 @@ void wallList::checkSelectState()
 				_wallUnitList[_selectWallUnit.id]->setClick(false);
 				_eSelectState = eDeselect;
 				_selectWallUnit.id = -1;
-				_centerVec.set(0.0f, ofRandom(-1, 1)>0 ? ofRandom(30.0, 60.0) : ofRandom(-60.0, -30.0));
+				_centerVec.set(0.0f, ofRandom(-1, 1)>0 ? ofRandom(cWallListMoveVecMin, cWallListMoveVecMax) : ofRandom(-cWallListMoveVecMax, -cWallListMoveVecMin));
 				_centerBaseVec = _centerVec;
 			}
 			break;
@@ -372,6 +407,9 @@ void wallList::checkSelectDrapState()
 	{
 		_eSelectDrapState = eStable;
 		_wallUnitList[_selectWallUnit.id]->setClick(true);
+
+		_parent->setTextUIVisible(true);
+
 	}
 }
 
@@ -379,7 +417,7 @@ void wallList::checkSelectDrapState()
 int wallList::getAnimMoveX()
 {
 	float halfSelectWidth_ = cSelectWidth * 0.5f;
-	int moveX_ = getListPosX();
+	int moveX_ = getBasePosX();
 	if ((moveX_ + halfSelectWidth_) > _parent->getWallRectWidth())
 	{
 		moveX_ = _parent->getWallRectWidth() - halfSelectWidth_;
@@ -401,6 +439,8 @@ void wallList::fitSelectPos()
 	_animMoveSelect.reset(_centerUnitPos.y);
 	_animMoveSelect.animateTo(_centerUnitPos.y - diffY_);
 	_eSelectDrapState = eMove;
+
+	_parent->updateTextUI(getSelectPhotoID());
 }
 
 #pragma endregion
@@ -567,6 +607,7 @@ void wallList::inputDrag(inputEventArgs e)
 
 		if (getIsSelect() && abs(e.diffPos.y) > cInputTriggerDiffLimit && _wallUnitList[_selectWallUnit.id]->getClick())
 		{
+			_parent->setTextUIVisible(false);
 			_wallUnitList[_selectWallUnit.id]->setClick(false);
 			_eSelectDrapState = eDrap;
 		}

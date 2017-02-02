@@ -1,5 +1,6 @@
 #include "wallMgr.h"
 
+
 //--------------------------------
 wallMgr::wallMgr()
 	:_isSetup(false)
@@ -16,6 +17,7 @@ wallMgr::~wallMgr()
 	_wallListMgr.clear();
 }
 
+#pragma region Base Method
 //--------------------------------
 void wallMgr::setup(ePhotoPrimaryCategory category, ofRectangle wallRect)
 {
@@ -23,7 +25,7 @@ void wallMgr::setup(ePhotoPrimaryCategory category, ofRectangle wallRect)
 	_wallRect = wallRect;
 
 	_mainUI.setup(this, ofVec2f(cPhotoWallCategoryWidth * 0.5, cWindowHeight * 0.5), "config/mainUIText.xml", category);
-
+	_textUI.setup(this);
 	_isSetup = true;
 }
 
@@ -37,6 +39,7 @@ void wallMgr::update(float delta)
 		iter_->update(delta);
 	}
 	_mainUI.update(delta);
+	_textUI.update(delta);
 }
 
 //--------------------------------
@@ -54,10 +57,12 @@ void wallMgr::draw()
 		if (iter_->getIsDeselect())
 		{
 			iter_->draw();
-		}	
+		}
 	}
 
-	drawUI();
+	_mainUI.draw(_isDisplayZH);
+	
+
 	ofPopMatrix();
 	ofPopStyle();
 }
@@ -79,8 +84,7 @@ void wallMgr::drawSelect()
 			iter_->draw();
 		}
 	}
-
-	drawUI();
+	drawTextUI();
 	ofPopMatrix();
 	ofPopStyle();
 }
@@ -101,7 +105,7 @@ void wallMgr::drawShadow()
 			//Shadow
 			imageRender::GetInstance()->drawImage(
 				NAME_MGR::I_Gradient,
-				ofVec2f(iter_->getListPosX() - cSelectShdowWidth * 0.5f, 0),
+				ofVec2f(iter_->getBasePosX() - cSelectShdowWidth * 0.5f, 0),
 				cSelectShdowWidth,
 				cWindowHeight
 			);
@@ -169,8 +173,9 @@ void wallMgr::disableWallListInput()
 		iter_->disableInput();
 	}
 }
+#pragma endregion
 
-#pragma region UI
+#pragma region mainUI
 //--------------------------------
 void wallMgr::mainUIin()
 {
@@ -188,41 +193,88 @@ void wallMgr::mainUIout()
 	enableWallListInput();
 }
 
+//--------------------------------
 void wallMgr::changeLanguage()
 {
 	_isDisplayZH ^= true;
 }
 
-//--------------------------------
-void wallMgr::drawUI()
-{
-	_mainUI.draw(_isDisplayZH);
-}
 #pragma endregion
 
+#pragma region textUI
+//--------------------------------
+void wallMgr::textUIin()
+{
+	_isVisible = true;
+	_textUI.open();
+	_textUI.enableInput();
+}
+
+//--------------------------------
+void wallMgr::textUIout()
+{
+	_isVisible = false;
+	_textUI.close();
+	_textUI.disableInput();
+}
+
+//--------------------------------
+void wallMgr::setTextUIVisible(bool val)
+{
+	_isVisible = val;
+}
+
+//--------------------------------
+void wallMgr::updateTextUI(int photoID)
+{
+	//TODO
+	string titleZH_ = "標題:" + ofToString(photoID);
+	string titleEN_ = "TITLE:" + ofToString(photoID);
+	string msgZH_ = "零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九";
+	string msgEN_ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ012345678901234567890123456789";
+	
+	if (_isDisplayZH)
+	{
+		_textUI.updateText(titleZH_, msgZH_, _isDisplayZH);
+	}
+	else
+	{
+		_textUI.updateText(titleEN_, msgEN_, _isDisplayZH);
+	}
+	
+}
+
+//--------------------------------
+void wallMgr::drawTextUI()
+{
+	if (_isVisible && _selectWallList)
+	{
+		_textUI.draw(ofVec2f(_selectWallList->getDrawPosX(), _selectWallList->getSelectBottomPosY()));
+	}
+	
+}
+#pragma endregion
 
 #pragma region Select
 
 //--------------------------------
 void wallMgr::selectCheck(wallList* selectList)
 {	
-	if (!_selectWallList)
+	if (_selectWallList)
+	{		
+		_selectWallList->disableInput();
+		_selectWallList->enableInput();
+		_selectWallList->deselect();
+		textUIout();
+	}
+
+	if (_selectWallList != selectList)
 	{
 		_selectWallList = selectList;
 		selectList->disableInput();
 		selectList->enableInput(true);
-	}
-	else
-	{	
-		_selectWallList->disableInput();
-		_selectWallList->enableInput();
-		_selectWallList->deselect();
-		if (_selectWallList != selectList)
-		{
-			_selectWallList = selectList;
-			selectList->disableInput();
-			selectList->enableInput(true);
-		}
+
+		updateTextUI(_selectWallList->getSelectPhotoID());
 	}
 }
 

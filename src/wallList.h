@@ -26,9 +26,11 @@ public:
 
 	void update(float delta);
 	void draw();
-	float getBaseWidth();
 	
-	int getListPosX();
+	float getBaseWidth();
+	int getBasePosX();
+
+	int getDrawPosX();
 	
 private:
 	ePhotoPrimaryCategory _eCategroy;
@@ -63,6 +65,8 @@ public:
 	bool select(ofVec2f& pos);
 	bool deselect();
 
+	int getSelectPhotoID();
+	int getSelectBottomPosY();
 private:
 	void setupAnimation(int posX, int width);
 	void updateAnimation(float delta);

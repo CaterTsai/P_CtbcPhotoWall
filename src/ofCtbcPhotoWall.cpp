@@ -4,7 +4,7 @@
 void ofCtbcPhotoWall::setup()
 {
 	ofBackground(0);
-	ofSetVerticalSync(true);
+	//ofSetVerticalSync(true);
 	ofSetFrameRate(60);
 		
 	photoRender::GetInstance()->setup("thumbnail/", "");
@@ -16,6 +16,7 @@ void ofCtbcPhotoWall::setup()
 	setupAudio();
 
 #ifndef _DEBUG
+	//ofToggleFullscreen();
 	ofSetWindowPosition(0, 0);
 #endif // !_DEBUG
 
@@ -60,6 +61,11 @@ void ofCtbcPhotoWall::keyPressed(int key)
 			mainUIout();
 			break;
 		}
+		case '1':
+		{
+			ofToggleFullscreen();
+			break;
+		}
 	}
 }
 
@@ -88,7 +94,7 @@ void ofCtbcPhotoWall::setupImageRender(string path)
 //--------------------------------------------------------------
 void ofCtbcPhotoWall::setupAudio()
 {
-	AudioMgr::GetInstance()->addBGM(NAME_MGR::BGM, "sounds/bgm.wav");
+	AudioMgr::GetInstance()->addBGM(NAME_MGR::BGM, "sounds/bgm.mp3");
 }
 #pragma endregion
 
