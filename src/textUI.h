@@ -22,6 +22,7 @@ public:
 private:
 	void updateCanvas();
 	void animStateCheck();
+	bool moveTextDrawY(int delta);
 	string reconstructMsg(int widthLimit, string& msg, vector<int>& eachWordWidth);
 
 
@@ -37,7 +38,7 @@ private:
 	
 	wallMgr*	_parent;
 	ofFbo	_displayCanvas, _textCanvas;
-	int _textDrawMax, _textDrawY;
+	int _textDrawYMin, _textDrawY;
 	ofxAnimatableFloat	_animHeight;
 
 #pragma region Input
@@ -45,9 +46,7 @@ public:
 	void enableInput(bool isSelect = false);
 	void disableInput();
 private:
-	void inputPress(inputEventArgs e) override;
 	void inputDrag(inputEventArgs e) override;
-	void inputRelease(inputEventArgs e) override;
 	ofRectangle	getInputArea() override;
 #pragma endregion
 };

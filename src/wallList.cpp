@@ -603,11 +603,6 @@ void wallList::inputPress(inputEventArgs e)
 {
 	_centerVec.set(0);
 
-	if (getIsSelect())
-	{
-		
-		
-	}
 }
 
 //--------------------------------------

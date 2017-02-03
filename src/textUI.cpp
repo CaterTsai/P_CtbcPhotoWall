@@ -1,5 +1,5 @@
 #include "textUI.h"
-
+#include "wallMgr.h"
 //---------------------------------
 textUI::textUI()
 	:_isSetup(false)
@@ -79,7 +79,7 @@ void textUI::updateText(string & title, string & context, bool isZH)
 	_textCanvas.end();
 
 	_textDrawY = 0;
-	_textDrawMax = MAX(0, _textCanvas.getHeight() - cTextUIHeight);
+	_textDrawYMin = MIN(0, -(_textCanvas.getHeight() - cTextUIHeight));
 	updateCanvas();
 }
 
@@ -143,6 +143,23 @@ void textUI::animStateCheck()
 }
 
 //---------------------------------
+bool textUI::moveTextDrawY(int delta)
+{
+	int afterMove_ = _textDrawY + delta;
+	afterMove_ = MAX(MIN(afterMove_, 0), _textDrawYMin);
+	
+	if (_textDrawY == afterMove_)
+	{
+		return false;
+	}
+	else
+	{
+		_textDrawY = afterMove_;
+		return true;
+	}
+}
+
+//---------------------------------
 string textUI::reconstructMsg(int widthLimit, string & msg, vector<int>& eachWordWidth)
 {
 	wstring wMsg_ = fontMgr::s2ws(msg);
@@ -176,24 +193,26 @@ void textUI::disableInput()
 }
 
 //---------------------------------
-void textUI::inputPress(inputEventArgs e)
-{
-}
-
-//---------------------------------
 void textUI::inputDrag(inputEventArgs e)
-{
-}
-
-//---------------------------------
-void textUI::inputRelease(inputEventArgs e)
-{
+{	
+	if (moveTextDrawY(e.delta.y))
+	{
+		updateCanvas();
+	}
 }
 
 //---------------------------------
 ofRectangle textUI::getInputArea()
 {
-	return ofRectangle();
+	ofRectangle rVal_;
+	if (_isSetup && _eState == eOpen)
+	{
+		auto drawPos_ = _parent->getWallRectPos() + _parent->getTextUIPos();
+		drawPos_.x -= cTextUIWidth * 0.5;
+		rVal_.set(drawPos_, cTextUIWidth, cTextUIHeight);
+	}
+	
+	return rVal_;
 }
 #pragma endregion
 

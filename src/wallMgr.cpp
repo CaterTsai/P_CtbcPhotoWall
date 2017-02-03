@@ -235,7 +235,7 @@ void wallMgr::updateTextUI(int photoID)
 	//TODO
 	string titleZH_ = "標題:" + ofToString(photoID);
 	string titleEN_ = "TITLE:" + ofToString(photoID);
-	string msgZH_ = "零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九";
+	string msgZH_ = "零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九";
 	string msgEN_ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ012345678901234567890123456789";
 	
 	if (_isDisplayZH)
@@ -250,11 +250,22 @@ void wallMgr::updateTextUI(int photoID)
 }
 
 //--------------------------------
+ofVec2f wallMgr::getTextUIPos()
+{
+	ofVec2f rVal_ = ofVec2f(0);
+	if (_selectWallList)
+	{
+		rVal_.set(_selectWallList->getDrawPosX(), _selectWallList->getSelectBottomPosY());
+	}
+	return rVal_;
+}
+
+//--------------------------------
 void wallMgr::drawTextUI()
 {
 	if (_isTextUIVisible && _selectWallList)
 	{
-		_textUI.draw(ofVec2f(_selectWallList->getDrawPosX(), _selectWallList->getSelectBottomPosY()));
+		_textUI.draw(getTextUIPos());
 	}
 }
 
@@ -290,14 +301,25 @@ void wallMgr::updateScrollUI()
 }
 
 //--------------------------------
+ofVec2f wallMgr::getScrollUIPos()
+{
+	ofVec2f rVal_ = ofVec2f(0);
+	if (_selectWallList)
+	{
+		rVal_.set(
+			_selectWallList->getDrawPosX() + cSelectWidth * 0.5,
+			_selectWallList->getSelectTopPosY()
+		);
+	}
+	return rVal_;
+}
+
+//--------------------------------
 void wallMgr::drawScrollUI()
 {
 	if (_isTextUIVisible && _selectWallList)
 	{	
-		_scrollUI.draw(ofVec2f(
-			_selectWallList->getDrawPosX() + cSelectWidth * 0.5,
-			_selectWallList->getSelectTopPosY())
-		);
+		_scrollUI.draw(getScrollUIPos());
 	}
 }
 #pragma endregion

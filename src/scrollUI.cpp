@@ -1,4 +1,5 @@
 #include "scrollUI.h"
+#include "wallMgr.h"
 
 //---------------------------------
 scrollUI::scrollUI()
@@ -62,7 +63,7 @@ void scrollUI::updateScroll(ePhotoPrimaryCategory eCategory, bool isZH)
 	updateItemList(eCategory);
 	updateTitle(eCategory);
 
-	_itemListDrawPosY = cScrollUIItemStartPosY;
+	
 	updateCanvas();
 }
 
@@ -191,7 +192,7 @@ void scrollUI::itemUnit::draw(ofVec2f pos, ePhotoPrimaryCategory eCategory, bool
 //---------------------------------
 void scrollUI::drawItemList()
 {
-	int startPos_ = _itemListDrawPosY;
+	int startPos_ = _itemListDrawY + cScrollUIItemStartPosY;
 	ofPushStyle();
 	{
 		for (auto& iter_ : _itemList)
@@ -218,10 +219,30 @@ void scrollUI::updateItemList(ePhotoPrimaryCategory eCategory)
 		itemUnit unit_(iter_);
 		_itemList.push_back(unit_);
 	}
+
+	_itemListDrawY = 0;
+	int temp_ = -(_itemList.size() * cScrollUIItemHeight - cScrollUIHeight);
+	_itemListDrawYMin = MIN(0, temp_);
+}
+
+//---------------------------------
+bool scrollUI::moveDrawPosY(int delta)
+{
+	int afterMove_ = _itemListDrawY + delta;
+	afterMove_ = MAX(MIN(afterMove_, 0), _itemListDrawYMin);
+
+	if (_itemListDrawY == afterMove_)
+	{
+		return false;
+	}
+	else
+	{
+		_itemListDrawY = afterMove_;
+		return true;
+	}
 }
 
 #pragma endregion
-
 
 #pragma region Input
 
@@ -245,6 +266,10 @@ void scrollUI::inputPress(inputEventArgs e)
 //---------------------------------
 void scrollUI::inputDrag(inputEventArgs e)
 {
+	if (moveDrawPosY(e.delta.y))
+	{
+		updateCanvas();
+	}
 }
 
 //---------------------------------
@@ -255,7 +280,14 @@ void scrollUI::inputRelease(inputEventArgs e)
 //---------------------------------
 ofRectangle scrollUI::getInputArea()
 {
-	return ofRectangle();
+	ofRectangle rVal_;
+	if (_isSetup && _eState == eOpen)
+	{
+		auto drawPos_ = _parent->getWallRectPos() + _parent->getScrollUIPos();
+		rVal_.set(drawPos_, cScrollUIWidth, cScrollUIHeight);
+	}
+
+	return rVal_;
 }
 #pragma endregion
 

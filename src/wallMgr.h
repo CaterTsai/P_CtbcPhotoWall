@@ -61,6 +61,8 @@ public:
 
 	void setTextUIVisible(bool val);
 	void updateTextUI(int photoID);
+
+	ofVec2f getTextUIPos();
 private:
 	
 	void drawTextUI();
@@ -76,6 +78,8 @@ public:
 
 	void setScrollUIVisible(bool val);
 	void updateScrollUI();
+
+	ofVec2f getScrollUIPos();
 private:
 
 	void drawScrollUI();
@@ -83,7 +87,6 @@ private:
 	bool _isScrollUIVisible;
 	scrollUI	_scrollUI;
 #pragma endregion
-
 
 #pragma region Select
 public:

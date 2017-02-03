@@ -63,12 +63,11 @@ private:
 private:
 	void drawItemList();
 	void updateItemList(ePhotoPrimaryCategory eCategory);
-
+	bool moveDrawPosY(int delta);
 private:
-	int _itemListDrawPosY;
+	int _itemListDrawY, _itemListDrawYMin;
 	vector<itemUnit>	_itemList;
 #pragma endregion
-
 
 #pragma region Input
 public:
