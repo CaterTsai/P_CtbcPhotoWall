@@ -3,6 +3,7 @@
 #include "wallList.h"
 #include "mainUI.h"
 #include "textUI.h"
+#include "scrollUI.h"
 
 class wallMgr : public inputEvent
 {
@@ -64,9 +65,25 @@ private:
 	
 	void drawTextUI();
 private:
-	bool _isVisible;
+	bool _isTextUIVisible;
 	textUI	_textUI;
 #pragma endregion
+
+#pragma region scrollUI
+public:
+	void scrollUIin();
+	void scrollUIout();
+
+	void setScrollUIVisible(bool val);
+	void updateScrollUI();
+private:
+
+	void drawScrollUI();
+private:
+	bool _isScrollUIVisible;
+	scrollUI	_scrollUI;
+#pragma endregion
+
 
 #pragma region Select
 public:

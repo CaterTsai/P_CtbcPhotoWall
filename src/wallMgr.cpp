@@ -24,8 +24,11 @@ void wallMgr::setup(ePhotoPrimaryCategory category, ofRectangle wallRect)
 	_eCategory = category;
 	_wallRect = wallRect;
 
-	_mainUI.setup(this, ofVec2f(cPhotoWallCategoryWidth * 0.5, cWindowHeight * 0.5), "config/mainUIText.xml", category);
+	_mainUI.setup(this, ofVec2f(cPhotoWallCategoryWidth * 0.5, cWindowHeight * 0.5), category);
 	_textUI.setup(this);
+	_scrollUI.setup(this);
+	updateScrollUI();
+
 	_isSetup = true;
 }
 
@@ -40,6 +43,7 @@ void wallMgr::update(float delta)
 	}
 	_mainUI.update(delta);
 	_textUI.update(delta);
+	_scrollUI.update(delta);
 }
 
 //--------------------------------
@@ -76,7 +80,7 @@ void wallMgr::drawSelect()
 	ofSetColor(255);
 	ofPushMatrix();
 	ofTranslate(_wallRect.getPosition());
-	ofVec2f drawPos_(0);
+	drawScrollUI();
 	for (auto& iter_ : _wallListMgr)
 	{
 		if (!iter_->getIsDeselect())
@@ -85,6 +89,7 @@ void wallMgr::drawSelect()
 		}
 	}
 	drawTextUI();
+	
 	ofPopMatrix();
 	ofPopStyle();
 }
@@ -205,7 +210,7 @@ void wallMgr::changeLanguage()
 //--------------------------------
 void wallMgr::textUIin()
 {
-	_isVisible = true;
+	_isTextUIVisible = true;
 	_textUI.open();
 	_textUI.enableInput();
 }
@@ -213,7 +218,7 @@ void wallMgr::textUIin()
 //--------------------------------
 void wallMgr::textUIout()
 {
-	_isVisible = false;
+	_isTextUIVisible = false;
 	_textUI.close();
 	_textUI.disableInput();
 }
@@ -221,7 +226,7 @@ void wallMgr::textUIout()
 //--------------------------------
 void wallMgr::setTextUIVisible(bool val)
 {
-	_isVisible = val;
+	_isTextUIVisible = val;
 }
 
 //--------------------------------
@@ -247,11 +252,53 @@ void wallMgr::updateTextUI(int photoID)
 //--------------------------------
 void wallMgr::drawTextUI()
 {
-	if (_isVisible && _selectWallList)
+	if (_isTextUIVisible && _selectWallList)
 	{
 		_textUI.draw(ofVec2f(_selectWallList->getDrawPosX(), _selectWallList->getSelectBottomPosY()));
 	}
-	
+}
+
+#pragma endregion
+
+#pragma region scrollUI
+//--------------------------------
+void wallMgr::scrollUIin()
+{
+	_isScrollUIVisible = true;
+	_scrollUI.open();
+	_scrollUI.enableInput();
+}
+
+//--------------------------------
+void wallMgr::scrollUIout()
+{
+	_isScrollUIVisible = false;
+	_scrollUI.close();
+	_scrollUI.disableInput();
+}
+
+//--------------------------------
+void wallMgr::setScrollUIVisible(bool val)
+{
+	_isScrollUIVisible = val;
+}
+
+//--------------------------------
+void wallMgr::updateScrollUI()
+{
+	_scrollUI.updateScroll(_eCategory, _isDisplayZH);
+}
+
+//--------------------------------
+void wallMgr::drawScrollUI()
+{
+	if (_isTextUIVisible && _selectWallList)
+	{	
+		_scrollUI.draw(ofVec2f(
+			_selectWallList->getDrawPosX() + cSelectWidth * 0.5,
+			_selectWallList->getSelectTopPosY())
+		);
+	}
 }
 #pragma endregion
 
@@ -266,6 +313,7 @@ void wallMgr::selectCheck(wallList* selectList)
 		_selectWallList->enableInput();
 		_selectWallList->deselect();
 		textUIout();
+		scrollUIout();
 	}
 
 	if (_selectWallList != selectList)

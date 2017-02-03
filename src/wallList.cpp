@@ -61,7 +61,6 @@ int wallList::getDrawPosX()
 }
 
 #pragma region Center
-
 //--------------------------------------
 void wallList::resetCenter()
 {
@@ -73,7 +72,6 @@ void wallList::resetCenter()
 //--------------------------------------
 void wallList::updateCenter(float delta)
 {
-
 	if (abs(_centerVec.y) > abs(_centerBaseVec.y))
 	{
 		_centerVec.y *= 0.96;
@@ -332,6 +330,18 @@ int wallList::getSelectPhotoID()
 }
 
 //--------------------------------------
+int wallList::getSelectTopPosY()
+{
+	int rVal_ = 0;
+
+	if (getIsSelect())
+	{
+		rVal_ = _selectWallUnit.pos.y;
+	}
+	return rVal_;
+}
+
+//--------------------------------------
 int wallList::getSelectBottomPosY()
 {
 	int rVal_ = 0;
@@ -378,6 +388,7 @@ void wallList::checkSelectState()
 			{
 				_eSelectState = eSelect;
 				_parent->textUIin();
+				_parent->scrollUIin();
 			}
 			break;
 		}
@@ -409,6 +420,7 @@ void wallList::checkSelectDrapState()
 		_wallUnitList[_selectWallUnit.id]->setClick(true);
 
 		_parent->setTextUIVisible(true);
+		_parent->setScrollUIVisible(true);
 
 	}
 }
@@ -608,6 +620,7 @@ void wallList::inputDrag(inputEventArgs e)
 		if (getIsSelect() && abs(e.diffPos.y) > cInputTriggerDiffLimit && _wallUnitList[_selectWallUnit.id]->getClick())
 		{
 			_parent->setTextUIVisible(false);
+			_parent->setScrollUIVisible(false);
 			_wallUnitList[_selectWallUnit.id]->setClick(false);
 			_eSelectDrapState = eDrap;
 		}

@@ -26,10 +26,10 @@ void fontMgr::setup(string fontPath)
 	_isSetup &= _fontList[eFontTextUIContextEN].loadFont(fontPath + "regular.otf", cTextUIContextFontSize);
 
 	_fontList[eFontMenuUIZH].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMenuUIZH].loadFont(fontPath + "regular.otf", 20);
+	_isSetup &= _fontList[eFontMenuUIZH].loadFont(fontPath + "black.otf", cScrollUIFontSize);
 
 	_fontList[eFontMenuUIEN].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMenuUIEN].loadFont(fontPath + "regular.otf", 20);
+	_isSetup &= _fontList[eFontMenuUIEN].loadFont(fontPath + "english.TTF", cScrollUIFontSize);
 	if (!_isSetup)
 	{
 		ofLog(OF_LOG_ERROR, "[fontMgr::setup]load font failed");

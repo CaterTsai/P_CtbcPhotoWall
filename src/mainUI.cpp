@@ -164,7 +164,7 @@ mainUI::mainUI()
 {}
 
 //-----------------------------------------------------------------------------
-void mainUI::setup(wallMgr* wallMgr, ofVec2f drawPos, string xmlPath, ePhotoPrimaryCategory eCategory)
+void mainUI::setup(wallMgr* wallMgr, ofVec2f drawPos, ePhotoPrimaryCategory eCategory)
 {
 
 	_category = eCategory;
@@ -177,7 +177,7 @@ void mainUI::setup(wallMgr* wallMgr, ofVec2f drawPos, string xmlPath, ePhotoPrim
 	_mainPos.set(cMainUIWidth * -0.5 + cMainUIUnitWidth * 0.5, cMainUIHeight * -0.5 + cMainUIUnitHeight * 0.5);
 	_miniPos.set(cMainUIWidth * -0.5 + cMainUIUnitWidth + cMainUIUnitMinWidth * -0.5, cMainUIHeight * -0.5 + cMainUIUnitMinHeight * 0.5);
 	_btnPos.set(cMainUIWidth * -0.5, cMainUIHeight * -0.5);
-	_setup = loadXml(xmlPath);
+	_setup = setupUI();
 
 	_parentWallMgr = wallMgr;
 	_centerPos = drawPos;
@@ -287,7 +287,7 @@ void mainUI::drawBtn(bool isZH)
 		int drawWidth_ = cMainUIBtnWidth * _animVal;
 		int drawHeight_ = cMainUIBtnHeight * _animVal;
 		imageRender::GetInstance()->drawImage(
-			getBtnName(_category, isZH), 
+			dataHolder::GetInstance()->getCategoryName(_category, isZH),
 			ofVec2f(drawWidth_ * -0.5f, drawHeight_ * -0.5f),
 			drawWidth_,
 			drawHeight_
@@ -393,28 +393,20 @@ void mainUI::animStateCheck()
 }
 
 //-----------------------------------------------------------------------------
-bool mainUI::loadXml(string xmlPath)
+bool mainUI::setupUI()
 {
-	ofxXmlSettings xml_;
-	if (!xml_.load(xmlPath))
+	for (int idx_ = 0; idx_ < ePhotoCategory_Num; idx_++)
 	{
-		ofLog(OF_LOG_ERROR, "[mainUI::loadXml]load config failed");
-		return false;
-	}
-
-	int num_ = xml_.getNumTags("mainUIText");
-	for (int idx_ = 0; idx_ < num_; idx_++)
-	{
-		ePhotoPrimaryCategory type_ = (ePhotoPrimaryCategory)xml_.getValue("mainUIText:type", idx_, idx_);
-		string zh_ = xml_.getValue("mainUIText:zh", "", idx_);
-		string en_ = xml_.getValue("mainUIText:en", "", idx_);
+		ePhotoPrimaryCategory type_ = (ePhotoPrimaryCategory)idx_;
+		string zh_ = dataHolder::GetInstance()->getCategoryName(type_, true);
+		string en_ = dataHolder::GetInstance()->getCategoryName(type_, false);
 
 		ofImage enImage_, zhImage_;
 		ofRectangle enRect_, zhRect_;
 		createTextImgEN(en_, enImage_, enRect_);
 		createTextImg(zh_, zhImage_, zhRect_);
 
-		baseUnit newUnit_(zhImage_, zhRect_, enImage_, enRect_, getBPColor(type_));
+		baseUnit newUnit_(zhImage_, zhRect_, enImage_, enRect_, getCategoryColor(type_));
 		_mainUIMap.insert(make_pair(type_, newUnit_));
 
 	}
@@ -452,8 +444,7 @@ void mainUI::createTextImgEN(string text, ofImage& img, ofRectangle& textRect)
 	img.clear();
 
 	textRect = fontMgr::GetInstance()->getStringBoundingBox(eFontType::eFontMainUIEN, text);
-
-	
+		
 	ofFbo	_canvas;
 	_canvas.allocate(textRect.getWidth(), textRect.getHeight(), GL_RGBA);
 
@@ -471,74 +462,6 @@ void mainUI::createTextImgEN(string text, ofImage& img, ofRectangle& textRect)
 	ofPixels pixel_;
 	_canvas.readToPixels(pixel_);
 	img.setFromPixels(pixel_);
-}
-
-//-----------------------------------------------------------------------------
-ofColor mainUI::getBPColor(ePhotoPrimaryCategory category)
-{
-	ofColor returnColor_;
-	switch (category)
-	{
-		case ePhotoCategory_1:
-		{
-			returnColor_.set(0, 167, 157);
-			break;
-		}
-		case ePhotoCategory_2:
-		{
-			returnColor_.set(254, 188, 16);
-			break;
-		}
-		case ePhotoCategory_3:
-		{
-			returnColor_.set(245, 130, 59);
-			break;
-		}
-		case ePhotoCategory_4:
-		{
-			returnColor_.set(240, 78, 104);
-			break;
-		}
-		default:
-		{
-			returnColor_.set(0);
-		}
-	}
-	return returnColor_;
-}
-
-//-----------------------------------------------------------------------------
-string mainUI::getBtnName(ePhotoPrimaryCategory category, bool isZH)
-{
-	string btnName_ = "";
-	switch (category)
-	{
-	case ePhotoCategory_1:
-	{
-		btnName_ = isZH ? NAME_MGR::I_BtnEN1 : NAME_MGR::I_BtnZH1;
-		break;
-	}
-	case ePhotoCategory_2:
-	{
-		btnName_ = isZH ? NAME_MGR::I_BtnEN2 : NAME_MGR::I_BtnZH2;
-		break;
-	}
-	case ePhotoCategory_3:
-	{
-		btnName_ = isZH ? NAME_MGR::I_BtnEN3 : NAME_MGR::I_BtnZH3;
-		break;
-	}
-	case ePhotoCategory_4:
-	{
-		btnName_ = isZH ? NAME_MGR::I_BtnEN4 : NAME_MGR::I_BtnZH4;
-		break;
-	}
-	default:
-	{
-		btnName_ = "";
-	}
-	}
-	return btnName_;
 }
 
 #pragma region Input

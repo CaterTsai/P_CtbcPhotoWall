@@ -3,9 +3,9 @@
 #include "constParameter.h"
 #include "inputEventMgr.h"
 #include "fontMgr.h"
+#include "dataHolder.h"
 #include "imageRender.h"
 #include "ofxAnimatableFloat.h"
-#include "ofxXmlSettings.h"
 
 class wallMgr;
 class mainUI : public inputEvent
@@ -47,7 +47,7 @@ private:
 	
 public:
 	mainUI();
-	void setup(wallMgr* wallMgr, ofVec2f drawPos, string xmlPath, ePhotoPrimaryCategory eCategory);
+	void setup(wallMgr* wallMgr, ofVec2f drawPos, ePhotoPrimaryCategory eCategory);
 	void update(float delta);
 	void draw(bool isZH);
 
@@ -64,12 +64,10 @@ private:
 	void miniOut();
 
 	void animStateCheck();
-	bool loadXml(string xmlPath);
+	bool setupUI();
 	void createTextImg(string text, ofImage& img, ofRectangle& textRect);
 	void createTextImgEN(string text, ofImage& img, ofRectangle& textRect);
 
-	static ofColor getBPColor(ePhotoPrimaryCategory category);
-	static string getBtnName(ePhotoPrimaryCategory category, bool isZH);
 private:
 	enum eUIState
 	{

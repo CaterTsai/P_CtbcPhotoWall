@@ -66,6 +66,7 @@ public:
 	bool deselect();
 
 	int getSelectPhotoID();
+	int getSelectTopPosY();
 	int getSelectBottomPosY();
 private:
 	void setupAnimation(int posX, int width);

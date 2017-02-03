@@ -13,7 +13,7 @@ void textUI::setup(wallMgr * parent)
 
 	_displayCanvas.allocate(cTextUIWidth, cTextUIHeight);
 
-	_animHeight.setDuration(0.3);
+	_animHeight.setDuration(cTextUIAnimDuration);
 	_animHeight.setRepeatType(AnimRepeat::PLAY_ONCE);
 	_animHeight.reset(0.0f);
 	_eState = eClose;

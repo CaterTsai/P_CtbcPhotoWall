@@ -3,6 +3,7 @@
 #include "constParameter.h"
 #include "fontMgr.h"
 #include "inputEventMgr.h"
+#include "dataHolder.h"
 #include "ofxAnimatableFloat.h"
 
 class wallMgr;
@@ -33,6 +34,7 @@ private:
 		,eUIOut
 	}_eState;
 	bool _isSetup;
+	
 	wallMgr*	_parent;
 	ofFbo	_displayCanvas, _textCanvas;
 	int _textDrawMax, _textDrawY;

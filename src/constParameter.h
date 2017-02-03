@@ -7,6 +7,7 @@
 #pragma region Define
 #define USE_MOUSE
 #define PHOTO_TYPE unsigned short
+
 #define PHOTO_ID_MASK 0x0000ffff
 #define PHOTO_HEADER_MASK 0xffff0000
 #define PHOTO_SHAPE_MASK 0x000f0000
@@ -27,6 +28,7 @@ enum ePhotoPrimaryCategory : unsigned char
 	,ePhotoCategory_2
 	,ePhotoCategory_3
 	,ePhotoCategory_4
+	,ePhotoCategory_Num
 };
 
 enum ePhotoShape : int
@@ -43,6 +45,7 @@ enum eInputSystemLevel : int
 	eInputTop = 0
 	,eInputMainUI
 	,eInputTextUI
+	,eInputScrollUI
 	,eInputWallMgr
 	,eInputWallSelectList
 	,eInputWallList
@@ -115,7 +118,53 @@ const int cTextUIHeight = cTextUIWidth * 0.5f;
 const int cTextUIContextLimitWidth = cTextUIWidth * 0.9f;
 const int cTextUIFontSize = cTextUIWidth * 0.1f;
 const int cTextUIContextFontSize = cTextUIFontSize * 0.5f;
-const int cTextUIAnimDuration = 0.5f;
+const float cTextUIAnimDuration = 0.3f;
 
+//Scroll UI
+const int cScrollUIWidth = cSelectWidth * 0.6;
+const int cScrollUIHeight = cScrollUIWidth * 1.5;
+const int cScrollUIAlpha = 255 * 0.95;
+const int cScrollUIItemHeight = cScrollUIHeight * 0.2;
+const int cScrollUIItemStartPosY = cScrollUIItemHeight;
+const ofColor sScrollUIItemColor = ofColor(20, cScrollUIAlpha);
+const ofColor sScrollUIItemSelectColor = ofColor(50, cScrollUIAlpha);
+const int cScrollUIFontSize = cScrollUIWidth * 0.1f;
 
+const float cScrollUIAnimDuration = 0.3f;
 #pragma endregion
+
+#pragma region Static Method
+static ofColor getCategoryColor(ePhotoPrimaryCategory category)
+{
+	ofColor returnColor_;
+	switch (category)
+	{
+	case ePhotoCategory_1:
+	{
+		returnColor_.set(0, 167, 157);
+		break;
+	}
+	case ePhotoCategory_2:
+	{
+		returnColor_.set(254, 188, 16);
+		break;
+	}
+	case ePhotoCategory_3:
+	{
+		returnColor_.set(245, 130, 59);
+		break;
+	}
+	case ePhotoCategory_4:
+	{
+		returnColor_.set(240, 78, 104);
+		break;
+	}
+	default:
+	{
+		returnColor_.set(0);
+	}
+	}
+	return returnColor_;
+}
+#pragma endregion
+
