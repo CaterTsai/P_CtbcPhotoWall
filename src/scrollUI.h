@@ -52,6 +52,7 @@ private:
 			, _isSelect(false)
 		{}
 
+		void setSelect(bool val);
 		void draw(ofVec2f pos, ePhotoPrimaryCategory eCategory, bool isZH);
 
 	private:
@@ -64,7 +65,9 @@ private:
 	void drawItemList();
 	void updateItemList(ePhotoPrimaryCategory eCategory);
 	bool moveDrawPosY(int delta);
+	int getSelectIndex(ofVec2f pos);
 private:
+	int _selectItemIdx;
 	int _itemListDrawY, _itemListDrawYMin;
 	vector<itemUnit>	_itemList;
 #pragma endregion

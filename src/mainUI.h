@@ -68,6 +68,7 @@ private:
 	void createTextImg(string text, ofImage& img, ofRectangle& textRect);
 	void createTextImgEN(string text, ofImage& img, ofRectangle& textRect);
 
+	string mainUI::getBtnName(ePhotoPrimaryCategory category, bool isZH);
 private:
 	enum eUIState
 	{

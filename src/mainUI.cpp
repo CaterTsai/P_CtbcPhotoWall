@@ -287,7 +287,7 @@ void mainUI::drawBtn(bool isZH)
 		int drawWidth_ = cMainUIBtnWidth * _animVal;
 		int drawHeight_ = cMainUIBtnHeight * _animVal;
 		imageRender::GetInstance()->drawImage(
-			dataHolder::GetInstance()->getCategoryName(_category, isZH),
+			getBtnName(_category, isZH),
 			ofVec2f(drawWidth_ * -0.5f, drawHeight_ * -0.5f),
 			drawWidth_,
 			drawHeight_
@@ -411,6 +411,40 @@ bool mainUI::setupUI()
 
 	}
 	return true;
+}
+
+//-----------------------------------------------------------------------------
+string mainUI::getBtnName(ePhotoPrimaryCategory category, bool isZH)
+{
+	string btnName_ = "";
+	switch (category)
+	{
+	case ePhotoCategory_1:
+	{
+		btnName_ = isZH ? NAME_MGR::I_BtnEN1 : NAME_MGR::I_BtnZH1;
+		break;
+	}
+	case ePhotoCategory_2:
+	{
+		btnName_ = isZH ? NAME_MGR::I_BtnEN2 : NAME_MGR::I_BtnZH2;
+		break;
+	}
+	case ePhotoCategory_3:
+	{
+		btnName_ = isZH ? NAME_MGR::I_BtnEN3 : NAME_MGR::I_BtnZH3;
+		break;
+	}
+	case ePhotoCategory_4:
+	{
+		btnName_ = isZH ? NAME_MGR::I_BtnEN4 : NAME_MGR::I_BtnZH4;
+		break;
+	}
+	default:
+	{
+		btnName_ = "";
+	}
+	}
+	return btnName_;
 }
 
 //-----------------------------------------------------------------------------

@@ -127,7 +127,7 @@ const int cScrollUIAlpha = 255 * 0.95;
 const int cScrollUIItemHeight = cScrollUIHeight * 0.2;
 const int cScrollUIItemStartPosY = cScrollUIItemHeight;
 const ofColor sScrollUIItemColor = ofColor(20, cScrollUIAlpha);
-const ofColor sScrollUIItemSelectColor = ofColor(50, cScrollUIAlpha);
+const ofColor sScrollUIItemSelectColor = ofColor(100, cScrollUIAlpha);
 const int cScrollUIFontSize = cScrollUIWidth * 0.1f;
 
 const float cScrollUIAnimDuration = 0.3f;

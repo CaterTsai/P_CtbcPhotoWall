@@ -27,8 +27,7 @@ void wallMgr::setup(ePhotoPrimaryCategory category, ofRectangle wallRect)
 	_mainUI.setup(this, ofVec2f(cPhotoWallCategoryWidth * 0.5, cWindowHeight * 0.5), category);
 	_textUI.setup(this);
 	_scrollUI.setup(this);
-	updateScrollUI();
-
+	
 	_isSetup = true;
 }
 
@@ -196,6 +195,8 @@ void wallMgr::mainUIout()
 	_eWallState = eWallPhoto;
 	disableInput();
 	enableWallListInput();
+
+	updateScrollUI();
 }
 
 //--------------------------------

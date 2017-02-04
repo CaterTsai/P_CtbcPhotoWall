@@ -8,6 +8,7 @@ scrollUI::scrollUI()
 	, _isZH(false)
 	, _eCategory(ePhotoCategory_1)
 	, _parent(nullptr)
+	, _selectItemIdx(-1)
 {}
 
 //---------------------------------
@@ -167,6 +168,12 @@ void scrollUI::updateTitle(ePhotoPrimaryCategory eCategory)
 
 #pragma region CLASS itemUnit
 //---------------------------------
+void scrollUI::itemUnit::setSelect(bool val)
+{
+	_isSelect = val;
+}
+
+//---------------------------------
 void scrollUI::itemUnit::draw(ofVec2f pos, ePhotoPrimaryCategory eCategory, bool isZH)
 {
 	ofPushStyle();
@@ -221,7 +228,7 @@ void scrollUI::updateItemList(ePhotoPrimaryCategory eCategory)
 	}
 
 	_itemListDrawY = 0;
-	int temp_ = -(_itemList.size() * cScrollUIItemHeight - cScrollUIHeight);
+	int temp_ = -( int(_itemList.size() * cScrollUIItemHeight) - cScrollUIHeight);
 	_itemListDrawYMin = MIN(0, temp_);
 }
 
@@ -240,6 +247,28 @@ bool scrollUI::moveDrawPosY(int delta)
 		_itemListDrawY = afterMove_;
 		return true;
 	}
+}
+
+//---------------------------------
+int scrollUI::getSelectIndex(ofVec2f pos)
+{
+	int rVal_ = -1;
+	auto localPos_ = pos - (_parent->getWallRectPos() + _parent->getScrollUIPos());
+	localPos_.y -= cScrollUIItemStartPosY;
+	if (localPos_.x > 0 && localPos_.x < cScrollUIWidth &&
+		localPos_.y > 0 && localPos_.y < cScrollUIHeight)
+	{
+		float dist_ = localPos_.y - _itemListDrawY;
+		rVal_ = static_cast<int>(dist_ / cScrollUIItemHeight);
+
+		if (rVal_ < 0 || rVal_ > _itemList.size())
+		{
+			ofLog(OF_LOG_ERROR, "[scrollUI::getSelectIndex]Wrong compute");
+			rVal_ = -1;
+		}
+	}
+
+	return rVal_;
 }
 
 #pragma endregion
@@ -275,6 +304,21 @@ void scrollUI::inputDrag(inputEventArgs e)
 //---------------------------------
 void scrollUI::inputRelease(inputEventArgs e)
 {
+	if (e.holdTime <= cInputHoldLimit && abs(e.diffPos.y) < cInputTriggerDiffLimit)
+	{
+		int newSelectIdx_ = getSelectIndex(e.pos);
+		if (newSelectIdx_ != -1 && _selectItemIdx != newSelectIdx_)
+		{
+			if (_selectItemIdx != -1)
+			{
+				_itemList[_selectItemIdx].setSelect(false);
+			}
+			_itemList[newSelectIdx_].setSelect(true);
+			_selectItemIdx = newSelectIdx_;
+
+			updateCanvas();
+		}
+	}
 }
 
 //---------------------------------
