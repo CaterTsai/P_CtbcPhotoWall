@@ -195,6 +195,10 @@ void scrollUI::itemUnit::draw(ofVec2f pos, ePhotoPrimaryCategory eCategory, bool
 	ofPopMatrix();
 	ofPopStyle();
 }
+PHOTO_TYPE scrollUI::itemUnit::getPhotoType()
+{
+	return _photoType;
+}
 #pragma endregion
 //---------------------------------
 void scrollUI::drawItemList()
@@ -317,6 +321,8 @@ void scrollUI::inputRelease(inputEventArgs e)
 			_selectItemIdx = newSelectIdx_;
 
 			updateCanvas();
+
+			_parent->selectType(_itemList[newSelectIdx_].getPhotoType());
 		}
 	}
 }

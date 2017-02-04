@@ -54,7 +54,7 @@ private:
 
 		void setSelect(bool val);
 		void draw(ofVec2f pos, ePhotoPrimaryCategory eCategory, bool isZH);
-
+		PHOTO_TYPE getPhotoType();
 	private:
 		PHOTO_TYPE	_photoType;
 		bool _isSelect;

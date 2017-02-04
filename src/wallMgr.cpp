@@ -316,6 +316,17 @@ ofVec2f wallMgr::getScrollUIPos()
 }
 
 //--------------------------------
+void wallMgr::selectType(PHOTO_TYPE type)
+{
+	if (_selectWallList)
+	{
+		setTextUIVisible(false);
+		setScrollUIVisible(false);
+		_selectWallList->selectType(type);
+	}
+}
+
+//--------------------------------
 void wallMgr::drawScrollUI()
 {
 	if (_isTextUIVisible && _selectWallList)

@@ -39,23 +39,22 @@ private:
 public:
 	stPhotoHeader& getPhotoHeader(int photoId);
 	stPhotoData getPhotoData(int photoId);
-	vector<int> getPhotoID(PHOTO_TYPE type);
 	vector<int> getPhotoID(ePhotoPrimaryCategory eCategory);
-
+	vector<int> getPhotoID(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type);
 private:
 	
 	void loadPhotoHeader();
 
 	void addPhotoMap(stPhotoHeader& photoHeader);
-	void addType2PhotoID(PHOTO_TYPE type, int photoid);
-	void addCategory2PhotoID(ePhotoPrimaryCategory, int photoid);
+	void addIndex(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type, int photoid);
+
 
 private:
 	bool _isSetup;
 	string _backendUrl;
 	map<int, stPhotoHeader> _photoMap;
-	map<PHOTO_TYPE, vector<int>> _typeToPhotoID;
-	map<ePhotoPrimaryCategory, vector<int>>	_categoryToPhotoID;
+	map<PHOTO_TYPE, vector<int>> _typeToPhotoID[ePhotoCategory_Num];
+
 #pragma endregion
 		
 #pragma region Singleton

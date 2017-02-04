@@ -111,33 +111,30 @@ stPhotoData dataHolder::getPhotoData(int photoId)
 	return stPhotoData();
 }
 //--------------------------------------------------------------
-vector<int> dataHolder::getPhotoID(PHOTO_TYPE type)
-{
-	setupCheck();
-	auto Iter_ = _typeToPhotoID.find(type);
-	if (Iter_ != _typeToPhotoID.end())
-	{
-		return Iter_->second;
-	}
-	else
-	{
-		throw std::runtime_error(("getPhotoID : can't found photo type "));
-	}
-}
-
-//--------------------------------------------------------------
 vector<int> dataHolder::getPhotoID(ePhotoPrimaryCategory eCategory)
 {
 	setupCheck();
-	auto Iter_ = _categoryToPhotoID.find(eCategory);
-	if (Iter_ != _categoryToPhotoID.end())
+	vector<int> rVal_;
+
+	for (auto& iter_ : _typeToPhotoID[eCategory])
 	{
-		return Iter_->second;
+		rVal_.insert(rVal_.end(), iter_.second.begin(), iter_.second.end());
 	}
-	else
+	return rVal_;
+}
+
+//--------------------------------------------------------------
+vector<int> dataHolder::getPhotoID(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type)
+{
+	setupCheck();
+	vector<int> rVal_;
+
+	auto& iter_ = _typeToPhotoID[eCategory].find(type);
+	if (iter_ != _typeToPhotoID[eCategory].end())
 	{
-		throw std::runtime_error(("getPhotoID : can't found ePhotoPrimaryCategory"));
+		rVal_.insert(rVal_.end(), iter_->second.begin(), iter_->second.end());
 	}
+	return rVal_;
 }
 
 //--------------------------------------------------------------
@@ -186,40 +183,26 @@ void dataHolder::addPhotoMap(stPhotoHeader & photoHeader)
 	else
 	{
 		_photoMap.insert(make_pair(photoHeader.id, photoHeader));
-		addType2PhotoID(photoHeader.type, photoHeader.id);
-		addCategory2PhotoID(photoHeader.category, photoHeader.id);
+		addIndex(photoHeader.category, photoHeader.type, photoHeader.id);
 	}
 
 }
 
 //--------------------------------------------------------------
-void dataHolder::addType2PhotoID(PHOTO_TYPE type, int photoid)
+void dataHolder::addIndex(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type, int photoid)
 {
-	auto iter_ = _typeToPhotoID.find(type);
+	auto iter_ = _typeToPhotoID[eCategory].find(type);
 
-	if (iter_ == _typeToPhotoID.end())
+	if (iter_ == _typeToPhotoID[eCategory].end())
 	{
 		vector<int> photoID_;
-		_typeToPhotoID.insert(make_pair(type, photoID_));
-		iter_ = _typeToPhotoID.find(type);
+		_typeToPhotoID[eCategory].insert(make_pair(type, photoID_));
+		iter_ = _typeToPhotoID[eCategory].find(type);
 	}
 
 	iter_->second.push_back(photoid);
 }
 
-//--------------------------------------------------------------
-void dataHolder::addCategory2PhotoID(ePhotoPrimaryCategory eCategory, int photoid)
-{
-	auto iter_ = _categoryToPhotoID.find(eCategory);
-
-	if (iter_ == _categoryToPhotoID.end())
-	{
-		vector<int> photoID_;
-		_categoryToPhotoID.insert(make_pair(eCategory, photoID_));
-		iter_ = _categoryToPhotoID.find(eCategory);
-	}
-	iter_->second.push_back(photoid);
-}
 #pragma endregion
 
 #pragma region Singletion

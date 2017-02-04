@@ -29,7 +29,6 @@ public:
 	
 	float getBaseWidth();
 	int getBasePosX();
-
 	int getDrawPosX();
 	
 private:
@@ -96,7 +95,9 @@ private:
 #pragma endregion
 	
 #pragma region WallUnit
-	//WallUnit
+//WallUnit
+public:
+	void selectType(PHOTO_TYPE type);
 private:
 	void setupWallUnit();
 	void updateWallUnit(float delta);
@@ -104,10 +105,13 @@ private:
 	void drawWallUnitDown();
 
 	void addWallUnit(ofPtr<wallUnit> newUnil);
-	void addWallUnits();
-	void addWallUnits(int type);
+	void addWallUnit(int index, ofPtr<wallUnit> newUnil);
+	void resetWallUnits();
+	void insertWallUnits(int index, PHOTO_TYPE type);
+	void removeWallUnits(int start, int end);
+	void clearWallUnits();
 
-	void removeWallUnits();
+	void findDisplayRange(wallUnitInfo& start, wallUnitInfo& end);
 
 	void updateWallTotalHeight();
 private:

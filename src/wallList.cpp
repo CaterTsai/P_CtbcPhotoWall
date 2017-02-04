@@ -9,7 +9,7 @@ wallList::wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle
 	,_parent(parent)
 {
 	setupAnimation(drawArea.getCenter().x, _baseArea.getWidth());
-	addWallUnits();
+	resetWallUnits();
 	resetCenter();	
 }
 
@@ -28,6 +28,9 @@ void wallList::update(float delta)
 
 	checkSelectState();
 	checkSelectDrapState();
+
+
+	
 }
 
 //--------------------------------------
@@ -38,6 +41,7 @@ void wallList::draw()
 
 	drawWallUnitUp();
 	drawWallUnitDown();
+
 
 	ofPopMatrix();
 }
@@ -98,6 +102,7 @@ void wallList::updateSelectCenter(float delta)
 			_centerUnitPos.y = _animMoveSelect.getCurrentValue();
 		}
 	}
+	fixCenterUnitPos();
 }
 
 //--------------------------------------
@@ -459,6 +464,15 @@ void wallList::fitSelectPos()
 
 #pragma region WallUnit
 //--------------------------------------
+void wallList::selectType(PHOTO_TYPE type)
+{
+	wallUnitInfo start, end;
+	findDisplayRange(start, end);
+	insertWallUnits(start.id, type);
+}
+
+
+//--------------------------------------
 void wallList::setupWallUnit()
 {
 	for (auto& Iter_ : _wallUnitList)
@@ -534,7 +548,13 @@ void wallList::addWallUnit(ofPtr<wallUnit> newUnil)
 }
 
 //--------------------------------------
-void wallList::addWallUnits()
+void wallList::addWallUnit(int index, ofPtr<wallUnit> newUnil)
+{
+	_wallUnitList.insert(_wallUnitList.begin() + index, newUnil);
+}
+
+//--------------------------------------
+void wallList::resetWallUnits()
 {
 	auto photoIDList_ = dataHolder::GetInstance()->getPhotoID(_eCategroy);
 
@@ -556,14 +576,52 @@ void wallList::addWallUnits()
 }
 
 //--------------------------------------
-void wallList::addWallUnits(int type)
+void wallList::insertWallUnits(int index, PHOTO_TYPE type)
 {
+	auto photoIDList_ = dataHolder::GetInstance()->getPhotoID(_eCategroy, type);
+
+	for (auto& iter_ : photoIDList_)
+	{
+		auto photoHeader_ = dataHolder::GetInstance()->getPhotoHeader(iter_);
+		addWallUnit(index, ofPtr<wallUnit>(new photoUnit(photoHeader_, _animDrawWidth.getCurrentValue())));
+	}
+	updateWallTotalHeight();
 }
 
 //--------------------------------------
-void wallList::removeWallUnits()
+void wallList::removeWallUnits(int start, int end)
+{
+	if (end < start)
+	{
+		swap(end, start);
+	}
+
+	if (start < 0 || _wallUnitList.size() < end)
+	{
+		ofLog(OF_LOG_ERROR, "[wallList::removeWallUnits]Wrong index");
+		return;
+	}
+	
+	_wallUnitList.erase(_wallUnitList.begin() + start, _wallUnitList.end() + end);
+	updateWallTotalHeight();
+}
+
+//--------------------------------------
+void wallList::clearWallUnits()
 {
 	_wallUnitList.clear();
+	updateWallTotalHeight();
+}
+
+//--------------------------------------
+void wallList::findDisplayRange(wallUnitInfo& start, wallUnitInfo& end)
+{
+	float diffToTop_ = _centerUnitPos.y - 0;
+	float diffToDown_ = _baseArea.getHeight() - _centerUnitPos.y;
+
+	start = foundUnitUp(abs(diffToTop_));
+	end = (diffToDown_ > 0 ? foundUnitDown(diffToDown_) : foundUnitUp(abs(diffToDown_)));
+
 }
 
 //--------------------------------------

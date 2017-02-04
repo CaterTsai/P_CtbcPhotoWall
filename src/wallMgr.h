@@ -80,6 +80,8 @@ public:
 	void updateScrollUI();
 
 	ofVec2f getScrollUIPos();
+
+	void selectType(PHOTO_TYPE type);
 private:
 
 	void drawScrollUI();
