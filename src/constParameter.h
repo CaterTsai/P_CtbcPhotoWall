@@ -96,7 +96,7 @@ const float cSelectCoverAlpha = 255 * 0.8;
 const float cSelectAnimLength = 0.5f;
 const int cSelectWidth = cPhotoWallCategoryWidth * 0.4f;
 const int cSelectShdowWidth = cSelectWidth * 3.0;
-const int cCategoryNum = 1;
+const int cCategoryNum = 4;
 
 //Main UI
 const int cMainUIWidth = cPhotoWallCategoryWidth * 0.74;

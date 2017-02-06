@@ -7,6 +7,7 @@ wallList::wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle
 	,_centerUnitPos(0.0)
 	, _eCategroy(eCategroy)
 	,_parent(parent)
+	, _isInsert(false)
 {
 	setupAnimation(drawArea.getCenter().x, _baseArea.getWidth());
 	resetWallUnits();
@@ -117,6 +118,34 @@ wallUnitInfo wallList::foundWallUnit(ofVec2f pos, bool nearest)
 	{
 		return nearest ? foundUnitUpNearest(abs(diff_)) : foundUnitUp(abs(diff_));
 	}
+}
+
+//--------------------------------------
+wallUnitInfo wallList::foundWallUnit(int index)
+{
+	wallUnitInfo _rVal;
+	if (index >= 0 && _wallUnitList.size() > index)
+	{
+		int upDiff_ = 0;
+		for (int idx_ = _wallUnitList.size() - 1; idx_ > index; idx_--)
+		{
+			upDiff_ += _wallUnitList[idx_]->getHeight();
+		}
+
+		if (_centerUnitPos.y - upDiff_ >= 0)
+		{
+			_rVal.id = index;
+			_rVal.pos.set(_centerUnitPos.x, _centerUnitPos.y - (upDiff_ + _wallUnitList[index]->getHeight()));
+		}
+		else
+		{
+			_rVal.id = index;
+			_rVal.pos.set(_centerUnitPos.x, _centerUnitPos.y + (_wallTotalHeight - upDiff_ - _wallUnitList[index]->getHeight()));
+		}
+	}
+
+
+	return _rVal;
 }
 
 //--------------------------------------
@@ -264,6 +293,30 @@ void wallList::fixCenterUnitPos()
 	else if (_centerUnitPos.y < -(*_wallUnitList.begin())->getHeight())
 	{
 		_centerUnitPos.y = _wallTotalHeight + _centerUnitPos.y;
+	}
+}
+
+//--------------------------------------
+void wallList::fixCenterUnitPosBySelect()
+{
+	if (getIsDeselect())
+	{
+		return;
+	}
+
+	int dist_ = 0;
+	for (int idx_ = 0; idx_ < _selectWallUnit.id; idx_++)
+	{
+		dist_ += _wallUnitList[idx_]->getHeight();
+	}
+
+	if (_selectWallUnit.pos.y - (dist_ - _wallUnitList[0]->getHeight())> 0)
+	{
+		_centerUnitPos.y = _selectWallUnit.pos.y - dist_ ;
+	}
+	else
+	{
+		_centerUnitPos.y = _selectWallUnit.pos.y + (_wallTotalHeight - dist_);
 	}
 }
 
@@ -427,6 +480,18 @@ void wallList::checkSelectDrapState()
 		_parent->setTextUIVisible(true);
 		_parent->setScrollUIVisible(true);
 
+		if (_isInsert)
+		{
+			removeWallUnits(0, _insertStart);
+			removeWallUnits(_insertEnd - _insertStart + 1, _wallUnitList.size());
+			_isInsert = false;
+
+			if (getIsSelect())
+			{
+				_selectWallUnit.id -= _insertStart;
+				fixCenterUnitPosBySelect();
+			}
+		}
 	}
 }
 
@@ -454,7 +519,22 @@ void wallList::fitSelectPos()
 	float diffY_ = nearestWallUnit_.pos.y - _selectWallUnit.pos.y;
 
 	_animMoveSelect.reset(_centerUnitPos.y);
+	_animMoveSelect.setDuration(0.3);
 	_animMoveSelect.animateTo(_centerUnitPos.y - diffY_);
+	_eSelectDrapState = eMove;
+
+	_parent->updateTextUI(getSelectPhotoID());
+}
+
+//--------------------------------------
+void wallList::moveSelectPos(wallUnitInfo newSelectUnit)
+{
+	_selectWallUnit.id = newSelectUnit.id;
+	float diffY_ = _wallTotalHeight - abs(newSelectUnit.pos.y - _selectWallUnit.pos.y);
+	
+	_animMoveSelect.reset(_centerUnitPos.y);
+	_animMoveSelect.setDuration(1.0);
+	_animMoveSelect.animateTo(_centerUnitPos.y + diffY_);
 	_eSelectDrapState = eMove;
 
 	_parent->updateTextUI(getSelectPhotoID());
@@ -468,7 +548,14 @@ void wallList::selectType(PHOTO_TYPE type)
 {
 	wallUnitInfo start, end;
 	findDisplayRange(start, end);
-	insertWallUnits(start.id, type);
+	int insertNum_ = insertWallUnits(start.id, type);
+	auto insert_ = foundWallUnit(start.id + (insertNum_ * 0.5) - 1);
+	
+	_isInsert = true;
+	_insertStart = start.id;
+	_insertEnd = start.id + insertNum_ - 1;
+	
+	moveSelectPos(insert_);
 }
 
 
@@ -576,7 +663,7 @@ void wallList::resetWallUnits()
 }
 
 //--------------------------------------
-void wallList::insertWallUnits(int index, PHOTO_TYPE type)
+int wallList::insertWallUnits(int index, PHOTO_TYPE type)
 {
 	auto photoIDList_ = dataHolder::GetInstance()->getPhotoID(_eCategroy, type);
 
@@ -586,15 +673,13 @@ void wallList::insertWallUnits(int index, PHOTO_TYPE type)
 		addWallUnit(index, ofPtr<wallUnit>(new photoUnit(photoHeader_, _animDrawWidth.getCurrentValue())));
 	}
 	updateWallTotalHeight();
+
+	return photoIDList_.size();
 }
 
 //--------------------------------------
 void wallList::removeWallUnits(int start, int end)
 {
-	if (end < start)
-	{
-		swap(end, start);
-	}
 
 	if (start < 0 || _wallUnitList.size() < end)
 	{
@@ -602,7 +687,7 @@ void wallList::removeWallUnits(int start, int end)
 		return;
 	}
 	
-	_wallUnitList.erase(_wallUnitList.begin() + start, _wallUnitList.end() + end);
+	_wallUnitList.erase(_wallUnitList.begin() + start, _wallUnitList.begin() + end);
 	updateWallTotalHeight();
 }
 

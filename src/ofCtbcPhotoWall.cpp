@@ -113,13 +113,13 @@ void ofCtbcPhotoWall::setupWallMgr()
 		);
 
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
-		//_photoWall[idx_].addWallList(cMinimumPhotoWidth * 2);
-		//_photoWall[idx_].addWallList(cMinimumPhotoWidth);
-		//_photoWall[idx_].addWallList(cMinimumPhotoWidth);
-		//_photoWall[idx_].addWallList(cMinimumPhotoWidth);
-		//_photoWall[idx_].addWallList(cMinimumPhotoWidth);
-		//_photoWall[idx_].addWallList(cMinimumPhotoWidth * 2);
-		//_photoWall[idx_].addWallList(cMinimumPhotoWidth);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth * 2);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth * 2);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
 	}
 
 

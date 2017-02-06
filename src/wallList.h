@@ -35,6 +35,7 @@ private:
 	ePhotoPrimaryCategory _eCategroy;
 	ofRectangle	_baseArea;
 	wallMgr*	_parent;
+
 #pragma region Center
 //Center
 private:
@@ -43,6 +44,7 @@ private:
 	void updateSelectCenter(float delta);
 	
 	wallUnitInfo foundWallUnit(ofVec2f pos, bool nearest = false);
+	wallUnitInfo foundWallUnit(int index);
 	wallUnitInfo foundUnitUp(float diff);
 	wallUnitInfo foundUnitDown(float diff);
 	wallUnitInfo foundUnitUpNearest(float diff);
@@ -50,6 +52,7 @@ private:
 
 	int getCenterUnitPosYFromSelect();
 	void fixCenterUnitPos();
+	void fixCenterUnitPosBySelect();
 	
 private:
 	ofVec2f _centerVec, _centerBaseVec;
@@ -75,6 +78,8 @@ private:
 	void checkSelectDrapState();
 	int getAnimMoveX();
 	void fitSelectPos();
+	void moveSelectPos(wallUnitInfo newSelectUnit);
+	
 private:
 	enum selectState {
 		eDeselect = 0
@@ -107,7 +112,7 @@ private:
 	void addWallUnit(ofPtr<wallUnit> newUnil);
 	void addWallUnit(int index, ofPtr<wallUnit> newUnil);
 	void resetWallUnits();
-	void insertWallUnits(int index, PHOTO_TYPE type);
+	int insertWallUnits(int index, PHOTO_TYPE type);
 	void removeWallUnits(int start, int end);
 	void clearWallUnits();
 
@@ -115,8 +120,10 @@ private:
 
 	void updateWallTotalHeight();
 private:
+	bool _isInsert;
 	int _wallTotalHeight;
 	vector<ofPtr<wallUnit>>	_wallUnitList;
+	int _insertStart, _insertEnd;
 #pragma endregion
 
 #pragma region Input
