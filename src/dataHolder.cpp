@@ -157,18 +157,8 @@ void dataHolder::loadPhotoHeader()
 
 		addPhotoMap(header_);
 
-		try
-		{
-			photoRender::GetInstance()->addImage(header_.id, header_.thumbnailPath, true);
-		}
-		catch (const std::exception& e)
-		{
-			ofLog(OF_LOG_ERROR, "[dataHolder::loadPhotoHeader]addImage failed");
-		}
 
 	}
-
-	photoRender::GetInstance()->signal();
 }
 
 //--------------------------------------------------------------

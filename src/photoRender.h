@@ -5,7 +5,6 @@
 class photoRender : ofThread
 {
 private:
-
 	struct photoEntry {
 		bool isThumbanil;
 		ofImage img;
@@ -20,8 +19,7 @@ public:
 private:	
 	void checkSetup();
 private:
-	bool _isSetup;
-	
+	bool _isSetup;	
 
 #pragma region Photo
 public:
@@ -32,8 +30,10 @@ public:
 private:
 	void updateImage();
 	void updateTexture(ofImage& img);
+	void checkSignal(float delta);
 	void insertToMap(map<int, photoEntry>& map, photoEntry& entry);
 private:
+	float _mainTimer, _singnalTimer;
 	string _thumbPath, _sourcePath;
 	queue<photoEntry> _imgNeedUpdate;
 	map<int, photoEntry>	_thumbMap;
@@ -60,11 +60,15 @@ public:
 	void signal();
 
 private:
+	
+	bool checkInQueue(int id);
 	virtual void threadedFunction() override;
 
 	queue<photoEntry>	_imgQueue;
+	set<int>	_imgChecker;
 	ofMutex _mutex;
 
+	bool _canSignal;
 	std::condition_variable	_condition;
 #pragma endregion	
 

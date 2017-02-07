@@ -7,7 +7,7 @@ void ofCtbcPhotoWall::setup()
 	//ofSetVerticalSync(true);
 	ofSetFrameRate(60);
 		
-	photoRender::GetInstance()->setup("thumbnail/", "");
+	photoRender::GetInstance()->setup("thumbnail/", "photo/");
 	dataHolder::GetInstance()->setup("");
 	fontMgr::GetInstance()->setup("fonts/");
 	inputEventMgr::GetInstance()->enableInput();

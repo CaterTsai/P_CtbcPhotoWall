@@ -77,6 +77,9 @@ const int cWindowWidth = 3840;
 const int cWindowHeight = cWindowWidth * 0.421875;
 const int cPhotoWallCategoryWidth = cWindowWidth * 0.25;
 
+//Photo Render
+const float cSingnalCheckTime = 3.0f;
+
 //input event manager
 const int cInputEventLevel = 10;
 const float cInputHoldLimit = 0.5f;

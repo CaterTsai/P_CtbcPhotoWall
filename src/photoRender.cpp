@@ -8,14 +8,20 @@ void photoRender::setup(string thumbPath, string sourcePath)
 	startThread();
 	setupDefault();	
 	ofAddListener(ofEvents().update, this, &photoRender::update);
+
+	_mainTimer = ofGetElapsedTimef();
 	_isSetup = true;
 }
 
 //--------------------------------------------------------------
-void photoRender::update(ofEventArgs&)
+void photoRender::update(ofEventArgs& e)
 {
+	float delta_ = ofGetElapsedTimef() - _mainTimer;
+	_mainTimer += delta_;
+
 	updateImage();
-	
+	checkSignal(delta_);
+
 }
 
 //--------------------------------------------------------------
@@ -27,6 +33,7 @@ void photoRender::checkSetup()
 	}
 }
 
+#pragma region Photo
 //--------------------------------------------------------------
 void photoRender::drawThumb(stPhotoHeader & photoheader, ofVec3f pos, float width, float height)
 {
@@ -39,6 +46,10 @@ void photoRender::drawThumb(stPhotoHeader & photoheader, ofVec3f pos, float widt
 	}
 	else
 	{
+		if (!checkInQueue(photoheader.id) && Iter_ == _thumbMap.end())
+		{
+			addImage(photoheader.id, photoheader.thumbnailPath, true);
+		}
 		drawDefault(photoheader.shape, pos, width, height);
 	}
 }
@@ -80,6 +91,7 @@ void photoRender::updateImage()
 		if (photoEntry_.isThumbanil)
 		{
 			insertToMap(_thumbMap, photoEntry_);
+			_imgChecker.erase(photoEntry_.photoId);
 		}
 		else
 		{
@@ -103,6 +115,21 @@ void photoRender::updateTexture(ofImage & img)
 }
 
 //--------------------------------------------------------------
+void photoRender::checkSignal(float delta)
+{
+	if (_imgQueue.size() > 0 && _canSignal)
+	{
+		_singnalTimer -= delta;
+
+		if (_singnalTimer <= 0)
+		{
+			signal();
+			_singnalTimer = cSingnalCheckTime;
+		}
+	}
+}
+
+//--------------------------------------------------------------
 void photoRender::insertToMap(map<int, photoEntry>& map, photoEntry& entry)
 {
 	if (map.find(entry.photoId) == map.end())
@@ -110,8 +137,7 @@ void photoRender::insertToMap(map<int, photoEntry>& map, photoEntry& entry)
 		map.insert(make_pair(entry.photoId, entry));
 	}
 }
-
-
+#pragma endregion
 
 #pragma region Default
 //--------------------------------------------------------------
@@ -143,7 +169,6 @@ void photoRender::drawDefault(ePhotoShape eShape, ofVec2f pos, float width, floa
 
 
 #pragma region Thread
-
 //--------------------------------------------------------------
 void photoRender::addImage(int id, string path, bool isThumb)
 {
@@ -158,14 +183,25 @@ void photoRender::addImage(int id, string path, bool isThumb)
 		entry_.path = _sourcePath + path;
 	}	
 	entry_.photoId = id;
-
+	_imgChecker.insert(id);
 	_imgQueue.push(entry_);
 }
 
 //--------------------------------------------------------------
 void photoRender::signal()
 {
-	_condition.notify_all();
+	if (_canSignal)
+	{
+		_condition.notify_all();
+		_canSignal = false;
+	}
+	
+}
+
+//--------------------------------------------------------------
+bool photoRender::checkInQueue(int id)
+{
+	return _imgChecker.find(id) != _imgChecker.end();
 }
 
 //--------------------------------------------------------------
@@ -178,6 +214,7 @@ void photoRender::threadedFunction()
 			lock();
 			photoEntry imgEntry_ = _imgQueue.front();
 			_imgQueue.pop();
+			
 			unlock();
 
 			if (imgEntry_.img.loadImage(imgEntry_.path))
@@ -196,8 +233,10 @@ void photoRender::threadedFunction()
 		}
 		else
 		{
+			_canSignal = true;
 			std::unique_lock<std::mutex>	lock_(_mutex);
 			_condition.wait(lock_);
+			
 		}
 	}
 }
@@ -206,6 +245,9 @@ void photoRender::threadedFunction()
 #pragma region Singleton
 //--------------------------------------------------------------
 photoRender::photoRender()
+	:_isSetup(false)
+	,_canSignal(true)
+	, _singnalTimer(cSingnalCheckTime)
 {}
 
 //--------------------------------------------------------------

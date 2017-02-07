@@ -43,7 +43,6 @@ void wallList::draw()
 	drawWallUnitUp();
 	drawWallUnitDown();
 
-
 	ofPopMatrix();
 }
 
