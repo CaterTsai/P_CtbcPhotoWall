@@ -254,6 +254,12 @@ void mainUI::close()
 }
 
 //-----------------------------------------------------------------------------
+void mainUI::changeCategory(ePhotoPrimaryCategory eCategory)
+{
+	_category = eCategory;
+}
+
+//-----------------------------------------------------------------------------
 void mainUI::drawMain(bool isZH)
 {	
 	_mainUIMap[_category].draw(_mainPos, cMainUIUnitWidth, cMainUIUnitHeight, isZH);
@@ -498,6 +504,30 @@ void mainUI::createTextImgEN(string text, ofImage& img, ofRectangle& textRect)
 	img.setFromPixels(pixel_);
 }
 
+//-----------------------------------------------------------------------------
+ePhotoPrimaryCategory mainUI::getSelectMiniCategory(ofVec2f selectPos)
+{
+	ePhotoPrimaryCategory rVal_ = _category;
+	if (abs(_miniPos.x + cMainUIUnitMinWidth - selectPos.x) < cMainUIUnitMinWidth * 0.5)
+	{
+		int index_ = (int)(abs(selectPos.y - (_miniPos.y - cMainUIUnitMinHeight * 0.5)) / (float)cMainUIUnitMinHeight);
+
+		for (auto& iter_ : _mainUIMap)
+		{
+			if (iter_.first != _category)
+			{
+				if (index_ == 0)
+				{
+					rVal_ = iter_.first;
+					break;
+				}
+				index_--;
+			}
+		}
+	}
+	return rVal_;
+}
+
 #pragma region Input
 //--------------------------------------
 void mainUI::enableInput()
@@ -522,6 +552,11 @@ void mainUI::inputRelease(inputEventArgs e)
 	}
 	else
 	{
+		auto selectCategory_ = getSelectMiniCategory(pos_);
+		if (selectCategory_ != _category)
+		{
+			_parentWallMgr->changeCategory(selectCategory_);
+		}
 		_parentWallMgr->mainUIout();
 	}
 	

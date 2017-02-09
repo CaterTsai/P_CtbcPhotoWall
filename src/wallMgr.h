@@ -49,6 +49,7 @@ public:
 	void mainUIout();
 
 	void changeLanguage();
+	void changeCategory(ePhotoPrimaryCategory eCategory);
 private:
 	bool _isDisplayZH;
 	mainUI	_mainUI;

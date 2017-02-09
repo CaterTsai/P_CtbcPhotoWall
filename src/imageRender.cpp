@@ -47,7 +47,7 @@ void imageRender::drawImage(string name, ofVec3f pos, float width, float height)
 	}
 	else
 	{
-		ofLog(OF_LOG_ERROR, "[imageRender::drawImage]Unknow image :" + name);
+		ofLog(OF_LOG_ERROR, "[imageRender::drawPhoto]Unknow image :" + name);
 	}
 }
 

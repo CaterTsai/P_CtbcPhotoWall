@@ -105,12 +105,6 @@ stPhotoHeader & dataHolder::getPhotoHeader(int photoId)
 }
 
 //--------------------------------------------------------------
-stPhotoData dataHolder::getPhotoData(int photoId)
-{
-	setupCheck();
-	return stPhotoData();
-}
-//--------------------------------------------------------------
 vector<int> dataHolder::getPhotoID(ePhotoPrimaryCategory eCategory)
 {
 	setupCheck();
@@ -154,10 +148,11 @@ void dataHolder::loadPhotoHeader()
 		header_.type = (imageData_ & PHOTO_TYPE_MASK) >> 20;
 		header_.category = (ePhotoPrimaryCategory)((imageData_ & PHOTO_CATEGORY_MASK) >> 28);
 		header_.thumbnailPath = fileName_;
+		header_.sourcePath = fileName_;
+		header_.title = "";
+		header_.msg = "";
 
 		addPhotoMap(header_);
-
-
 	}
 }
 

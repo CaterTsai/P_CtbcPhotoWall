@@ -205,6 +205,16 @@ void wallMgr::changeLanguage()
 	_isDisplayZH ^= true;
 }
 
+//--------------------------------
+void wallMgr::changeCategory(ePhotoPrimaryCategory eCategory)
+{
+	for (auto& iter_ : _wallListMgr)
+	{
+		iter_->changeCategory(eCategory);
+	}
+	_eCategory = eCategory;
+}
+
 #pragma endregion
 
 #pragma region textUI
@@ -390,4 +400,3 @@ ofRectangle wallMgr::getInputArea()
 	return _wallRect;
 }
 #pragma endregion
-

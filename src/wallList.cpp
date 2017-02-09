@@ -4,6 +4,7 @@
 wallList::wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle drawArea)
 	:_baseArea(drawArea)
 	,_eSelectState(eDeselect)
+	, _eMoveCenterYState(eStable)
 	,_centerUnitPos(0.0)
 	, _eCategroy(eCategroy)
 	,_parent(parent)
@@ -28,10 +29,7 @@ void wallList::update(float delta)
 	getIsDeselect()? updateCenter(delta): updateSelectCenter(delta);
 
 	checkSelectState();
-	checkSelectDrapState();
-
-
-	
+	checkMoveCenterYState();	
 }
 
 //--------------------------------------
@@ -76,14 +74,21 @@ void wallList::resetCenter()
 //--------------------------------------
 void wallList::updateCenter(float delta)
 {
-	if (abs(_centerVec.y) > abs(_centerBaseVec.y))
+	if (_eMoveCenterYState == eStable)
 	{
-		_centerVec.y *= 0.96;
-	}
+		if (abs(_centerVec.y) > abs(_centerBaseVec.y))
+		{
+			_centerVec.y *= 0.96;
+		}
 
-	float diff_ = _centerVec.y * delta;
-	int height_ = (*_wallUnitList.begin())->getHeight();
-	_centerUnitPos.y += diff_;
+		float diff_ = _centerVec.y * delta;
+		int height_ = (*_wallUnitList.begin())->getHeight();
+		_centerUnitPos.y += diff_;
+	}
+	else
+	{
+		_centerUnitPos.y = _animDrawPosY.getCurrentValue();
+	}
 
 	fixCenterUnitPos();
 }
@@ -97,9 +102,9 @@ void wallList::updateSelectCenter(float delta)
 	}
 	else
 	{
-		if (_eSelectDrapState == eMove)
+		if (_eMoveCenterYState == eMove)
 		{
-			_centerUnitPos.y = _animMoveSelect.getCurrentValue();
+			_centerUnitPos.y = _animDrawPosY.getCurrentValue();
 		}
 	}
 	fixCenterUnitPos();
@@ -296,26 +301,22 @@ void wallList::fixCenterUnitPos()
 }
 
 //--------------------------------------
-void wallList::fixCenterUnitPosBySelect()
+void wallList::fixCenterUnitPosByUnit(int idx, int posY)
 {
-	if (getIsDeselect())
-	{
-		return;
-	}
 
 	int dist_ = 0;
-	for (int idx_ = 0; idx_ < _selectWallUnit.id; idx_++)
+	for (int idx_ = 0; idx_ < idx; idx_++)
 	{
 		dist_ += _wallUnitList[idx_]->getHeight();
 	}
 
-	if (_selectWallUnit.pos.y - (dist_ - _wallUnitList[0]->getHeight())> 0)
+	if (posY - (dist_ - _wallUnitList[0]->getHeight())> 0)
 	{
-		_centerUnitPos.y = _selectWallUnit.pos.y - dist_ ;
+		_centerUnitPos.y = posY - dist_ ;
 	}
 	else
 	{
-		_centerUnitPos.y = _selectWallUnit.pos.y + (_wallTotalHeight - dist_);
+		_centerUnitPos.y = posY + (_wallTotalHeight - dist_);
 	}
 }
 
@@ -421,9 +422,9 @@ void wallList::setupAnimation(int posX, int width)
 	_animDrawWidth.setRepeatType(AnimRepeat::PLAY_ONCE);
 	_animDrawWidth.reset(width);
 
-	_animMoveSelect.setDuration(0.2);
-	_animMoveSelect.setRepeatType(AnimRepeat::PLAY_ONCE);
-	_animMoveSelect.setCurve(AnimCurve::BOUNCY);
+	_animDrawPosY.setDuration(0.2);
+	_animDrawPosY.setRepeatType(AnimRepeat::PLAY_ONCE);
+	_animDrawPosY.setCurve(AnimCurve::BOUNCY);
 }
 
 //--------------------------------------
@@ -431,7 +432,16 @@ void wallList::updateAnimation(float delta)
 {
 	_animDrawWidth.update(delta);
 	_animDrawPosX.update(delta);
-	_animMoveSelect.update(delta);
+	_animDrawPosY.update(delta);
+}
+
+//--------------------------------------
+void wallList::movePosY(int posY, float t)
+{
+	_animDrawPosY.reset(_centerUnitPos.y);
+	_animDrawPosY.setDuration(t);
+	_animDrawPosY.animateTo(posY);
+	_eMoveCenterYState = eMove;
 }
 
 //--------------------------------------
@@ -469,27 +479,38 @@ void wallList::checkSelectState()
 }
 
 //--------------------------------------
-void wallList::checkSelectDrapState()
+void wallList::checkMoveCenterYState()
 {
-	if (_eSelectDrapState == eMove && _animMoveSelect.hasFinishedAnimating() && _animMoveSelect.getPercentDone() == 1.0)
+	//TODO
+	if (_eMoveCenterYState == eMove && _animDrawPosY.hasFinishedAnimating() && _animDrawPosY.getPercentDone() == 1.0)
 	{
-		_eSelectDrapState = eStable;
-		_wallUnitList[_selectWallUnit.id]->setClick(true);
+		_eMoveCenterYState = eStable;
 
-		_parent->setTextUIVisible(true);
-		_parent->setScrollUIVisible(true);
+		if (getIsSelect())
+		{
+			_wallUnitList[_selectWallUnit.id]->setClick(true);
+			_parent->setTextUIVisible(true);
+			_parent->setScrollUIVisible(true);
+	
+		}
 
 		if (_isInsert)
 		{
 			removeWallUnits(0, _insertStart);
 			removeWallUnits(_insertEnd - _insertStart + 1, _wallUnitList.size());
-			_isInsert = false;
 
 			if (getIsSelect())
 			{
 				_selectWallUnit.id -= _insertStart;
-				fixCenterUnitPosBySelect();
+				fixCenterUnitPosByUnit(_selectWallUnit.id, _selectWallUnit.pos.y);
 			}
+			else if(getIsDeselect())
+			{
+				int id_ = (_insertStart + _insertEnd - 1) * 0.5;
+				fixCenterUnitPosByUnit(id_ - _insertStart, _baseArea.getHeight() * 0.5);
+			}
+
+			_isInsert = false;
 		}
 	}
 }
@@ -517,11 +538,7 @@ void wallList::fitSelectPos()
 	_selectWallUnit.id = nearestWallUnit_.id;
 	float diffY_ = nearestWallUnit_.pos.y - _selectWallUnit.pos.y;
 
-	_animMoveSelect.reset(_centerUnitPos.y);
-	_animMoveSelect.setDuration(0.3);
-	_animMoveSelect.animateTo(_centerUnitPos.y - diffY_);
-	_eSelectDrapState = eMove;
-
+	movePosY(_centerUnitPos.y - diffY_, 0.3);
 	_parent->updateTextUI(getSelectPhotoID());
 }
 
@@ -530,11 +547,7 @@ void wallList::moveSelectPos(wallUnitInfo newSelectUnit)
 {
 	_selectWallUnit.id = newSelectUnit.id;
 	float diffY_ = _wallTotalHeight - abs(newSelectUnit.pos.y - _selectWallUnit.pos.y);
-	
-	_animMoveSelect.reset(_centerUnitPos.y);
-	_animMoveSelect.setDuration(1.0);
-	_animMoveSelect.animateTo(_centerUnitPos.y + diffY_);
-	_eSelectDrapState = eMove;
+	movePosY(_centerUnitPos.y + diffY_, cMoveWallListPosYLength);
 
 	_parent->updateTextUI(getSelectPhotoID());
 }
@@ -557,6 +570,22 @@ void wallList::selectType(PHOTO_TYPE type)
 	moveSelectPos(insert_);
 }
 
+//--------------------------------------
+void wallList::changeCategory(ePhotoPrimaryCategory category)
+{
+	_eCategroy = category;
+	wallUnitInfo start, end;
+	findDisplayRange(start, end);
+
+	int insertNum_ = insertWallUnits(start.id);
+	auto insert_ = foundWallUnit(start.id + (insertNum_ * 0.5) - 1);
+
+	_isInsert = true;
+	_insertStart = start.id;
+	_insertEnd = start.id + insertNum_ - 1;
+	float diffY_ = _wallTotalHeight - abs(insert_.pos.y - _baseArea.getHeight() * 0.5);
+	movePosY(_centerUnitPos.y + diffY_, cMoveWallListPosYLength);
+}
 
 //--------------------------------------
 void wallList::setupWallUnit()
@@ -677,6 +706,29 @@ int wallList::insertWallUnits(int index, PHOTO_TYPE type)
 }
 
 //--------------------------------------
+int wallList::insertWallUnits(int index)
+{
+	auto photoIDList_ = dataHolder::GetInstance()->getPhotoID(_eCategroy);
+
+	random_shuffle(photoIDList_.begin(), photoIDList_.end());
+
+	int idx_ = 0;
+	for (auto& iter_ : photoIDList_)
+	{
+		auto photoHeader_ = dataHolder::GetInstance()->getPhotoHeader(iter_);
+		addWallUnit(index, ofPtr<wallUnit>(new photoUnit(photoHeader_, _animDrawWidth.getCurrentValue())));
+
+		idx_++;
+		if (idx_ > cDefaultPhotoListNum)
+		{
+			break;
+		}
+	}
+	updateWallTotalHeight();
+	return cDefaultPhotoListNum;
+}
+
+//--------------------------------------
 void wallList::removeWallUnits(int start, int end)
 {
 
@@ -759,7 +811,6 @@ void wallList::inputDrag(inputEventArgs e)
 			_parent->setTextUIVisible(false);
 			_parent->setScrollUIVisible(false);
 			_wallUnitList[_selectWallUnit.id]->setClick(false);
-			_eSelectDrapState = eDrap;
 		}
 	}
 }
@@ -777,13 +828,12 @@ void wallList::inputRelease(inputEventArgs e)
 		
 		if (getIsSelect())
 		{
-			if (_eSelectDrapState == eDrap)
+			if (_eMoveCenterYState == eStable)
 			{
 				fitSelectPos();
 			}
 			_parent->selectCheck(this);
 		}
-		
 	}
 	else
 	{

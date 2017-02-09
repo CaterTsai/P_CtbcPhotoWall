@@ -10,6 +10,7 @@ private:
 		ofImage img;
 		string path;
 		int photoId;
+		//TODO Deadtime
 	};
 
 public:
@@ -25,7 +26,8 @@ private:
 public:
 	void drawThumb(stPhotoHeader& photoheader, ofVec3f pos, float width, float height);
 	void drawThumb(stPhotoHeader& photoheader, ofRectangle drawRect);
-	void drawImage(stPhotoHeader& photoheader, ofRectangle drawRect);
+	void drawPhoto(stPhotoHeader& photoheader, ofVec3f pos, float width, float height);
+	void drawPhoto(stPhotoHeader& photoheader, ofRectangle drawRect);
 
 private:
 	void updateImage();
@@ -61,11 +63,11 @@ public:
 
 private:
 	
-	bool checkInQueue(int id);
+	bool checkInQueue(int id, bool isThumb);
 	virtual void threadedFunction() override;
 
 	queue<photoEntry>	_imgQueue;
-	set<int>	_imgChecker;
+	set<int> _thumbChecker, _sourceChecker;
 	ofMutex _mutex;
 
 	bool _canSignal;

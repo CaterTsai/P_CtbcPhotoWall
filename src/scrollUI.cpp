@@ -63,8 +63,6 @@ void scrollUI::updateScroll(ePhotoPrimaryCategory eCategory, bool isZH)
 	_eCategory = eCategory;
 	updateItemList(eCategory);
 	updateTitle(eCategory);
-
-	
 	updateCanvas();
 }
 

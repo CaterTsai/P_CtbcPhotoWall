@@ -38,7 +38,6 @@ private:
 #pragma region PhotoHeader
 public:
 	stPhotoHeader& getPhotoHeader(int photoId);
-	stPhotoData getPhotoData(int photoId);
 	vector<int> getPhotoID(ePhotoPrimaryCategory eCategory);
 	vector<int> getPhotoID(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type);
 private:

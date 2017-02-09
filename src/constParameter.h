@@ -60,16 +60,10 @@ struct stPhotoHeader
 	PHOTO_TYPE type;
 	ePhotoPrimaryCategory category;
 	ePhotoShape shape;
-	string thumbnailPath;
+	string title, msg;
+	string thumbnailPath, sourcePath;
 };
 
-struct stPhotoData
-{
-	stPhotoHeader header;
-	string title, msg;
-	string sourcePath;
-	
-};
 #pragma endregion
 
 #pragma region const parameter
@@ -96,6 +90,7 @@ const int cDefaultPhotoListNum = (int)ceil(cWindowHeight / (float)cMinimumPhotoH
 const ofColor cSelectCoverColor(0, 167, 157);
 const float cSelectCoverAlpha = 255 * 0.8;
 
+const float cMoveWallListPosYLength = 1.5f;
 const float cSelectAnimLength = 0.5f;
 const int cSelectWidth = cPhotoWallCategoryWidth * 0.4f;
 const int cSelectShdowWidth = cSelectWidth * 3.0;

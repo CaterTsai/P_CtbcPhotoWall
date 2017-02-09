@@ -46,7 +46,7 @@ void photoRender::drawThumb(stPhotoHeader & photoheader, ofVec3f pos, float widt
 	}
 	else
 	{
-		if (!checkInQueue(photoheader.id) && Iter_ == _thumbMap.end())
+		if (!checkInQueue(photoheader.id, true) && Iter_ == _thumbMap.end())
 		{
 			addImage(photoheader.id, photoheader.thumbnailPath, true);
 		}
@@ -61,19 +61,29 @@ void photoRender::drawThumb(stPhotoHeader& photoheader, ofRectangle drawRect)
 }
 
 //--------------------------------------------------------------
-void photoRender::drawImage(stPhotoHeader& photoheader, ofRectangle drawRect)
+void photoRender::drawPhoto(stPhotoHeader & photoheader, ofVec3f pos, float width, float height)
 {
 	checkSetup();
 	auto Iter_ = _sourceMap.find(photoheader.id);
 
 	if (Iter_ != _sourceMap.end() && Iter_->second.img.isAllocated())
 	{
-		Iter_->second.img.draw(drawRect);
+		Iter_->second.img.draw(pos, width, height);
 	}
 	else
 	{
-		drawThumb(photoheader, drawRect);
+		if (!checkInQueue(photoheader.id, false) && Iter_ == _sourceMap.end())
+		{
+			addImage(photoheader.id, photoheader.sourcePath, false);
+		}
+		drawThumb(photoheader, pos, width, height);
 	}
+}
+
+//--------------------------------------------------------------
+void photoRender::drawPhoto(stPhotoHeader& photoheader, ofRectangle drawRect)
+{
+	drawPhoto(photoheader, drawRect.getPosition(), drawRect.getWidth(), drawRect.getHeight());
 }
 
 //--------------------------------------------------------------
@@ -91,11 +101,12 @@ void photoRender::updateImage()
 		if (photoEntry_.isThumbanil)
 		{
 			insertToMap(_thumbMap, photoEntry_);
-			_imgChecker.erase(photoEntry_.photoId);
+			_thumbChecker.erase(photoEntry_.photoId);
 		}
 		else
 		{
 			insertToMap(_sourceMap, photoEntry_);
+			_sourceChecker.erase(photoEntry_.photoId);
 		}
 	}
 }
@@ -177,13 +188,15 @@ void photoRender::addImage(int id, string path, bool isThumb)
 	if (isThumb)
 	{
 		entry_.path = _thumbPath + path;
+		_thumbChecker.insert(id);
 	}
 	else
 	{
 		entry_.path = _sourcePath + path;
+		_sourceChecker.insert(id);
 	}	
 	entry_.photoId = id;
-	_imgChecker.insert(id);
+	
 	_imgQueue.push(entry_);
 }
 
@@ -199,9 +212,17 @@ void photoRender::signal()
 }
 
 //--------------------------------------------------------------
-bool photoRender::checkInQueue(int id)
+bool photoRender::checkInQueue(int id, bool isThumb)
 {
-	return _imgChecker.find(id) != _imgChecker.end();
+	if (isThumb)
+	{
+		return _thumbChecker.find(id) != _thumbChecker.end();
+	}
+	else
+	{
+		return _sourceChecker.find(id) != _sourceChecker.end();
+	}
+	
 }
 
 //--------------------------------------------------------------

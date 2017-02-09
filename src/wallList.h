@@ -52,7 +52,7 @@ private:
 
 	int getCenterUnitPosYFromSelect();
 	void fixCenterUnitPos();
-	void fixCenterUnitPosBySelect();
+	void fixCenterUnitPosByUnit(int idx, int posY);
 	
 private:
 	ofVec2f _centerVec, _centerBaseVec;
@@ -74,8 +74,10 @@ private:
 	void setupAnimation(int posX, int width);
 	void updateAnimation(float delta);
 	
+	void movePosY(int posY, float t);
+
 	void checkSelectState();
-	void checkSelectDrapState();
+	void checkMoveCenterYState();
 	int getAnimMoveX();
 	void fitSelectPos();
 	void moveSelectPos(wallUnitInfo newSelectUnit);
@@ -88,21 +90,21 @@ private:
 		,eZoomOut
 	}_eSelectState;
 
-	enum selectDrapState {
+	enum moveCenterYState {
 		eStable	=	0
-		,eDrap
 		,eMove
-	}_eSelectDrapState;
+	}_eMoveCenterYState;
 
 	wallUnitInfo _selectWallUnit;
 	ofxAnimatableFloat _animDrawPosX, _animDrawWidth;
-	ofxAnimatableFloat _animMoveSelect;
+	ofxAnimatableFloat _animDrawPosY;
 #pragma endregion
 	
 #pragma region WallUnit
 //WallUnit
 public:
 	void selectType(PHOTO_TYPE type);
+	void changeCategory(ePhotoPrimaryCategory category);
 private:
 	void setupWallUnit();
 	void updateWallUnit(float delta);
@@ -113,6 +115,7 @@ private:
 	void addWallUnit(int index, ofPtr<wallUnit> newUnil);
 	void resetWallUnits();
 	int insertWallUnits(int index, PHOTO_TYPE type);
+	int insertWallUnits(int index);
 	void removeWallUnits(int start, int end);
 	void clearWallUnits();
 

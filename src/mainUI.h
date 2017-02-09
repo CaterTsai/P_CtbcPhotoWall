@@ -54,6 +54,7 @@ public:
 	void open();
 	void close();
 
+	void changeCategory(ePhotoPrimaryCategory eCategory);
 private:
 	void drawMain(bool isZH);
 	void drawMini(bool isZH);
@@ -67,6 +68,8 @@ private:
 	bool setupUI();
 	void createTextImg(string text, ofImage& img, ofRectangle& textRect);
 	void createTextImgEN(string text, ofImage& img, ofRectangle& textRect);
+
+	ePhotoPrimaryCategory getSelectMiniCategory(ofVec2f selectPos);
 
 	string mainUI::getBtnName(ePhotoPrimaryCategory category, bool isZH);
 private:
