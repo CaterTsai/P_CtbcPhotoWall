@@ -53,12 +53,6 @@ void photoUnit::draw(ofVec2f pos, bool isSelectList)
 }
 
 //--------------------------------------
-void photoUnit::setClick(bool val, ofVec2f pos)
-{
-	_isClick = val;
-}
-
-//--------------------------------------
 int photoUnit::getHeight(int width)
 {
 	return static_cast<int>(width * _photoRatio + 0.5f);;
@@ -98,5 +92,3 @@ void photoUnit::setRatio()
 	}
 }
 #pragma endregion
-
-

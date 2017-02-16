@@ -21,7 +21,7 @@ wallMgr::~wallMgr()
 //--------------------------------
 void wallMgr::setup(ePhotoPrimaryCategory category, ofRectangle wallRect)
 {
-	_eCategory = category;
+	_eCategory = _backupCategory = category;
 	_wallRect = wallRect;
 
 	_mainUI.setup(this, ofVec2f(cPhotoWallCategoryWidth * 0.5, cWindowHeight * 0.5), category);
@@ -120,6 +120,28 @@ void wallMgr::drawShadow()
 }
 
 //--------------------------------
+void wallMgr::start()
+{	
+	_mainUI.start();
+	_eWallState = eWallMainUI;
+}
+
+//--------------------------------
+void wallMgr::end()
+{
+	if (_eCategory != _backupCategory)
+	{
+		changeCategory(_backupCategory);
+	}
+	_isDisplayZH = true;
+	_mainUI.end();	
+
+	disableWallListInput();
+	disableInput();
+	_eWallState = eWallIdle;
+}
+
+//--------------------------------
 void wallMgr::addWallList(int width)
 {
 	setupCheck();
@@ -183,19 +205,21 @@ void wallMgr::disableWallListInput()
 //--------------------------------
 void wallMgr::mainUIin()
 {
-	_mainUI.open();
+	_mainUI.toBigMenu();
 	_eWallState = eWallMainUI;
 	enableInput();
+
+	disableWallListInput();
 }
 
 //--------------------------------
 void wallMgr::mainUIout()
 {
-	_mainUI.close();
+	_mainUI.toSmallMenu();
 	_eWallState = eWallPhoto;
 	disableInput();
-	enableWallListInput();
 
+	enableWallListInput();
 	updateScrollUI();
 }
 
@@ -212,6 +236,7 @@ void wallMgr::changeCategory(ePhotoPrimaryCategory eCategory)
 	{
 		iter_->changeCategory(eCategory);
 	}
+	_mainUI.changeCategory(eCategory);
 	_eCategory = eCategory;
 }
 

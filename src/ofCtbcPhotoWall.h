@@ -42,8 +42,8 @@ public:
 	void inIdle();
 	void outIdle();
 
-	void mainUIin();
-	void mainUIout();
+	void startAll();
+	void endAll();
 
 private:
 	void setupWallBlur();

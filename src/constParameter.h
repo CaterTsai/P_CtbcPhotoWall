@@ -6,7 +6,7 @@
 
 #pragma region Define
 #define USE_MOUSE
-#define PHOTO_TYPE unsigned short
+#define PHOTO_TYPE unsigned int
 
 #define PHOTO_ID_MASK 0x0000ffff
 #define PHOTO_HEADER_MASK 0xffff0000
@@ -20,7 +20,7 @@
 enum eWallUnitType : int
 {
 	ePhotoUnit = 0
-	,eMenuUnit
+	,eMainUIUnit
 };
 enum ePhotoPrimaryCategory : unsigned char
 {
@@ -43,11 +43,11 @@ enum ePhotoShape : int
 enum eInputSystemLevel : int
 {
 	eInputTop = 0
-	,eInputMainUI
 	,eInputTextUI
 	,eInputScrollUI
-	,eInputWallMgr
 	,eInputWallSelectList
+	,eInputMainUI
+	,eInputWallMgr
 	,eInputWallList
 };
 
@@ -109,6 +109,9 @@ const int cMainUIBtnWidth = cMainUIWidth * 0.15;
 const int cMainUIBtnHeight = cMainUIBtnWidth;
 const int cMainUIFontSize = cMainUIHeight * 0.22;
 const int cMainUIFontENSize = cMainUIHeight * 0.22;
+
+const int cMainSmallUIWidth = cMinimumPhotoWidth;
+const int cMainSmallUIHeight = cMinimumPhotoHeight;
 
 //Text UI
 const int cTextUIWidth = cSelectWidth;

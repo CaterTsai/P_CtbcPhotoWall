@@ -341,7 +341,7 @@ bool wallList::select(ofVec2f& pos)
 	if (_eSelectState == eDeselect)
 	{	
 		_selectWallUnit = foundWallUnit(pos);
-		_wallUnitList[_selectWallUnit.id]->setClick(true, pos);
+		_wallUnitList[_selectWallUnit.id]->setClick(true);
 
 		//trigger animation
 		_eSelectState = eZoomIn;

@@ -58,7 +58,7 @@ void ofCtbcPhotoWall::keyPressed(int key)
 		}
 		case 'e':
 		{
-			mainUIout();
+			endAll();
 			break;
 		}
 		case '1':
@@ -99,7 +99,6 @@ void ofCtbcPhotoWall::setupAudio()
 #pragma endregion
 
 #pragma region Photo Wall
-
 //--------------------------------------------------------------
 void ofCtbcPhotoWall::setupWallMgr()
 {
@@ -121,7 +120,6 @@ void ofCtbcPhotoWall::setupWallMgr()
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth * 2);
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
 	}
-
 
 	setupWallBlur();
 	setupIdleVideo("videos/idle.avi");
@@ -153,13 +151,11 @@ void ofCtbcPhotoWall::drawWallMgr()
 	else
 	{
 		ofPushStyle();
-		
 		_blur.draw();
 
 		ofSetColor(0, _blurLevel.getCurrentValue() * 150);
 		ofFill();
 		ofRect(0, 0, cWindowWidth, cWindowHeight);
-
 
 		drawIdleVideo();
 		ofPopStyle();
@@ -172,7 +168,7 @@ void ofCtbcPhotoWall::inIdle()
 {
 	if (_wallState == ePhotoWall_Play)
 	{
-		mainUIout();
+		endAll();
 		_idleVideo.play();
 		_idleVideo.setFrame(0);
 		_idleVideo.update();
@@ -189,25 +185,24 @@ void ofCtbcPhotoWall::outIdle()
 	{
 		_wallState = ePhotoWall_BlurOut;
 		_blurLevel.animateTo(0.0f);
-		
 	}
 }
 
 //--------------------------------------------------------------
-void ofCtbcPhotoWall::mainUIin()
+void ofCtbcPhotoWall::startAll()
 {
 	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
 	{
-		_photoWall[idx_].mainUIin();
+		_photoWall[idx_].start();
 	}
 }
 
 //--------------------------------------------------------------
-void ofCtbcPhotoWall::mainUIout()
+void ofCtbcPhotoWall::endAll()
 {
 	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
 	{
-		_photoWall[idx_].mainUIout();
+		_photoWall[idx_].end();
 	}
 }
 
@@ -244,7 +239,7 @@ void ofCtbcPhotoWall::updateWallBlur(float delta)
 				_wallState = ePhotoWall_Play;
 				
 				_idleVideo.stop();
-				mainUIin();
+				startAll();
 			}
 			break;
 		}
@@ -321,4 +316,3 @@ void ofCtbcPhotoWall::drawIdleVideo()
 #pragma endregion
 
 #pragma endregion
-

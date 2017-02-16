@@ -143,7 +143,7 @@ void dataHolder::loadPhotoHeader()
 		string fileName_ = dir_.getName(idx_);
 		int imageData_ = stoi(fileName_.substr(0, 10));
 		stPhotoHeader header_;
-		header_.id = imageData_ & PHOTO_ID_MASK;
+		header_.id = imageData_;
 		header_.shape = (ePhotoShape)((imageData_ & PHOTO_SHAPE_MASK) >> 16);
 		header_.type = (imageData_ & PHOTO_TYPE_MASK) >> 20;
 		header_.category = (ePhotoPrimaryCategory)((imageData_ & PHOTO_CATEGORY_MASK) >> 28);

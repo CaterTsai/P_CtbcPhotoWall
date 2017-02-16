@@ -15,7 +15,7 @@ public:
 
 	virtual void update(float delta, int width) {};
 	virtual void draw(ofVec2f pos, bool isSelectList = false) {};
-	virtual void setClick(bool val, ofVec2f pos = ofVec2f(0)) {};
+	virtual void setClick(bool val) { _isClick = val; };
 	virtual bool getClick() { return _isClick; };
 
 	virtual eWallUnitType getUnitType() { return _unitType; };
@@ -30,7 +30,6 @@ protected:
 	
 };
 
-
 //--------------------------------------
 //Photo 
 class photoUnit :public wallUnit
@@ -40,13 +39,13 @@ public:
 
 	void update(float delta, int width) override;
 	void draw(ofVec2f pos, bool isSelectList = false) override;
-	void setClick(bool val, ofVec2f pos) override;
 	int getHeight(int width) override;
 	stPhotoHeader& getPhotoHeader();
 private:
 	void setRatio();
-protected:
+private:
 	float _photoRatio;
 	
 	stPhotoHeader	_photoIndex;
 };
+

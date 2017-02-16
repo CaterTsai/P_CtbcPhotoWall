@@ -1,5 +1,6 @@
 #include "mainUI.h"
 #include "wallMgr.h"
+
 #pragma region CLASS baseUnit
 //--------------------------------------------------------------
 mainUI::baseUnit::baseUnit(ofImage& zhText, ofRectangle& zhRect, ofImage& enText, ofRectangle& enRect, ofColor c)
@@ -157,31 +158,27 @@ void mainUI::baseUnit::directClose()
 }
 #pragma endregion
 
+#pragma region Basic Method
 //-----------------------------------------------------------------------------
 mainUI::mainUI()
 	:_setup(false)
 	, _parentWallMgr(nullptr)
+	, _eMainUIState(eMainUIDisable)
+	, _eBigUIState(eBigUIClose)
+	, _eSmallUIState(eSmallUIClose)
 {}
 
 //-----------------------------------------------------------------------------
 void mainUI::setup(wallMgr* wallMgr, ofVec2f drawPos, ePhotoPrimaryCategory eCategory)
 {
-
 	_category = eCategory;
 
-	setupMiniAnim();
-	_animBtn.setDuration(0.4f);
-	_animBtn.setRepeatType(PLAY_ONCE);
-	_animBtn.reset(0.0);
-
-	_mainPos.set(cMainUIWidth * -0.5 + cMainUIUnitWidth * 0.5, cMainUIHeight * -0.5 + cMainUIUnitHeight * 0.5);
-	_miniPos.set(cMainUIWidth * -0.5 + cMainUIUnitWidth + cMainUIUnitMinWidth * -0.5, cMainUIHeight * -0.5 + cMainUIUnitMinHeight * 0.5);
-	_btnPos.set(cMainUIWidth * -0.5, cMainUIHeight * -0.5);
 	_setup = setupUI();
-
+	setupBigMenu();
+	setupSmallMenu();
+	
 	_parentWallMgr = wallMgr;
 	_centerPos = drawPos;
-
 }
 
 //-----------------------------------------------------------------------------
@@ -192,17 +189,8 @@ void mainUI::update(float delta)
 		return;
 	}
 
-	for (auto& iter_ : _mainUIMap)
-	{
-		iter_.second.update(delta);
-	}
-
-	for (auto& iter_ : _animMiniPosX)
-	{
-		iter_.update(delta);
-	}
-	_animBtn.update(delta);
-	animStateCheck();
+	updateBigMenu(delta);
+	updateSmallMenu(delta);
 }
 
 //-----------------------------------------------------------------------------
@@ -218,39 +206,59 @@ void mainUI::draw(bool isZH)
 	ofTranslate(_centerPos);
 	{
 		ofSetColor(255);
-		drawMini(isZH);
-		drawMain(isZH);
-		drawBtn(isZH);
+
+		if (_eMainUIState == eMainUIDisplayBig)
+		{
+			drawBigMenu(isZH);
+		}
+		else if(_eMainUIState == eMainUIDisplaySmall)
+		{
+			drawSmallMenu(isZH);
+		}
 
 	}
 	ofPopMatrix();
 	ofPopStyle();
-}
-
-//-----------------------------------------------------------------------------
-void mainUI::open()
-{
-	if (_eUIState != eUIClose)
-	{
-		return;
-	}
-
-	_eUIState = eUIMainIn;
-	_mainUIMap[_category].open();
 	
 }
 
 //-----------------------------------------------------------------------------
-void mainUI::close()
+void mainUI::start()
 {
-	if (_eUIState != eUIOpen)
-	{
-		return;
-	}
-
+	_eMainUIState = eMainUIDisplayBig;
+	_eBigUIState = eBigUIClose;
+	_eSmallUIState = eSmallUIClose;
 	disableInput();
-	_eUIState = eUIMiniOut;
-	miniOut();
+	mainIn();
+
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::end()
+{
+	_eMainUIState = eMainUIDisable;
+	disableInput();
+	resetUI();	
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::toBigMenu()
+{
+	if (_eMainUIState != eMainUIDisable && _eSmallUIState == eSmallOpen && _eBigUIState == eBigUIClose)
+	{
+		smallUIOut();
+		disableInput();
+	}
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::toSmallMenu()
+{
+	if (_eMainUIState != eMainUIDisable && _eSmallUIState == eSmallUIClose && _eBigUIState == eBigUIOpen)
+	{
+		miniOut();
+		disableInput();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -260,14 +268,137 @@ void mainUI::changeCategory(ePhotoPrimaryCategory eCategory)
 }
 
 //-----------------------------------------------------------------------------
+bool mainUI::setupUI()
+{
+	for (int idx_ = 0; idx_ < ePhotoCategory_Num; idx_++)
+	{
+		ePhotoPrimaryCategory type_ = (ePhotoPrimaryCategory)idx_;
+		string zh_ = dataHolder::GetInstance()->getCategoryName(type_, true);
+		string en_ = dataHolder::GetInstance()->getCategoryName(type_, false);
+
+		ofImage enImage_, zhImage_;
+		ofRectangle enRect_, zhRect_;
+		createTextImgEN(en_, enImage_, enRect_);
+		createTextImg(zh_, zhImage_, zhRect_);
+
+		baseUnit newUnit_(zhImage_, zhRect_, enImage_, enRect_, getCategoryColor(type_));
+		_mainUIMap.insert(make_pair(type_, newUnit_));
+
+	}
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::resetUI()
+{
+	for (auto& iter_ : _mainUIMap)
+	{
+		iter_.second.directClose();
+	}
+	resetBigMenuAnim();
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::createTextImg(string text, ofImage& img, ofRectangle& textRect)
+{
+	img.clear();
+
+	textRect = fontMgr::GetInstance()->getStringBoundingBox(eFontType::eFontMainUIZH, text);
+	ofFbo	_canvas;
+	_canvas.allocate(textRect.getWidth(), textRect.getHeight(), GL_RGBA);
+
+	_canvas.begin();
+	{
+		ofClear(0);
+		ofPushMatrix();
+
+		ofSetColor(255);
+		fontMgr::GetInstance()->drawString(eFontType::eFontMainUIZH, text, ofVec2f(-textRect.x, -textRect.y));
+		ofPopMatrix();
+	}
+	_canvas.end();
+
+	ofPixels pixel_;
+	_canvas.readToPixels(pixel_);
+	img.setFromPixels(pixel_);
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::createTextImgEN(string text, ofImage& img, ofRectangle& textRect)
+{
+	img.clear();
+
+	textRect = fontMgr::GetInstance()->getStringBoundingBox(eFontType::eFontMainUIEN, text);
+
+	ofFbo	_canvas;
+	_canvas.allocate(textRect.getWidth(), textRect.getHeight(), GL_RGBA);
+
+	_canvas.begin();
+	{
+		ofClear(0);
+		ofPushMatrix();
+
+		ofSetColor(255);
+		fontMgr::GetInstance()->drawString(eFontType::eFontMainUIEN, text, ofVec2f(-textRect.x, -textRect.y));
+		ofPopMatrix();
+	}
+	_canvas.end();
+
+	ofPixels pixel_;
+	_canvas.readToPixels(pixel_);
+	img.setFromPixels(pixel_);
+}
+#pragma endregion
+
+#pragma region Big Menu
+//-----------------------------------------------------------------------------
+void mainUI::setupBigMenu()
+{
+	_mainPos.set(cMainUIWidth * -0.5 + cMainUIUnitWidth * 0.5, cMainUIHeight * -0.5 + cMainUIUnitHeight * 0.5);
+	_miniPos.set(cMainUIWidth * -0.5 + cMainUIUnitWidth + cMainUIUnitMinWidth * -0.5, cMainUIHeight * -0.5 + cMainUIUnitMinHeight * 0.5);
+	_btnPos.set(cMainUIWidth * -0.5, cMainUIHeight * -0.5);
+
+	resetBigMenuAnim();
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::updateBigMenu(float delta)
+{
+	for (auto& iter_ : _mainUIMap)
+	{
+		iter_.second.update(delta);
+	}
+
+	for (auto& iter_ : _animMiniPosX)
+	{
+		iter_.update(delta);
+	}
+	_animBtn.update(delta);
+	bigMenuAnimStateCheck();
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::drawBigMenu(bool isZH)
+{
+	ofPushStyle();
+	{
+		ofSetColor(255);
+		drawMini(isZH);
+		drawMain(isZH);
+		drawBtn(isZH);
+	}		
+	ofPopStyle();
+}
+
+//-----------------------------------------------------------------------------
 void mainUI::drawMain(bool isZH)
-{	
+{
 	_mainUIMap[_category].draw(_mainPos, cMainUIUnitWidth, cMainUIUnitHeight, isZH);
 }
 
 //-----------------------------------------------------------------------------
 void mainUI::drawMini(bool isZH)
-{	
+{
 	int idx_ = 0;
 	for (auto& iter_ : _mainUIMap)
 	{
@@ -303,7 +434,7 @@ void mainUI::drawBtn(bool isZH)
 }
 
 //-----------------------------------------------------------------------------
-void mainUI::setupMiniAnim()
+void mainUI::resetBigMenuAnim()
 {
 	for (auto& iter_ : _animMiniPosX)
 	{
@@ -311,6 +442,25 @@ void mainUI::setupMiniAnim()
 		iter_.setDuration(0.2f);
 		iter_.setRepeatType(AnimRepeat::PLAY_ONCE);
 	}
+
+	_animBtn.setDuration(0.4f);
+	_animBtn.setRepeatType(PLAY_ONCE);
+	_animBtn.reset(0.0);
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::mainIn()
+{	
+	_eMainUIState = eMainUIDisplayBig;
+	_mainUIMap[_category].open();
+	_eBigUIState = eBigUIMainIn;
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::mainOut()
+{
+	_mainUIMap[_category].close();
+	_eBigUIState = eBigUIMainOut;
 }
 
 //-----------------------------------------------------------------------------
@@ -325,6 +475,7 @@ void mainUI::miniIn()
 	_animMiniPosX[2].animateToAfterDelay(1.0f, 0.2f);
 
 	_animBtn.animateTo(1.0f);
+	_eBigUIState = eBigUIMiniIn;
 }
 
 //-----------------------------------------------------------------------------
@@ -339,85 +490,97 @@ void mainUI::miniOut()
 	_animMiniPosX[2].animateToAfterDelay(0.0f, 0.2f);
 
 	_animBtn.animateTo(0.0f);
+	_eBigUIState = eBigUIMiniOut;
 }
 
 //-----------------------------------------------------------------------------
-void mainUI::animStateCheck()
+void mainUI::bigMenuInputCheck(ofVec2f pos)
 {
-	switch (_eUIState)
+	ofVec2f pos_ = pos - (_parentWallMgr->getWallRectPos() + _centerPos);
+
+	if (pos_.distance(_btnPos) < (cMainUIBtnWidth * 0.5))
 	{
-		case eUIMainIn:
+		_parentWallMgr->changeLanguage();
+	}
+	else
+	{
+		auto selectCategory_ = getSelectMiniCategory(pos_);
+		if (selectCategory_ != _category)
 		{
-			if (_mainUIMap[_category].isOpen())
-			{
-				for (auto& iter_ : _mainUIMap)
-				{
-					if (iter_.first != _category)
-					{
-						iter_.second.directOpen();
-					}
-				}
-				miniIn();
-				_eUIState = eUIMiniIn;
-			}
-			break;
+			_parentWallMgr->changeCategory(selectCategory_);
 		}
-		case eUIMiniIn:
-		{
-			if (_animMiniPosX[2].hasFinishedAnimating() && _animMiniPosX[2].getPercentDone() == 1.0)
-			{
-				_eUIState = eUIOpen;
-				enableInput();
-			}
-			break;
-		}
-		case eUIMiniOut:
-		{
-			if (_animMiniPosX[2].hasFinishedAnimating() && _animMiniPosX[2].getPercentDone() == 1.0)
-			{
-				for (auto& iter_ : _mainUIMap)
-				{
-					if (iter_.first != _category)
-					{
-						iter_.second.directClose();
-					}
-				}
-				_eUIState = eUIMainOut;
-				_mainUIMap[_category].close();
-			}
-			break;
-		}
-		case eUIMainOut:
-		{
-			if (_mainUIMap[_category].isClose())
-			{
-				_eUIState = eUIClose;
-			}
-			break;
-		}
+		_parentWallMgr->mainUIout();
 	}
 }
 
 //-----------------------------------------------------------------------------
-bool mainUI::setupUI()
+ofRectangle mainUI::getBigMenuInputArea()
 {
-	for (int idx_ = 0; idx_ < ePhotoCategory_Num; idx_++)
-	{
-		ePhotoPrimaryCategory type_ = (ePhotoPrimaryCategory)idx_;
-		string zh_ = dataHolder::GetInstance()->getCategoryName(type_, true);
-		string en_ = dataHolder::GetInstance()->getCategoryName(type_, false);
-
-		ofImage enImage_, zhImage_;
-		ofRectangle enRect_, zhRect_;
-		createTextImgEN(en_, enImage_, enRect_);
-		createTextImg(zh_, zhImage_, zhRect_);
-
-		baseUnit newUnit_(zhImage_, zhRect_, enImage_, enRect_, getCategoryColor(type_));
-		_mainUIMap.insert(make_pair(type_, newUnit_));
-
-	}
-	return true;
+	ofRectangle inputArea_;
+	inputArea_.setFromCenter(_parentWallMgr->getWallRectPos() + _centerPos, cMainUIWidth, cMainUIHeight);
+	inputArea_.scaleFromCenter(1.15);
+	return inputArea_;
 }
+
+//-----------------------------------------------------------------------------
+void mainUI::bigMenuAnimStateCheck()
+{
+	switch (_eBigUIState)
+	{
+	case eBigUIMainIn:
+	{
+		if (_mainUIMap[_category].isOpen())
+		{
+			for (auto& iter_ : _mainUIMap)
+			{
+				if (iter_.first != _category)
+				{
+					iter_.second.directOpen();
+				}
+			}
+			miniIn();
+		}
+		break;
+	}
+	case eBigUIMiniIn:
+	{
+		if (_animMiniPosX[2].hasFinishedAnimating() && _animMiniPosX[2].getPercentDone() == 1.0)
+		{
+			_eBigUIState = eBigUIOpen;
+			enableInput();
+			_parentWallMgr->enableInput();
+		}
+		break;
+	}
+	case eBigUIMiniOut:
+	{
+		if (_animMiniPosX[2].hasFinishedAnimating() && _animMiniPosX[2].getPercentDone() == 1.0)
+		{
+			for (auto& iter_ : _mainUIMap)
+			{
+				if (iter_.first != _category)
+				{
+					iter_.second.directClose();
+				}
+			}
+			_eBigUIState = eBigUIMainOut;
+			_mainUIMap[_category].close();
+		}
+		break;
+	}
+	case eBigUIMainOut:
+	{
+		if (_mainUIMap[_category].isClose())
+		{
+			_eBigUIState = eBigUIClose;
+			smallUIIn();
+		}
+		break;
+	}
+	}
+}
+
+
 
 //-----------------------------------------------------------------------------
 string mainUI::getBtnName(ePhotoPrimaryCategory category, bool isZH)
@@ -453,56 +616,7 @@ string mainUI::getBtnName(ePhotoPrimaryCategory category, bool isZH)
 	return btnName_;
 }
 
-//-----------------------------------------------------------------------------
-void mainUI::createTextImg(string text, ofImage& img, ofRectangle& textRect)
-{
-	img.clear();
-	
-	textRect = fontMgr::GetInstance()->getStringBoundingBox(eFontType::eFontMainUIZH, text);
-	ofFbo	_canvas;
-	_canvas.allocate(textRect.getWidth(), textRect.getHeight(), GL_RGBA);
 
-	_canvas.begin();
-	{
-		ofClear(0);
-		ofPushMatrix();
-
-		ofSetColor(255);
-		fontMgr::GetInstance()->drawString(eFontType::eFontMainUIZH, text, ofVec2f(-textRect.x, -textRect.y));
-		ofPopMatrix();
-	}
-	_canvas.end();
-
-	ofPixels pixel_;
-	_canvas.readToPixels(pixel_);
-	img.setFromPixels(pixel_);
-}
-
-//-----------------------------------------------------------------------------
-void mainUI::createTextImgEN(string text, ofImage& img, ofRectangle& textRect)
-{
-	img.clear();
-
-	textRect = fontMgr::GetInstance()->getStringBoundingBox(eFontType::eFontMainUIEN, text);
-		
-	ofFbo	_canvas;
-	_canvas.allocate(textRect.getWidth(), textRect.getHeight(), GL_RGBA);
-
-	_canvas.begin();
-	{
-		ofClear(0);
-		ofPushMatrix();
-		
-		ofSetColor(255);
-		fontMgr::GetInstance()->drawString(eFontType::eFontMainUIEN, text, ofVec2f(-textRect.x, -textRect.y));
-		ofPopMatrix();
-	}
-	_canvas.end();
-
-	ofPixels pixel_;
-	_canvas.readToPixels(pixel_);
-	img.setFromPixels(pixel_);
-}
 
 //-----------------------------------------------------------------------------
 ePhotoPrimaryCategory mainUI::getSelectMiniCategory(ofVec2f selectPos)
@@ -527,6 +641,88 @@ ePhotoPrimaryCategory mainUI::getSelectMiniCategory(ofVec2f selectPos)
 	}
 	return rVal_;
 }
+#pragma endregion
+
+#pragma region Small Menu
+//-----------------------------------------------------------------------------
+void mainUI::setupSmallMenu()
+{
+	_smallPos.set(cMainUIWidth * -0.5 + cMainUIUnitWidth * 0.5, cWindowHeight * 0.25);
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::updateSmallMenu(float delta)
+{
+	smallMenuAnimStateCheck();
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::drawSmallMenu(bool isZH)
+{
+	_mainUIMap[_category].draw(_smallPos, cMainSmallUIWidth, cMainSmallUIHeight, isZH);
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::smallUIIn()
+{
+	_eMainUIState = eMainUIDisplaySmall;
+	_mainUIMap[_category].open();
+	_eSmallUIState = eSmallUIIn;
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::smallUIOut()
+{
+	_mainUIMap[_category].close();
+	_eSmallUIState = eSmallUIOut;
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::smallMenuAnimStateCheck()
+{
+	switch (_eSmallUIState)
+	{
+		case eSmallUIIn:
+		{
+			if (_mainUIMap[_category].isOpen())
+			{
+				_eSmallUIState = eSmallOpen;
+				enableInput();
+			}
+			break;
+		}
+		case eSmallUIOut:
+		{
+			if (_mainUIMap[_category].isClose())
+			{
+				_eSmallUIState = eSmallUIClose;
+				mainIn();
+			}
+			break;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+void mainUI::smallMenuInputCheck(ofVec2f pos)
+{
+	ofVec2f pos_ = pos - (_parentWallMgr->getWallRectPos() + _centerPos);
+
+	if (abs(pos_.x - _smallPos.x) < cMainSmallUIWidth * 0.5 &&
+		abs(pos_.y - _smallPos.y) < cMainSmallUIHeight * 0.5)
+	{
+		_parentWallMgr->mainUIin();
+	}
+}
+
+//-----------------------------------------------------------------------------
+ofRectangle mainUI::getSmallMenuInputArea()
+{
+	ofRectangle inputArea_;
+	inputArea_.setFromCenter(_parentWallMgr->getWallRectPos() + _centerPos + _smallPos, cMainSmallUIWidth, cMainSmallUIHeight);
+	return inputArea_;
+}
+#pragma endregion
 
 #pragma region Input
 //--------------------------------------
@@ -544,20 +740,13 @@ void mainUI::disableInput()
 //--------------------------------------
 void mainUI::inputRelease(inputEventArgs e)
 {
-	ofVec2f pos_ = e.pos - (_parentWallMgr->getWallRectPos() + _centerPos);
-	
-	if (pos_.distance(_btnPos) < (cMainUIBtnWidth * 0.5))
+	if (_eMainUIState == eMainUIDisplayBig)
 	{
-		_parentWallMgr->changeLanguage();
+		bigMenuInputCheck(e.pos);
 	}
-	else
+	else if(_eMainUIState == eMainUIDisplaySmall)
 	{
-		auto selectCategory_ = getSelectMiniCategory(pos_);
-		if (selectCategory_ != _category)
-		{
-			_parentWallMgr->changeCategory(selectCategory_);
-		}
-		_parentWallMgr->mainUIout();
+		smallMenuInputCheck(e.pos);
 	}
 	
 }
@@ -565,9 +754,17 @@ void mainUI::inputRelease(inputEventArgs e)
 //--------------------------------------
 ofRectangle mainUI::getInputArea()
 {
-	ofRectangle inputArea_;
-	inputArea_.setFromCenter(_parentWallMgr->getWallRectPos() + _centerPos, cMainUIWidth, cMainUIHeight);
-	inputArea_.scaleFromCenter(1.15);
-	return inputArea_;
+	if (_eMainUIState == eMainUIDisplayBig)
+	{
+		return getBigMenuInputArea();
+	}
+	else if (_eMainUIState == eMainUIDisplaySmall)
+	{
+		return getSmallMenuInputArea();
+	}
+	else
+	{
+		return ofRectangle();
+	}
 }
 #pragma endregion

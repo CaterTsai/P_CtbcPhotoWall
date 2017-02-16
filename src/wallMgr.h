@@ -18,6 +18,9 @@ public:
 	void drawSelect();
 	void drawShadow();
 
+	void start();
+	void end();
+
 	void addWallList(int width);
 
 	ofVec2f getWallRectPos();
@@ -39,7 +42,7 @@ private:
 	}_eWallState;
 	bool	_isSetup;
 	ofRectangle	_wallRect;
-	ePhotoPrimaryCategory	_eCategory;
+	ePhotoPrimaryCategory	_eCategory, _backupCategory;
 	vector<ofPtr<wallList>> _wallListMgr;
 #pragma endregion
 
@@ -99,9 +102,10 @@ private:
 #pragma endregion
 
 #pragma region Input
-private:
+public:
 	void enableInput();
 	void disableInput();
+private:
 	void inputRelease(inputEventArgs e) override;
 	ofRectangle	getInputArea() override;
 #pragma endregion
