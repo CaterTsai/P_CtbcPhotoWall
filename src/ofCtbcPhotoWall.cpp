@@ -39,6 +39,10 @@ void ofCtbcPhotoWall::update()
 void ofCtbcPhotoWall::draw()
 {
 	drawWallMgr();
+
+#ifdef USE_TUIO
+	inputEventMgr::GetInstance()->displayTUIO();
+#endif // USE_TUIO
 }
 
 //--------------------------------------------------------------

@@ -2,23 +2,19 @@
 
 #include "constParameter.h"
 #include "ofxWinTouchHook.h"
+#ifdef USE_TUIO
+#include "ofxTuioClient.h"
+#endif // USE_TUIO
 
+#pragma region Structure
 struct inputEventArgs
 {
-	inputEventArgs()
-	{
-		clear();
-	}
-	void clear()
-	{
-		pos.set(0);
-		delta.set(0);
-		holdTime = 0.0f;
-		diffPos.set(0);
-	}
 	ofVec2f pos, delta, diffPos;
 	float holdTime;
 };
+
+
+#pragma endregion
 
 class inputEvent
 {
@@ -31,21 +27,56 @@ public:
 
 class inputEventMgr
 {
+#pragma region inputEventParam
+private:
+	struct inputEventParam
+	{
+		inputEventParam()
+		{
+			clear();
+		}
+		void clear()
+		{
+			_pressPos.set(0);
+			_dragPos.set(0);
+			_delta.set(0);
+			_pressTime = 0.0f;
+			_pressObj = nullptr;
+		}
+
+		inputEvent*	_pressObj;
+		ofVec2f _pressPos, _dragPos, _delta;
+		float _pressTime;
+	};
+#pragma endregion
+
 public:
 	void registerInputEvent(inputEvent* input, int level = cInputEventLevel - 1);
 	void unregisterInputEvent(inputEvent* input);
 private:
-
+	bool pressCheck(ofVec2f& pos, inputEventParam& param);
+	void dragCheck(ofVec2f& pos, inputEventParam& param);
+	void releaseCheck(ofVec2f& pos, inputEventParam& param);
 private:
 	list<inputEvent*>	_inputEventMap[cInputEventLevel];
-	inputEvent*	_pressObj;
-	ofVec2f _pressPos, _dragPos, _delta;
-	float _pressTime;
+
+#ifdef USE_MOUSE
+	inputEventParam _inputEventParam;
+#else
+	map<int, inputEventParam> _inputEventParamMgr;
+#endif // USE_MOUSE
+
+
 #pragma region Input
+public:
+	void enableInput();
+	void disableInput();
+
 #ifdef USE_MOUSE
 public:
-	void mouseDragged(ofMouseEventArgs& e);
+
 	void mousePressed(ofMouseEventArgs& e);
+	void mouseDragged(ofMouseEventArgs& e);
 	void mouseReleased(ofMouseEventArgs& e);
 	void mouseMoved(ofMouseEventArgs& e) {};
 	void mouseScrolled(ofMouseEventArgs& e) {};
@@ -58,10 +89,21 @@ public:
 	void touchMoved(ofTouchEventArgs& e);
 	void touchUp(ofTouchEventArgs& e);
 #endif // USE_MOUSE
+	
+private:
+	ofTouchEventArgs modifyTouchPos(ofTouchEventArgs e);
 
+
+#ifdef USE_TUIO
 public:
-	void enableInput();
-	void disableInput();
+	void displayTUIO();
+private:
+	void setupTUIO();
+private:
+	ofxTuioClient _tuio;
+#endif // USE_TUIO
+
+private:
 #pragma endregion
 
 #pragma region Singleton

@@ -96,8 +96,11 @@ private:
 
 #pragma region Select
 public:
+	void canSelect();
+	bool isCanSelect();
 	void selectCheck(wallList* selectList);
 private:
+	bool _canSelect;
 	wallList* _selectWallList;
 #pragma endregion
 

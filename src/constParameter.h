@@ -5,7 +5,12 @@
 #include "ctbcEvent.h"
 
 #pragma region Define
-#define USE_MOUSE
+//#define USE_MOUSE
+
+#ifndef USE_MOUSE
+#define USE_TUIO
+#endif
+
 #define PHOTO_TYPE unsigned int
 
 #define PHOTO_ID_MASK 0x0000ffff
@@ -78,6 +83,10 @@ const float cSingnalCheckTime = 3.0f;
 const int cInputEventLevel = 10;
 const float cInputHoldLimit = 0.5f;
 const float cInputTriggerDiffLimit = cPhotoWallCategoryWidth * 0.05f;
+const ofVec2f cInputToWindow(1.0, cWindowHeight / 2160.0);
+
+const int cInputTUIOPort = 3333;
+const int cInputTUIOCircleSize = cWindowHeight * 0.02;
 
 //Wall
 const float cWallListMoveVecRatio = 5.0f;

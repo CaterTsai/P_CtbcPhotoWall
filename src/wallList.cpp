@@ -1,5 +1,6 @@
 #include "wallList.h"
 #include "wallMgr.h"
+
 //--------------------------------------
 wallList::wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle drawArea)
 	:_baseArea(drawArea)
@@ -456,6 +457,7 @@ void wallList::checkSelectState()
 				_eSelectState = eSelect;
 				_parent->textUIin();
 				_parent->scrollUIin();
+				_parent->canSelect();
 			}
 			break;
 		}
@@ -796,7 +798,6 @@ void wallList::disableInput()
 void wallList::inputPress(inputEventArgs e)
 {
 	_centerVec.set(0);
-
 }
 
 //--------------------------------------
@@ -820,7 +821,7 @@ void wallList::inputRelease(inputEventArgs e)
 {
 	if (e.holdTime <= cInputHoldLimit && abs(e.diffPos.y) < cInputTriggerDiffLimit)
 	{
-		if (getIsDeselect())
+		if (getIsDeselect() && _parent->isCanSelect())
 		{
 			select(e.pos);
 			_parent->selectCheck(this);
@@ -856,5 +857,3 @@ ofRectangle wallList::getInputArea()
 	return ofRectangle(pos_, _animDrawWidth.getCurrentValue(), _baseArea.getHeight());
 }
 #pragma endregion
-
-

@@ -7,6 +7,7 @@ wallMgr::wallMgr()
 	, _selectWallList(nullptr)
 	, _eWallState(eWallIdle)
 	, _isDisplayZH(true)
+	, _canSelect(true)
 {
 	
 }
@@ -210,6 +211,7 @@ void wallMgr::mainUIin()
 	enableInput();
 
 	disableWallListInput();
+	_canSelect = false;
 }
 
 //--------------------------------
@@ -221,6 +223,8 @@ void wallMgr::mainUIout()
 
 	enableWallListInput();
 	updateScrollUI();
+
+	_canSelect = true;
 }
 
 //--------------------------------
@@ -374,8 +378,21 @@ void wallMgr::drawScrollUI()
 #pragma region Select
 
 //--------------------------------
+void wallMgr::canSelect()
+{
+	_canSelect = true;
+}
+
+//--------------------------------
+bool wallMgr::isCanSelect()
+{
+	return _canSelect;
+}
+
+//--------------------------------
 void wallMgr::selectCheck(wallList* selectList)
 {	
+	auto backup_ = _selectWallList;
 	if (_selectWallList)
 	{		
 		_selectWallList->disableInput();
@@ -383,15 +400,17 @@ void wallMgr::selectCheck(wallList* selectList)
 		_selectWallList->deselect();
 		textUIout();
 		scrollUIout();
+		_selectWallList = nullptr;
 	}
 
-	if (_selectWallList != selectList)
+	if (backup_ != selectList)
 	{
 		_selectWallList = selectList;
 		selectList->disableInput();
 		selectList->enableInput(true);
 
 		updateTextUI(_selectWallList->getSelectPhotoID());
+		_canSelect = false;
 	}
 }
 

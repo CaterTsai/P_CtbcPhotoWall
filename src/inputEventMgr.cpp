@@ -36,28 +36,8 @@ void inputEventMgr::unregisterInputEvent(inputEvent * input)
 	}
 }
 
-#pragma region Input
-#ifdef USE_MOUSE
 //--------------------------------
-void inputEventMgr::mouseDragged(ofMouseEventArgs& e)
-{
-	if (_pressObj)
-	{
-		inputEventArgs args_;
-		ofVec2f delta_ = e - _dragPos;
-		_dragPos = e;
-		_delta = delta_;
-		args_.pos = e;
-		args_.diffPos = e - _pressPos;
-		args_.delta = delta_;
-		args_.holdTime = ofGetElapsedTimef() - _pressTime;
-
-		_pressObj->inputDrag(args_);
-	}
-}
-
-//--------------------------------
-void inputEventMgr::mousePressed(ofMouseEventArgs& e)
+bool inputEventMgr::pressCheck(ofVec2f & pos, inputEventParam & param)
 {
 	bool isTrigger_ = false;
 	for (int idx_ = 0; idx_ < cInputEventLevel; idx_++)
@@ -65,15 +45,17 @@ void inputEventMgr::mousePressed(ofMouseEventArgs& e)
 		for (auto& iter_ : _inputEventMap[idx_])
 		{
 			auto inputArea_ = iter_->getInputArea();
-			if (inputArea_.inside(e))
+			if (inputArea_.inside(pos))
 			{
+				param.clear();
+
 				inputEventArgs args_;
-				args_.pos = e;
+				args_.pos = pos;
 				iter_->inputPress(args_);
 
-				_pressObj = iter_;
-				_dragPos = _pressPos = e;
-				_pressTime = ofGetElapsedTimef();
+				param._pressObj = iter_;
+				param._pressPos = param._dragPos = pos;
+				param._pressTime = ofGetElapsedTimef();
 				isTrigger_ = true;
 				break;
 			}
@@ -84,51 +66,57 @@ void inputEventMgr::mousePressed(ofMouseEventArgs& e)
 			break;
 		}
 	}
+	return isTrigger_;
 }
 
 //--------------------------------
-void inputEventMgr::mouseReleased(ofMouseEventArgs& e)
+void inputEventMgr::dragCheck(ofVec2f & pos, inputEventParam & param)
 {
-	if (_pressObj)
+	if (param._pressObj)
 	{
 		inputEventArgs args_;
-		args_.pos = e;
-		args_.delta = _delta;
-		args_.holdTime = ofGetElapsedTimef() - _pressTime;
-		args_.diffPos = e - _pressPos;
-		_pressObj->inputRelease(args_);
+		ofVec2f delta_ = pos - param._dragPos;
+		param._dragPos = pos;
+		param._delta = delta_;
+		args_.pos = pos;
+		args_.diffPos = pos - param._pressPos;
+		args_.delta = delta_;
+		args_.holdTime = ofGetElapsedTimef() - param._pressTime;
 
-		_pressPos.set(0);
-		_dragPos.set(0);
-		_pressObj = nullptr;
-		_pressTime = 0.0f;
-		_delta.set(0);
+		param._pressObj->inputDrag(args_);
 	}
 }
 
-#else
 //--------------------------------
-void inputEventMgr::touchDown(ofTouchEventArgs& e)
+void inputEventMgr::releaseCheck(ofVec2f & pos, inputEventParam & param)
 {
+	if (param._pressObj)
+	{
+		inputEventArgs args_;
+		args_.pos = pos;
+		args_.delta = param._delta;
+		args_.holdTime = ofGetElapsedTimef() - param._pressTime;
+		args_.diffPos = pos - param._pressPos;
+		param._pressObj->inputRelease(args_);
+
+		param.clear();
+	}
 }
 
-//--------------------------------
-void inputEventMgr::touchMoved(ofTouchEventArgs& e)
-{
-}
-
-//--------------------------------
-void inputEventMgr::touchUp(ofTouchEventArgs& e)
-{
-}
-#endif // USE_MOUSE
+#pragma region Input
 //--------------------------------
 void inputEventMgr::enableInput()
 {
 #ifdef USE_MOUSE
 	ofRegisterMouseEvents(this);
 #else
+
+#ifdef USE_TUIO
+	setupTUIO();
+#else
 	ofxRegisterWinTouchEvents(this);
+#endif //USE_TUIO
+
 #endif // USE_MOUSE
 }
 
@@ -141,15 +129,123 @@ void inputEventMgr::disableInput()
 	ofxUnregisterWinTouchEvents(this);
 #endif // USE_MOUSE
 }
+
+#ifdef USE_MOUSE
+//--------------------------------
+void inputEventMgr::mousePressed(ofMouseEventArgs& e)
+{
+	pressCheck(e, _inputEventParam);
+}
+
+//--------------------------------
+void inputEventMgr::mouseDragged(ofMouseEventArgs& e)
+{
+	dragCheck(e, _inputEventParam);
+}
+
+//--------------------------------
+void inputEventMgr::mouseReleased(ofMouseEventArgs& e)
+{
+	releaseCheck(e, _inputEventParam);
+}
+
+#else
+//--------------------------------
+void inputEventMgr::touchDown(ofTouchEventArgs& e)
+{
+	if (_inputEventParamMgr.find(e.id) != _inputEventParamMgr.end())
+	{
+		ofLog(OF_LOG_ERROR, "[inputEventMgr::touchDown]touch id duplicate");
+		return;
+	}
+
+	inputEventParam _newParam;
+	ofTouchEventArgs fixArgs_ = modifyTouchPos(e);
+	
+	if (pressCheck(fixArgs_, _newParam))
+	{
+		_inputEventParamMgr.insert(make_pair(e.id, _newParam));
+	}
+}
+
+//--------------------------------
+void inputEventMgr::touchMoved(ofTouchEventArgs& e)
+{
+	if (_inputEventParamMgr.find(e.id) != _inputEventParamMgr.end())
+	{
+		ofTouchEventArgs fixArgs_ = modifyTouchPos(e);
+		dragCheck(fixArgs_, _inputEventParamMgr[e.id]);
+	}
+}
+
+//--------------------------------
+void inputEventMgr::touchUp(ofTouchEventArgs& e)
+{
+	if (_inputEventParamMgr.find(e.id) != _inputEventParamMgr.end())
+	{
+		ofTouchEventArgs fixArgs_ = modifyTouchPos(e);
+		releaseCheck(fixArgs_, _inputEventParamMgr[e.id]);
+		_inputEventParamMgr.erase(e.id);
+	}
+}
+
+#endif // USE_MOUSE
+
+//--------------------------------
+ofTouchEventArgs inputEventMgr::modifyTouchPos(ofTouchEventArgs e)
+{
+	auto rVal_ = e;
+
+#ifdef USE_TUIO
+	rVal_.x = (1.0f - rVal_.x) * cWindowWidth;
+	rVal_.y = (1.0f - rVal_.y) * cWindowHeight;
+#else
+	rVal_ *= cInputToWindow;
+#endif // USE_TUIO	
+	return rVal_;
+}
+
+#ifdef USE_TUIO
+//--------------------------------
+void inputEventMgr::displayTUIO()
+{
+	ofPushStyle();
+	for (auto& iter_ : _inputEventParamMgr)
+	{
+		ofColor color_(
+			iter_.first * 71 % 255,
+			iter_.first * 91 % 255,
+			iter_.first * 51 % 255,
+			128);
+
+		ofSetColor(color_);
+		ofCircle(iter_.second._dragPos, cInputTUIOCircleSize);
+	}
+	ofPopStyle();
+}
+//--------------------------------
+void inputEventMgr::setupTUIO()
+{
+	//Connect to Port
+	_tuio.connect(cInputTUIOPort);
+
+	//Assign Global TUIO Callback Functions
+	ofAddListener(ofEvents().touchDown, this, &inputEventMgr::touchDown);
+	ofAddListener(ofEvents().touchUp, this, &inputEventMgr::touchUp);
+	ofAddListener(ofEvents().touchMoved, this, &inputEventMgr::touchMoved);
+}
+#endif // USE_TUIO
+
 #pragma endregion
 
 #pragma region Singleton
 //--------------------------------------------------------------
 inputEventMgr::inputEventMgr()
-	:_pressObj(nullptr)
-	, _pressPos(0)
-	, _pressTime(0.0f)
-{}
+{
+#ifdef USE_MOUSE
+	_inputEventParam.clear();
+#endif // USE_MOUSE
+}
 
 //--------------------------------------------------------------
 inputEventMgr* inputEventMgr::_pInstance = nullptr;
