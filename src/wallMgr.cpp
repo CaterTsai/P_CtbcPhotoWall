@@ -316,7 +316,16 @@ void wallMgr::drawTextUI()
 void wallMgr::scrollUIin()
 {
 	_isScrollUIVisible = true;
-	_scrollUI.open();
+
+	if (_wallRect.getWidth() < _selectWallList->getDrawPosX() + cSelectWidth * 0.5 + cScrollUIWidth)
+	{
+		_scrollUI.open(false);
+	}
+	else
+	{
+		_scrollUI.open(true);
+	}
+	
 	_scrollUI.enableInput();
 }
 
@@ -347,7 +356,7 @@ ofVec2f wallMgr::getScrollUIPos()
 	if (_selectWallList)
 	{
 		rVal_.set(
-			_selectWallList->getDrawPosX() + cSelectWidth * 0.5,
+			_selectWallList->getDrawPosX(),
 			_selectWallList->getSelectTopPosY()
 		);
 	}

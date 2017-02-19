@@ -99,6 +99,7 @@ void wallList::updateSelectCenter(float delta)
 {
 	if (_eSelectState == eZoomIn || _eSelectState == eZoomOut)
 	{
+		_selectWallUnit.pos.y = _animSelectPosY.getCurrentValue();
 		_centerUnitPos.y = getCenterUnitPosYFromSelect();
 	}
 	else
@@ -108,6 +109,7 @@ void wallList::updateSelectCenter(float delta)
 			_centerUnitPos.y = _animDrawPosY.getCurrentValue();
 		}
 	}
+
 	fixCenterUnitPos();
 }
 
@@ -342,13 +344,15 @@ bool wallList::select(ofVec2f& pos)
 	if (_eSelectState == eDeselect)
 	{	
 		_selectWallUnit = foundWallUnit(pos);
-		_wallUnitList[_selectWallUnit.id]->setClick(true);
 
+		_wallUnitList[_selectWallUnit.id]->setClick(true);
+		
 		//trigger animation
 		_eSelectState = eZoomIn;
 
-		_animDrawPosX.animateTo(getAnimMoveX());
+		_animDrawPosX.animateTo(getAnimMoveX());		
 		_animDrawWidth.animateTo(cSelectWidth);
+		fixSelectPos();
 		_centerVec.set(0);
 		return true;
 	}
@@ -426,6 +430,10 @@ void wallList::setupAnimation(int posX, int width)
 	_animDrawPosY.setDuration(0.2);
 	_animDrawPosY.setRepeatType(AnimRepeat::PLAY_ONCE);
 	_animDrawPosY.setCurve(AnimCurve::BOUNCY);
+
+	_animSelectPosY.setDuration(cSelectAnimLength);
+	_animSelectPosY.setRepeatType(AnimRepeat::PLAY_ONCE);
+	_animSelectPosY.reset(width);
 }
 
 //--------------------------------------
@@ -434,6 +442,7 @@ void wallList::updateAnimation(float delta)
 	_animDrawWidth.update(delta);
 	_animDrawPosX.update(delta);
 	_animDrawPosY.update(delta);
+	_animSelectPosY.update(delta);
 }
 
 //--------------------------------------
@@ -534,7 +543,25 @@ int wallList::getAnimMoveX()
 }
 
 //--------------------------------------
-void wallList::fitSelectPos()
+void wallList::fixSelectPos()
+{
+	int selectHeight_ = _wallUnitList[_selectWallUnit.id]->getHeight(cSelectWidth);
+	int selectMinPosY_ = _selectWallUnit.pos.y;
+	int selectMaxPosY_ = _selectWallUnit.pos.y + selectHeight_ + cTextUIHeight;
+	
+	_animSelectPosY.reset(_selectWallUnit.pos.y);
+	if (selectMinPosY_ < 0)
+	{
+		_animSelectPosY.animateTo(0);
+	}
+	else if(selectMaxPosY_ > cWindowHeight)
+	{
+		_animSelectPosY.animateTo(_selectWallUnit.pos.y + (cWindowHeight - selectMaxPosY_));
+	}
+}
+
+//--------------------------------------
+void wallList::attractDrawPos()
 {
 	auto nearestWallUnit_ = foundWallUnit(_selectWallUnit.pos, true);
 	_selectWallUnit.id = nearestWallUnit_.id;
@@ -831,7 +858,7 @@ void wallList::inputRelease(inputEventArgs e)
 		{
 			if (_eMoveCenterYState == eStable)
 			{
-				fitSelectPos();
+				attractDrawPos();
 			}
 			_parent->selectCheck(this);
 		}
@@ -844,7 +871,7 @@ void wallList::inputRelease(inputEventArgs e)
 		}
 		if (getIsSelect())
 		{
-			fitSelectPos();
+			attractDrawPos();
 		}
 	}
 }

@@ -78,8 +78,11 @@ private:
 
 	void checkSelectState();
 	void checkMoveCenterYState();
+	
 	int getAnimMoveX();
-	void fitSelectPos();
+
+	void fixSelectPos();
+	void attractDrawPos();
 	void moveSelectPos(wallUnitInfo newSelectUnit);
 	
 private:
@@ -96,8 +99,8 @@ private:
 	}_eMoveCenterYState;
 
 	wallUnitInfo _selectWallUnit;
-	ofxAnimatableFloat _animDrawPosX, _animDrawWidth;
-	ofxAnimatableFloat _animDrawPosY;
+	ofxAnimatableFloat _animDrawPosX, _animDrawPosY, _animDrawWidth;
+	ofxAnimatableFloat _animSelectPosY;
 #pragma endregion
 	
 #pragma region WallUnit

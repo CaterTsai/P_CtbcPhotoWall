@@ -65,8 +65,7 @@ private:
 #else
 	map<int, inputEventParam> _inputEventParamMgr;
 #endif // USE_MOUSE
-
-
+	
 #pragma region Input
 public:
 	void enableInput();

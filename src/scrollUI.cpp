@@ -44,13 +44,11 @@ void scrollUI::draw(ofVec2f pos)
 		return;
 	}
 
+	ofPushStyle();
 	ofPushMatrix();
 	ofTranslate(pos);
-	ofRotateY(90.0 - _animRotate.getCurrentValue() * 90.0);
-	ofPushStyle();
-	ofSetColor(255);
 	{
-		_displayCanvas.draw(0, 0);
+		_isRight ? drawRight() : drawLeft();
 	}
 	ofPopMatrix();
 	ofPopStyle();
@@ -67,13 +65,14 @@ void scrollUI::updateScroll(ePhotoPrimaryCategory eCategory, bool isZH)
 }
 
 //---------------------------------
-void scrollUI::open()
+void scrollUI::open(bool isRight)
 {
 	if (!_isSetup || _eState != eClose)
 	{
 		return;
 	}
 
+	_isRight = isRight;
 	_animRotate.animateTo(1.0f);
 	_eState = eUIIn;
 }
@@ -88,6 +87,34 @@ void scrollUI::close()
 
 	_animRotate.animateTo(0.0f);
 	_eState = eUIOut;
+}
+
+//---------------------------------
+void scrollUI::drawRight()
+{
+	ofPushMatrix();
+	ofTranslate(cSelectWidth * 0.5, 0);
+	ofRotateY(90.0 - _animRotate.getCurrentValue() * 90.0);
+	{
+		ofSetColor(255);
+		_displayCanvas.draw(0, 0);
+	}
+	ofPopMatrix();
+}
+
+//---------------------------------
+void scrollUI::drawLeft()
+{
+	ofPushMatrix();
+	
+	ofTranslate(cSelectWidth * -0.5, 0);
+	ofRotateY(90.0 + _animRotate.getCurrentValue() * 90.0);
+	ofScale(-1, 1);
+	{
+		ofSetColor(255);
+		_displayCanvas.draw(-_displayCanvas.getWidth(), 0);
+	}
+	ofPopMatrix();
 }
 
 //---------------------------------
@@ -160,6 +187,14 @@ void scrollUI::updateTitle(ePhotoPrimaryCategory eCategory)
 	ofPixels pixel_;
 	_canvas.readToPixels(pixel_);
 	_titleImg.setFromPixels(pixel_);
+}
+
+//---------------------------------
+ofVec2f scrollUI::getDrawPos()
+{
+	auto rVal_ = _parent->getWallRectPos() + _parent->getScrollUIPos();
+	rVal_.x += (_isRight ? cSelectWidth * 0.5 : -(cSelectWidth * 0.5 + cScrollUIWidth));
+	return rVal_;
 }
 
 #pragma region item
@@ -255,7 +290,7 @@ bool scrollUI::moveDrawPosY(int delta)
 int scrollUI::getSelectIndex(ofVec2f pos)
 {
 	int rVal_ = -1;
-	auto localPos_ = pos - (_parent->getWallRectPos() + _parent->getScrollUIPos());
+	auto localPos_ = pos - (_parent->getWallRectPos() + getDrawPos());
 	localPos_.y -= cScrollUIItemStartPosY;
 	if (localPos_.x > 0 && localPos_.x < cScrollUIWidth &&
 		localPos_.y > 0 && localPos_.y < cScrollUIHeight)
@@ -331,10 +366,8 @@ ofRectangle scrollUI::getInputArea()
 	ofRectangle rVal_;
 	if (_isSetup && _eState == eOpen)
 	{
-		auto drawPos_ = _parent->getWallRectPos() + _parent->getScrollUIPos();
-		rVal_.set(drawPos_, cScrollUIWidth, cScrollUIHeight);
+		rVal_.set(getDrawPos(), cScrollUIWidth, cScrollUIHeight);
 	}
-
 	return rVal_;
 }
 #pragma endregion

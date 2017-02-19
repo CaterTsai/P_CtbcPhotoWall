@@ -17,13 +17,17 @@ public:
 	void draw(ofVec2f pos);
 
 	void updateScroll(ePhotoPrimaryCategory eCategory, bool isZH);
-	void open();
+	void open(bool isRight = true);
 	void close();
 
 private:
+	void drawRight();
+	void drawLeft();
 	void updateCanvas();
 	void animStateCheck();
 	void updateTitle(ePhotoPrimaryCategory eCategory);
+
+	ofVec2f getDrawPos();
 private:
 	enum eAnimState
 	{
@@ -32,7 +36,7 @@ private:
 		,eOpen
 		,eUIOut
 	}_eState;
-	bool _isSetup, _isZH;
+	bool _isSetup, _isZH, _isRight;
 	ePhotoPrimaryCategory _eCategory;
 	wallMgr*	_parent;
 	ofImage	_titleImg;

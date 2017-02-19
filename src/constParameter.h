@@ -5,7 +5,7 @@
 #include "ctbcEvent.h"
 
 #pragma region Define
-//#define USE_MOUSE
+#define USE_MOUSE
 
 #ifndef USE_MOUSE
 #define USE_TUIO
