@@ -134,6 +134,12 @@ void wallMgr::end()
 	{
 		changeCategory(_backupCategory);
 	}
+
+	if (_eWallState == eWallPhoto && _selectWallList != nullptr)
+	{
+		selectCheck(_selectWallList);
+	}
+
 	_isDisplayZH = true;
 	_mainUI.end();	
 

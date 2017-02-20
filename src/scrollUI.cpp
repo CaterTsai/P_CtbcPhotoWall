@@ -290,7 +290,7 @@ bool scrollUI::moveDrawPosY(int delta)
 int scrollUI::getSelectIndex(ofVec2f pos)
 {
 	int rVal_ = -1;
-	auto localPos_ = pos - (_parent->getWallRectPos() + getDrawPos());
+	auto localPos_ = pos - getDrawPos();
 	localPos_.y -= cScrollUIItemStartPosY;
 	if (localPos_.x > 0 && localPos_.x < cScrollUIWidth &&
 		localPos_.y > 0 && localPos_.y < cScrollUIHeight)

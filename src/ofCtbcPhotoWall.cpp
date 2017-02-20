@@ -16,8 +16,8 @@ void ofCtbcPhotoWall::setup()
 	setupAudio();
 
 #ifndef _DEBUG
-	//ofToggleFullscreen();
-	ofSetWindowPosition(0, 0);
+	ofToggleFullscreen();
+	//ofSetWindowPosition(0, 0);
 #endif // !_DEBUG
 
 	AudioMgr::GetInstance()->playAudio(NAME_MGR::BGM);
@@ -58,11 +58,6 @@ void ofCtbcPhotoWall::keyPressed(int key)
 		case 'w':
 		{
 			inIdle();
-			break;
-		}
-		case 'e':
-		{
-			endAll();
 			break;
 		}
 		case '1':
