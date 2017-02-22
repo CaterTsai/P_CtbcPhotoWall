@@ -214,7 +214,7 @@ void scrollUI::itemUnit::draw(ofVec2f pos, ePhotoPrimaryCategory eCategory, bool
 	ofTranslate(pos.x + cScrollUIWidth * 0.5, pos.y + cScrollUIItemHeight * 0.5);
 	{	
 		//Backplace
-		_isSelect ? ofSetColor(sScrollUIItemSelectColor) : ofSetColor(sScrollUIItemColor);
+		_isSelect ? ofSetColor(cScrollUIItemSelectColor) : ofSetColor(cScrollUIItemColor);
 		ofRect(cScrollUIWidth * -0.5, cScrollUIItemHeight * -0.5, cScrollUIWidth, cScrollUIItemHeight);
 		
 		//Text

@@ -11,7 +11,7 @@
 #include "ofxDSHapVideoPlayer.h"
 #include "AudioMgr.h"
 
-class ofCtbcPhotoWall : public ofBaseApp{
+class ofCtbcPhotoWall : public ofBaseApp, public inputEvent {
 
 public:
 	void setup();
@@ -73,6 +73,15 @@ private:
 #pragma endregion
 
 
+#pragma endregion
+
+#pragma region Input
+public:
+	void enableInput();
+	void disableInput();
+private:
+	void inputRelease(inputEventArgs e) override;
+	ofRectangle	getInputArea() override;
 #pragma endregion
 
 #pragma region Debug

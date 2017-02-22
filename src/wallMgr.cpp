@@ -28,6 +28,7 @@ void wallMgr::setup(ePhotoPrimaryCategory category, ofRectangle wallRect)
 	_mainUI.setup(this, ofVec2f(cPhotoWallCategoryWidth * 0.5, cWindowHeight * 0.5), category);
 	_textUI.setup(this);
 	_scrollUI.setup(this);
+	_closeUI.setup(this);
 	
 	_isSetup = true;
 }
@@ -89,6 +90,7 @@ void wallMgr::drawSelect()
 		}
 	}
 	drawTextUI();
+	drawCloseUI();
 	
 	ofPopMatrix();
 	ofPopStyle();
@@ -376,6 +378,8 @@ void wallMgr::selectType(PHOTO_TYPE type)
 	{
 		setTextUIVisible(false);
 		setScrollUIVisible(false);
+		setCloseUIVisible(false);
+
 		_selectWallList->selectType(type);
 	}
 }
@@ -383,15 +387,71 @@ void wallMgr::selectType(PHOTO_TYPE type)
 //--------------------------------
 void wallMgr::drawScrollUI()
 {
-	if (_isTextUIVisible && _selectWallList)
+	if (_isScrollUIVisible && _selectWallList)
 	{	
 		_scrollUI.draw(getScrollUIPos());
+	}
+}
+
+#pragma endregion
+
+#pragma region closeUI
+//--------------------------------
+void wallMgr::closeUIin()
+{
+	_closeUI.setDisplay(true);
+	_closeUI.enableInput();
+	_isCloseUIVidible = true;
+}
+
+//--------------------------------
+void wallMgr::closeUIout()
+{
+	_closeUI.setDisplay(false);
+	_closeUI.disableInput();
+	_isCloseUIVidible = false;
+}
+
+//--------------------------------
+void wallMgr::setCloseUIVisible(bool val)
+{
+	_isCloseUIVidible = val;
+}
+
+//--------------------------------
+void wallMgr::closeSelect()
+{
+	if (_selectWallList)
+	{
+		selectCheck(_selectWallList);
+	}
+}
+
+//--------------------------------
+ofVec2f wallMgr::getCloseUIPos()
+{
+	ofVec2f rVal_ = ofVec2f(0);
+	if (_selectWallList)
+	{
+		rVal_.set(
+			_selectWallList->getDrawPosX() + cSelectWidth * -0.4,
+			_selectWallList->getSelectTopPosY() + cCloseUIBGRadius * 1.8
+		);
+	}
+	return rVal_;
+}
+
+//--------------------------------
+void wallMgr::drawCloseUI()
+{
+	if (_isCloseUIVidible && _selectWallList)
+	{
+		_closeUI.draw(getCloseUIPos());
 	}
 }
 #pragma endregion
 
 #pragma region Select
-
 //--------------------------------
 void wallMgr::canSelect()
 {
@@ -415,6 +475,7 @@ void wallMgr::selectCheck(wallList* selectList)
 		_selectWallList->deselect();
 		textUIout();
 		scrollUIout();
+		closeUIout();
 		_selectWallList = nullptr;
 	}
 

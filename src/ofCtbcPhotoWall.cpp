@@ -23,6 +23,7 @@ void ofCtbcPhotoWall::setup()
 
 	AudioMgr::GetInstance()->playAudio(NAME_MGR::BGM);
 	setupWallMgr();
+	enableInput();
 	_timer = ofGetElapsedTimef();
 }
 
@@ -178,6 +179,7 @@ void ofCtbcPhotoWall::inIdle()
 
 		_wallState = ePhotoWall_BlurIn;
 		_blurLevel.animateTo(1.0f);
+		enableInput();
 	}
 }
 
@@ -188,6 +190,7 @@ void ofCtbcPhotoWall::outIdle()
 	{
 		_wallState = ePhotoWall_BlurOut;
 		_blurLevel.animateTo(0.0f);
+		disableInput();
 	}
 }
 
@@ -243,6 +246,7 @@ void ofCtbcPhotoWall::updateWallBlur(float delta)
 				
 				_idleVideo.stop();
 				startAll();
+
 			}
 			break;
 		}
@@ -277,9 +281,7 @@ void ofCtbcPhotoWall::drawPhotoWall()
 	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
 	{
 		_photoWall[idx_].drawShadow();
-	}
-
-	
+	}	
 	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
 	{
 		_photoWall[idx_].drawSelect();
@@ -316,6 +318,33 @@ void ofCtbcPhotoWall::drawIdleVideo()
 		_idleVideo.draw(0, -2);
 	}
 }
+
 #pragma endregion
 
+#pragma endregion
+
+#pragma region input
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::enableInput()
+{
+	inputEventMgr::GetInstance()->registerInputEvent(this, eInputWallMgr);
+}
+
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::disableInput()
+{
+	inputEventMgr::GetInstance()->unregisterInputEvent(this);
+}
+
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::inputRelease(inputEventArgs e)
+{
+	outIdle();
+}
+
+//--------------------------------------------------------------
+ofRectangle ofCtbcPhotoWall::getInputArea()
+{
+	return ofRectangle(0, 0, cWindowWidth, cWindowHeight);
+}
 #pragma endregion

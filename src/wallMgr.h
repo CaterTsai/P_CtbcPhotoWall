@@ -4,6 +4,7 @@
 #include "mainUI.h"
 #include "textUI.h"
 #include "scrollUI.h"
+#include "closeUI.h"
 
 class wallMgr : public inputEvent
 {
@@ -92,6 +93,24 @@ private:
 private:
 	bool _isScrollUIVisible;
 	scrollUI	_scrollUI;
+#pragma endregion
+
+#pragma region closeUI
+public:
+	void closeUIin();
+	void closeUIout();
+	void setCloseUIVisible(bool val);
+
+	void closeSelect();
+	ofVec2f getCloseUIPos();
+	
+private:
+	void drawCloseUI();
+
+private:
+	bool _isCloseUIVidible;
+	closeUI _closeUI;
+
 #pragma endregion
 
 #pragma region Select

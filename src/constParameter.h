@@ -50,6 +50,7 @@ enum eInputSystemLevel : int
 	eInputTop = 0
 	,eInputTextUI
 	,eInputScrollUI
+	,eInputCloseUI
 	,eInputWallSelectList
 	,eInputMainUI
 	,eInputWallMgr
@@ -136,11 +137,18 @@ const int cScrollUIHeight = cScrollUIWidth * 1.5;
 const int cScrollUIAlpha = 255 * 0.95;
 const int cScrollUIItemHeight = cScrollUIHeight * 0.2;
 const int cScrollUIItemStartPosY = cScrollUIItemHeight;
-const ofColor sScrollUIItemColor = ofColor(20, cScrollUIAlpha);
-const ofColor sScrollUIItemSelectColor = ofColor(100, cScrollUIAlpha);
+const ofColor cScrollUIItemColor = ofColor(20, cScrollUIAlpha);
+const ofColor cScrollUIItemSelectColor = ofColor(100, cScrollUIAlpha);
 const int cScrollUIFontSize = cScrollUIWidth * 0.1f;
 
 const float cScrollUIAnimDuration = 0.3f;
+
+//Close UI
+const int cCloseUIBGRadius = cSelectWidth * 0.05;
+const int cCloseUILength = cCloseUIBGRadius * 1.5;
+const int cCloseUIWidth = cCloseUILength * 0.2;
+const ofColor cCloseUIBGColor = ofColor(20, 200);
+const ofColor cCloseUIColor = ofColor(255);
 #pragma endregion
 
 #pragma region Static Method

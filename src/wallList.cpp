@@ -466,6 +466,7 @@ void wallList::checkSelectState()
 				_eSelectState = eSelect;
 				_parent->textUIin();
 				_parent->scrollUIin();
+				_parent->closeUIin();
 				_parent->canSelect();
 			}
 			break;
@@ -502,6 +503,7 @@ void wallList::checkMoveCenterYState()
 			_wallUnitList[_selectWallUnit.id]->setClick(true);
 			_parent->setTextUIVisible(true);
 			_parent->setScrollUIVisible(true);
+			_parent->setCloseUIVisible(true);
 	
 		}
 
@@ -838,6 +840,7 @@ void wallList::inputDrag(inputEventArgs e)
 		{
 			_parent->setTextUIVisible(false);
 			_parent->setScrollUIVisible(false);
+			_parent->setCloseUIVisible(false);
 			_wallUnitList[_selectWallUnit.id]->setClick(false);
 		}
 	}
