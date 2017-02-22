@@ -477,6 +477,7 @@ void wallMgr::selectCheck(wallList* selectList)
 		scrollUIout();
 		closeUIout();
 		_selectWallList = nullptr;
+		_canSelect = true;
 	}
 
 	if (backup_ != selectList)

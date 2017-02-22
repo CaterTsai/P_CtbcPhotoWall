@@ -79,7 +79,7 @@ void wallList::updateCenter(float delta)
 	{
 		if (abs(_centerVec.y) > abs(_centerBaseVec.y))
 		{
-			_centerVec.y *= 0.96;
+			_centerVec.y *= 0.9;
 		}
 
 		float diff_ = _centerVec.y * delta;
@@ -467,7 +467,6 @@ void wallList::checkSelectState()
 				_parent->textUIin();
 				_parent->scrollUIin();
 				_parent->closeUIin();
-				_parent->canSelect();
 			}
 			break;
 		}
@@ -856,14 +855,9 @@ void wallList::inputRelease(inputEventArgs e)
 			select(e.pos);
 			_parent->selectCheck(this);
 		}
-		
-		if (getIsSelect())
+		else
 		{
-			if (_eMoveCenterYState == eStable)
-			{
-				attractDrawPos();
-			}
-			_parent->selectCheck(this);
+			_centerVec = _centerBaseVec;
 		}
 	}
 	else
@@ -871,6 +865,7 @@ void wallList::inputRelease(inputEventArgs e)
 		if (getIsDeselect())
 		{
 			_centerVec = e.delta * ofGetFrameRate() * 0.5;
+			
 		}
 		if (getIsSelect())
 		{

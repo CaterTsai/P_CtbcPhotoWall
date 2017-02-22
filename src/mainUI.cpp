@@ -646,7 +646,8 @@ ePhotoPrimaryCategory mainUI::getSelectMiniCategory(ofVec2f selectPos)
 //-----------------------------------------------------------------------------
 void mainUI::setupSmallMenu()
 {
-	_smallPos.set(cMainUIWidth * -0.5 + cMainUIUnitWidth * 0.5, cWindowHeight * 0.25);
+	//_smallPos.set(cMainUIWidth * -0.5 + cMainUIUnitWidth * 0.5, cWindowHeight * 0.25);
+	_smallPos.set(cMainSmallUIWidth * -0.5, 0);
 }
 
 //-----------------------------------------------------------------------------
