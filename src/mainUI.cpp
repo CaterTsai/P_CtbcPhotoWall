@@ -548,7 +548,6 @@ void mainUI::bigMenuAnimStateCheck()
 		{
 			_eBigUIState = eBigUIOpen;
 			enableInput();
-			_parentWallMgr->enableInput();
 		}
 		break;
 	}

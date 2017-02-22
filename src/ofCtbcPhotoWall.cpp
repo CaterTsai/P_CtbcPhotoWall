@@ -4,7 +4,7 @@
 void ofCtbcPhotoWall::setup()
 {
 	ofBackground(0);
-	//ofSetVerticalSync(true);
+	ofSetVerticalSync(false);
 	ofSetFrameRate(60);
 		
 	photoRender::GetInstance()->setup("thumbnail/", "photo/");
@@ -18,6 +18,7 @@ void ofCtbcPhotoWall::setup()
 #ifndef _DEBUG
 	ofToggleFullscreen();
 	//ofSetWindowPosition(0, 0);
+	//ofSetWindowShape(cWindowWidth, cWindowHeight);
 #endif // !_DEBUG
 
 	AudioMgr::GetInstance()->playAudio(NAME_MGR::BGM);
@@ -40,9 +41,12 @@ void ofCtbcPhotoWall::draw()
 {
 	drawWallMgr();
 
-#ifdef USE_TUIO
-	inputEventMgr::GetInstance()->displayTUIO();
-#endif // USE_TUIO
+	ofPushStyle();
+#ifndef USE_MOUSE
+	inputEventMgr::GetInstance()->displayTouch();
+#endif // USE_MOUSE
+	ofDrawBitmapStringHighlight("FPS:" + ofToString(ofGetFrameRate()), 0, 100);
+	ofPopStyle();
 }
 
 //--------------------------------------------------------------
@@ -309,7 +313,7 @@ void ofCtbcPhotoWall::drawIdleVideo()
 	if (_wallState != ePhotoWall_Play && _idleVideo.isLoaded())
 	{
 		ofSetColor(255, _blurLevel.getCurrentValue() * 255);
-		_idleVideo.draw(0, 0);
+		_idleVideo.draw(0, -2);
 	}
 }
 #pragma endregion

@@ -8,7 +8,7 @@
 #define USE_MOUSE
 
 #ifndef USE_MOUSE
-#define USE_TUIO
+//#define USE_TUIO
 #endif
 
 #define PHOTO_TYPE unsigned int

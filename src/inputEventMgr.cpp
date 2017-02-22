@@ -5,7 +5,14 @@
 void inputEventMgr::registerInputEvent(inputEvent * input, int level)
 {
 	level = MIN(MAX(level, 0), cInputEventLevel - 1);
-	_inputEventMap[level].push_back(input);
+	if (isInputEventExist(input, level))
+	{
+		ofLog(OF_LOG_WARNING, "[inputEventMgr::registerInputEvent]Duplicate");
+	}
+	else
+	{
+		_inputEventMap[level].push_back(input);		
+	}
 }
 
 //--------------------------------
@@ -34,6 +41,22 @@ void inputEventMgr::unregisterInputEvent(inputEvent * input)
 			break;
 		}
 	}
+}
+
+//--------------------------------
+bool inputEventMgr::isInputEventExist(inputEvent * input, int level)
+{
+	bool isExist_ = false;
+
+	for (auto& iter_ : _inputEventMap[level])
+	{
+		if (iter_ == input)
+		{
+			isExist_ = true;
+			break;
+		}
+	}
+	return isExist_;
 }
 
 //--------------------------------
@@ -114,7 +137,10 @@ void inputEventMgr::enableInput()
 #ifdef USE_TUIO
 	setupTUIO();
 #else
-	ofxRegisterWinTouchEvents(this);
+
+	ofAddListener(ofxWinTouchHook::touchDown, this, &inputEventMgr::touchDown);
+	ofAddListener(ofxWinTouchHook::touchMoved, this, &inputEventMgr::touchMoved);
+	ofAddListener(ofxWinTouchHook::touchUp, this, &inputEventMgr::touchUp);
 #endif //USE_TUIO
 
 #endif // USE_MOUSE
@@ -189,6 +215,24 @@ void inputEventMgr::touchUp(ofTouchEventArgs& e)
 	}
 }
 
+//--------------------------------
+void inputEventMgr::displayTouch()
+{
+	ofPushStyle();
+	for (auto& iter_ : _inputEventParamMgr)
+	{
+		ofColor color_(
+			iter_.first * 71 % 255,
+			iter_.first * 91 % 255,
+			iter_.first * 51 % 255,
+			128);
+
+		ofSetColor(color_);
+		ofCircle(iter_.second._dragPos, cInputTUIOCircleSize);
+	}
+	ofPopStyle();
+}
+
 #endif // USE_MOUSE
 
 //--------------------------------
@@ -206,23 +250,6 @@ ofTouchEventArgs inputEventMgr::modifyTouchPos(ofTouchEventArgs e)
 }
 
 #ifdef USE_TUIO
-//--------------------------------
-void inputEventMgr::displayTUIO()
-{
-	ofPushStyle();
-	for (auto& iter_ : _inputEventParamMgr)
-	{
-		ofColor color_(
-			iter_.first * 71 % 255,
-			iter_.first * 91 % 255,
-			iter_.first * 51 % 255,
-			128);
-
-		ofSetColor(color_);
-		ofCircle(iter_.second._dragPos, cInputTUIOCircleSize);
-	}
-	ofPopStyle();
-}
 //--------------------------------
 void inputEventMgr::setupTUIO()
 {
@@ -244,6 +271,10 @@ inputEventMgr::inputEventMgr()
 {
 #ifdef USE_MOUSE
 	_inputEventParam.clear();
+#else
+#ifndef USE_TUIO
+	ofxWinTouchHook::EnableTouch();
+#endif
 #endif // USE_MOUSE
 }
 

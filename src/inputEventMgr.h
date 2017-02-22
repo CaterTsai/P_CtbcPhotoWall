@@ -54,6 +54,7 @@ public:
 	void registerInputEvent(inputEvent* input, int level = cInputEventLevel - 1);
 	void unregisterInputEvent(inputEvent* input);
 private:
+	bool isInputEventExist(inputEvent* input, int level);
 	bool pressCheck(ofVec2f& pos, inputEventParam& param);
 	void dragCheck(ofVec2f& pos, inputEventParam& param);
 	void releaseCheck(ofVec2f& pos, inputEventParam& param);
@@ -87,6 +88,7 @@ public:
 	void touchDown(ofTouchEventArgs& e);
 	void touchMoved(ofTouchEventArgs& e);
 	void touchUp(ofTouchEventArgs& e);
+	void displayTouch();
 #endif // USE_MOUSE
 	
 private:
@@ -95,7 +97,7 @@ private:
 
 #ifdef USE_TUIO
 public:
-	void displayTUIO();
+	
 private:
 	void setupTUIO();
 private:
