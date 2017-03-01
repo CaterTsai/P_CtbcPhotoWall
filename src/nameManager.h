@@ -21,5 +21,6 @@ namespace NAME_MGR
 	CREATE_VALUE(I_BtnEN4);
 
 	//Audio
+	CREATE_VALUE(BTN_CLICK);
 	CREATE_VALUE(BGM);
 }

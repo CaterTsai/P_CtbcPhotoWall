@@ -22,6 +22,7 @@ public:
 		
 private:
 	float _timer;
+	bool _displayMsg;
 
 #pragma region Image Render
 private:

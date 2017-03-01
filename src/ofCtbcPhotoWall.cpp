@@ -3,6 +3,8 @@
 //--------------------------------------------------------------
 void ofCtbcPhotoWall::setup()
 {
+	_displayMsg = false;
+	ofHideCursor();
 	ofBackground(0);
 	ofSetVerticalSync(false);
 	ofSetFrameRate(60);
@@ -17,8 +19,6 @@ void ofCtbcPhotoWall::setup()
 
 #ifndef _DEBUG
 	ofToggleFullscreen();
-	//ofSetWindowPosition(0, 0);
-	//ofSetWindowShape(cWindowWidth, cWindowHeight);
 #endif // !_DEBUG
 
 	AudioMgr::GetInstance()->playAudio(NAME_MGR::BGM);
@@ -42,12 +42,16 @@ void ofCtbcPhotoWall::draw()
 {
 	drawWallMgr();
 
-	ofPushStyle();
+	if (_displayMsg)
+	{
+		ofPushStyle();
 #ifndef USE_MOUSE
-	inputEventMgr::GetInstance()->displayTouch();
+		inputEventMgr::GetInstance()->displayTouch();
 #endif // USE_MOUSE
-	ofDrawBitmapStringHighlight("FPS:" + ofToString(ofGetFrameRate()), 0, 100);
-	ofPopStyle();
+		ofDrawBitmapStringHighlight("FPS:" + ofToString(ofGetFrameRate()), 0, 100);
+		ofPopStyle();
+	}
+	
 }
 
 //--------------------------------------------------------------
@@ -55,17 +59,18 @@ void ofCtbcPhotoWall::keyPressed(int key)
 {
 	switch (key)
 	{
-		case 'q':
+		case 'n':
 		{
 			outIdle();
 			break;
 		}
-		case 'w':
+		case 'd':
 		{
-			inIdle();
+			_displayMsg ^= true;
+			_displayMsg ? ofShowCursor() : ofHideCursor();
 			break;
 		}
-		case '1':
+		case 'f':
 		{
 			ofToggleFullscreen();
 			break;
@@ -98,6 +103,7 @@ void ofCtbcPhotoWall::setupImageRender(string path)
 //--------------------------------------------------------------
 void ofCtbcPhotoWall::setupAudio()
 {
+	AudioMgr::GetInstance()->addAduio(NAME_MGR::BTN_CLICK, "sounds/click.wav");
 	AudioMgr::GetInstance()->addBGM(NAME_MGR::BGM, "sounds/bgm.mp3");
 }
 #pragma endregion
@@ -315,7 +321,7 @@ void ofCtbcPhotoWall::drawIdleVideo()
 	if (_wallState != ePhotoWall_Play && _idleVideo.isLoaded())
 	{
 		ofSetColor(255, _blurLevel.getCurrentValue() * 255);
-		_idleVideo.draw(0, -2);
+		_idleVideo.draw(0, 0);
 	}
 }
 
