@@ -14,7 +14,7 @@ private:
 	};
 
 public:
-	void setup(string thumbPath, string sourcePath);
+	void setup();
 	void update(ofEventArgs&);
 	
 private:	
@@ -36,7 +36,6 @@ private:
 	void insertToMap(map<int, photoEntry>& map, photoEntry& entry);
 private:
 	float _mainTimer, _singnalTimer;
-	string _thumbPath, _sourcePath;
 	queue<photoEntry> _imgNeedUpdate;
 	map<int, photoEntry>	_thumbMap;
 	map<int, photoEntry>	_sourceMap;

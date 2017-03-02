@@ -127,6 +127,7 @@ void wallMgr::start()
 {	
 	_mainUI.start();
 	_eWallState = eWallMainUI;
+	enableInput();
 }
 
 //--------------------------------
@@ -136,7 +137,11 @@ void wallMgr::end()
 	{
 		changeCategory(_backupCategory);
 	}
-
+	else
+	{
+		resetWallList();
+	}
+	
 	if (_eWallState == eWallPhoto && _selectWallList != nullptr)
 	{
 		selectCheck(_selectWallList);
@@ -151,11 +156,11 @@ void wallMgr::end()
 }
 
 //--------------------------------
-void wallMgr::addWallList(int width)
+void wallMgr::addWallList(int width, bool canBeSmile)
 {
 	setupCheck();
 	ofRectangle	rect_(getListTotalWidth(), 0, width, _wallRect.getHeight());
-	_wallListMgr.push_back(ofPtr<wallList>(new wallList(this, _eCategory, rect_)));
+	_wallListMgr.push_back(ofPtr<wallList>(new wallList(this, _eCategory, rect_, canBeSmile)));
 }
 
 //--------------------------------
@@ -189,6 +194,15 @@ int wallMgr::getListTotalWidth()
 	}
 
 	return totalWidth_;
+}
+
+//--------------------------------
+void wallMgr::resetWallList()
+{
+	for (auto& iter_ : _wallListMgr)
+	{
+		iter_->reset();
+	}
 }
 
 //--------------------------------

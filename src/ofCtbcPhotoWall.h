@@ -7,6 +7,7 @@
 #include "blurShader.h"
 #include "wallMgr.h"
 #include "fontMgr.h"
+#include "configMgr.h"
 
 #include "ofxDSHapVideoPlayer.h"
 #include "AudioMgr.h"

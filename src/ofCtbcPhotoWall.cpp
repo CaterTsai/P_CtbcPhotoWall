@@ -9,11 +9,12 @@ void ofCtbcPhotoWall::setup()
 	ofSetVerticalSync(false);
 	ofSetFrameRate(60);
 		
-	photoRender::GetInstance()->setup("thumbnail/", "photo/");
+	configMgr::load("config/_config.xml");
+	photoRender::GetInstance()->setup();
 	dataHolder::GetInstance()->setup("");
 	fontMgr::GetInstance()->setup("fonts/");
 	inputEventMgr::GetInstance()->enableInput();
-
+	
 	setupImageRender("images/");
 	setupAudio();
 
@@ -34,6 +35,7 @@ void ofCtbcPhotoWall::update()
 	_timer += delta_;
 
 	updateWallMgr(delta_);
+	dataHolder::GetInstance()->update(delta_);
 	ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
 
@@ -59,9 +61,9 @@ void ofCtbcPhotoWall::keyPressed(int key)
 {
 	switch (key)
 	{
-		case 'n':
+		case 'w':
 		{
-			outIdle();
+			inIdle();
 			break;
 		}
 		case 'd':
@@ -116,13 +118,14 @@ void ofCtbcPhotoWall::setupWallMgr()
 	
 	for (int idx_ = 0; idx_ < cCategoryNum; idx_++)
 	{
+		ePhotoPrimaryCategory eCategory_ = (ePhotoPrimaryCategory)(cCategoryNum - idx_ - 1);
 		_photoWall[idx_].setup(
-			(ePhotoPrimaryCategory)(cCategoryNum - idx_ - 1)
+			eCategory_
 			,ofRectangle(idx_ * cPhotoWallCategoryWidth, 0, cPhotoWallCategoryWidth, cWindowHeight)
 		);
 
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
-		_photoWall[idx_].addWallList(cMinimumPhotoWidth * 2);
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth * 2, true);		
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
@@ -333,7 +336,7 @@ void ofCtbcPhotoWall::drawIdleVideo()
 //--------------------------------------------------------------
 void ofCtbcPhotoWall::enableInput()
 {
-	inputEventMgr::GetInstance()->registerInputEvent(this, eInputWallMgr);
+	inputEventMgr::GetInstance()->registerInputEvent(this, eInputTop);
 }
 
 //--------------------------------------------------------------

@@ -2,13 +2,14 @@
 
 #include "constParameter.h"
 #include "photoRender.h"
+#include "configMgr.h"
 #include "textUnit.h"
 
 class dataHolder
 {
 public:
 	void setup(string url);
-	
+	void update(float delta);
 private:
 	void setupCheck();
 
@@ -27,27 +28,40 @@ private:
 public:
 	vector<PHOTO_TYPE>	getType(ePhotoPrimaryCategory eCategory);
 	string getTypeName(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type, bool isZH);
-	
+	PHOTO_TYPE getSmileType();
+
 private:
 	void loadPhotoTypeName();
 
-private:
+private:	
 	map<ePhotoPrimaryCategory, map<PHOTO_TYPE, textUnit>>	_photoTypeName;
 #pragma endregion
 
+#pragma region Smile Photo
+private:
+	void loadSmilePhoto();
+	void checkSmileFile(float delta);
+	void addSmileHeader(string order);
+
+private:
+	int _smileBaseID;
+	PHOTO_TYPE _smileType;
+	float _timer;
+
+public:
+	ofEvent<stPhotoHeader> _onNewSmilePhoto;
+#pragma endregion
+	
 #pragma region PhotoHeader
 public:
 	stPhotoHeader& getPhotoHeader(int photoId);
 	vector<int> getPhotoID(ePhotoPrimaryCategory eCategory);
 	vector<int> getPhotoID(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type);
-private:
-	
+private:	
 	void loadPhotoHeader();
-
 	void addPhotoMap(stPhotoHeader& photoHeader);
 	void addIndex(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type, int photoid);
-
-
+	
 private:
 	bool _isSetup;
 	string _backendUrl;
@@ -55,11 +69,11 @@ private:
 	map<PHOTO_TYPE, vector<int>> _typeToPhotoID[ePhotoCategory_Num];
 
 #pragma endregion
-		
+	
 #pragma region Singleton
-	//-------------------
-	//Singleton
-	//-------------------
+//-------------------
+//Singleton
+//-------------------
 private:
 	dataHolder()
 		:_isSetup(false)
@@ -70,8 +84,6 @@ private:
 	}
 	dataHolder(dataHolder const&) {};
 	void operator=(dataHolder const&) {};
-
-
 public:
 	static dataHolder* GetInstance();
 	static void Destroy();

@@ -21,21 +21,22 @@ struct wallUnitInfo
 class wallList : public inputEvent
 {
 public:
-	wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle drawArea);
+	wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle drawArea, bool defaultSmile = false);
 	~wallList();
 
 	void update(float delta);
 	void draw();
+	void reset();
 	
 	float getBaseWidth();
 	int getBasePosX();
 	int getDrawPosX();
 	
-private:
+protected:
 	ePhotoPrimaryCategory _eCategroy;
 	ofRectangle	_baseArea;
 	wallMgr*	_parent;
-
+	
 #pragma region Center
 //Center
 private:
@@ -108,6 +109,7 @@ private:
 public:
 	void selectType(PHOTO_TYPE type);
 	void changeCategory(ePhotoPrimaryCategory category);
+	
 private:
 	void setupWallUnit();
 	void updateWallUnit(float delta);
@@ -116,9 +118,10 @@ private:
 
 	void addWallUnit(ofPtr<wallUnit> newUnil);
 	void addWallUnit(int index, ofPtr<wallUnit> newUnil);
-	void resetWallUnits();
+	void initWallUnits(bool isSmile);
 	int insertWallUnits(int index, PHOTO_TYPE type);
 	int insertWallUnits(int index);
+	void insertWallUnit(int index, stPhotoHeader newPhotoHeader);
 	void removeWallUnits(int start, int end);
 	void clearWallUnits();
 
@@ -126,22 +129,32 @@ private:
 
 	void updateWallTotalHeight();
 private:
-	bool _isInsert;
+	bool _needRemove, _isChangeType;
 	int _wallTotalHeight;
 	vector<ofPtr<wallUnit>>	_wallUnitList;
 	int _insertStart, _insertEnd;
+#pragma endregion
+
+#pragma region Smile
+public:
+	void onNewSmilePhoto(stPhotoHeader& smilePhoto);
+
+private:
+	void registerSmilePhoto();
+	void unregisterSmilePhoto();
+private:
+	bool _isSmile, _defaultSmile;
 #pragma endregion
 
 #pragma region Input
 public:
 	void enableInput(bool isSelect = false);
 	void disableInput();
-private:
+protected:
 	void inputPress(inputEventArgs e) override;
 	void inputDrag(inputEventArgs e) override;
 	void inputRelease(inputEventArgs e) override;
 	ofRectangle	getInputArea() override; 
 #pragma endregion
-
 
 };

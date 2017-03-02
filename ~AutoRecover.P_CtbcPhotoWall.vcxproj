@@ -1,0 +1,386 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7FD42DF7-442E-479A-BA76-D0022F99702A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>P_CtbcPhotoWall</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksDebug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksDebug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_debug</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>true</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_debug</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>true</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);..\..\..\addons\ofxAnimatable\src;..\..\..\addons\ofxDSHapVideoPlayer\libs;..\..\..\addons\ofxDSHapVideoPlayer\libs\External;..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow;..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses;..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy;..\..\..\addons\ofxDSHapVideoPlayer\src;..\..\..\addons\ofxOsc\libs;..\..\..\addons\ofxOsc\libs\oscpack;..\..\..\addons\ofxOsc\libs\oscpack\src;..\..\..\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\addons\ofxOsc\src;..\..\..\addons\ofxThreadedImageLoader\src;..\..\..\addons\ofxTrueTypeFontUC\src;..\..\..\addons\ofxTuioWrapper\src;..\..\..\addons\ofxTuioWrapper\src\TUIO;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);..\..\..\addons\ofxAnimatable\src;..\..\..\addons\ofxDSHapVideoPlayer\libs;..\..\..\addons\ofxDSHapVideoPlayer\libs\External;..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow;..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses;..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy;..\..\..\addons\ofxDSHapVideoPlayer\src;..\..\..\addons\ofxOsc\libs;..\..\..\addons\ofxOsc\libs\oscpack;..\..\..\addons\ofxOsc\libs\oscpack\src;..\..\..\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\addons\ofxOsc\src;..\..\..\addons\ofxThreadedImageLoader\src;..\..\..\addons\ofxTrueTypeFontUC\src;..\..\..\addons\ofxTuioWrapper\src;..\..\..\addons\ofxTuioWrapper\src\TUIO;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);..\..\..\addons\ofxAnimatable\src;..\..\..\addons\ofxDSHapVideoPlayer\libs;..\..\..\addons\ofxDSHapVideoPlayer\libs\External;..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow;..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses;..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy;..\..\..\addons\ofxDSHapVideoPlayer\src;..\..\..\addons\ofxOsc\libs;..\..\..\addons\ofxOsc\libs\oscpack;..\..\..\addons\ofxOsc\libs\oscpack\src;..\..\..\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\addons\ofxOsc\src;..\..\..\addons\ofxThreadedImageLoader\src;..\..\..\addons\ofxTrueTypeFontUC\src;..\..\..\addons\ofxTuioWrapper\src;..\..\..\addons\ofxTuioWrapper\src\TUIO;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);..\..\..\addons\ofxAnimatable\src;..\..\..\addons\ofxDSHapVideoPlayer\libs;..\..\..\addons\ofxDSHapVideoPlayer\libs\External;..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow;..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses;..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy;..\..\..\addons\ofxDSHapVideoPlayer\src;..\..\..\addons\ofxOsc\libs;..\..\..\addons\ofxOsc\libs\oscpack;..\..\..\addons\ofxOsc\libs\oscpack\src;..\..\..\addons\ofxOsc\libs\oscpack\src\ip;..\..\..\addons\ofxOsc\libs\oscpack\src\ip\posix;..\..\..\addons\ofxOsc\libs\oscpack\src\ip\win32;..\..\..\addons\ofxOsc\libs\oscpack\src\osc;..\..\..\addons\ofxOsc\src;..\..\..\addons\ofxThreadedImageLoader\src;..\..\..\addons\ofxTrueTypeFontUC\src;..\..\..\addons\ofxTuioWrapper\src;..\..\..\addons\ofxTuioWrapper\src\TUIO;..\..\..\addons\ofxXmlSettings\libs;..\..\..\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\addons\ofxAnimatable\src\ofxAnimatable.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxAnimatable\src\ofxAnimatableFloat.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxAnimatable\src\ofxAnimatableOfColor.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxAnimatable\src\ofxAnimatableOfPoint.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxAnimatable\src\ofxAnimatableQueue.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\src\DSUncompressedSampleGrabber.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\src\ofxDSHapVideoPlayer.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\amextra.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\amfilter.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\amvideo.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\arithutil.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\combase.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\cprop.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\ctlutil.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\ddmm.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\dllentry.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\dllsetup.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\mtype.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\outputq.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\perflog.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\pstream.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\pullpin.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\refclock.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\renbase.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\schedule.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\seekpt.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\source.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\strmctl.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\sysclock.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\transfrm.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\transip.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\videoctl.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\vtrans.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\winctrl.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\winutil.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\wxdebug.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\wxlist.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\wxutil.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy\snappy-c.cc" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy\snappy-sinksource.cc" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy\snappy-stubs-internal.cc" />
+    <ClCompile Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy\snappy.cc" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\src\ofxOscBundle.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\src\ofxOscMessage.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\src\ofxOscParameterSync.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\src\ofxOscReceiver.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\src\ofxOscSender.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\IpEndpointName.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\win32\NetworkingUtils.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\win32\UdpSocket.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscOutboundPacketStream.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscPrintReceivedElements.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscReceivedElements.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscTypes.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxThreadedImageLoader\src\ofxThreadedImageLoader.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxTrueTypeFontUC\src\ofxTrueTypeFontUC.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxTuioWrapper\src\ofxTuioClient.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxTuioWrapper\src\ofxTuioServer.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxTuioWrapper\src\TUIO\TuioClient.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxTuioWrapper\src\TUIO\TuioServer.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxTuioWrapper\src\TUIO\TuioTime.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxml.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
+    <ClCompile Include="src\AudioMgr.cpp" />
+    <ClCompile Include="src\blurShader.cpp" />
+    <ClCompile Include="src\closeUI.cpp" />
+    <ClCompile Include="src\configMgr.cpp" />
+    <ClCompile Include="src\dataHolder.cpp" />
+    <ClCompile Include="src\fontMgr.cpp" />
+    <ClCompile Include="src\imageRender.cpp" />
+    <ClCompile Include="src\inputEventMgr.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\mainUI.cpp" />
+    <ClCompile Include="src\ofCtbcPhotoWall.cpp" />
+    <ClCompile Include="src\ofxWinTouchHook.cpp" />
+    <ClCompile Include="src\photoRender.cpp" />
+    <ClCompile Include="src\scrollUI.cpp" />
+    <ClCompile Include="src\textUI.cpp" />
+    <ClCompile Include="src\wallList.cpp" />
+    <ClCompile Include="src\wallMgr.cpp" />
+    <ClCompile Include="src\wallUnit.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\addons\ofxAnimatable\src\ofxAnimatable.h" />
+    <ClInclude Include="..\..\..\addons\ofxAnimatable\src\ofxAnimatableFloat.h" />
+    <ClInclude Include="..\..\..\addons\ofxAnimatable\src\ofxAnimatableOfColor.h" />
+    <ClInclude Include="..\..\..\addons\ofxAnimatable\src\ofxAnimatableOfPoint.h" />
+    <ClInclude Include="..\..\..\addons\ofxAnimatable\src\ofxAnimatableQueue.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\src\DSShared.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\src\DSUncompressedSampleGrabber.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\src\HapShared.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\src\ofxDSHapVideoPlayer.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\amextra.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\amfilter.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\cache.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\checkbmi.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\combase.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\cprop.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\ctlutil.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\ddmm.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\dllsetup.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\dxmperf.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\fourcc.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\measure.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\msgthrd.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\mtype.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\outputq.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\perflog.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\perfstruct.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\pstream.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\pullpin.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\refclock.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\reftime.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\renbase.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\schedule.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\seekpt.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\source.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\streams.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\strmctl.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\sysclock.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\transfrm.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\transip.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\videoctl.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\vtrans.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\winctrl.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\winutil.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\wxdebug.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\wxlist.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\DirectShow\BaseClasses\wxutil.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy\config.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy\snappy-c.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy\snappy-internal.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy\snappy-sinksource.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy\snappy-stubs-internal.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy\snappy-stubs-public.h" />
+    <ClInclude Include="..\..\..\addons\ofxDSHapVideoPlayer\libs\External\snappy\snappy.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOsc.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOscArg.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOscBundle.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOscMessage.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOscParameterSync.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOscReceiver.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\src\ofxOscSender.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\IpEndpointName.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\NetworkingUtils.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\PacketListener.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\TimerListener.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\ip\UdpSocket.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\MessageMappingOscPacketListener.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscException.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscHostEndianness.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscOutboundPacketStream.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscPacketListener.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscPrintReceivedElements.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscReceivedElements.h" />
+    <ClInclude Include="..\..\..\addons\ofxOsc\libs\oscpack\src\osc\OscTypes.h" />
+    <ClInclude Include="..\..\..\addons\ofxThreadedImageLoader\src\ofxThreadedImageLoader.h" />
+    <ClInclude Include="..\..\..\addons\ofxTrueTypeFontUC\src\ofxTrueTypeFontUC.h" />
+    <ClInclude Include="..\..\..\addons\ofxTuioWrapper\src\ofxTuioClient.h" />
+    <ClInclude Include="..\..\..\addons\ofxTuioWrapper\src\ofxTuioServer.h" />
+    <ClInclude Include="..\..\..\addons\ofxTuioWrapper\src\TUIO\TuioClient.h" />
+    <ClInclude Include="..\..\..\addons\ofxTuioWrapper\src\TUIO\TuioContainer.h" />
+    <ClInclude Include="..\..\..\addons\ofxTuioWrapper\src\TUIO\TuioCursor.h" />
+    <ClInclude Include="..\..\..\addons\ofxTuioWrapper\src\TUIO\TuioListener.h" />
+    <ClInclude Include="..\..\..\addons\ofxTuioWrapper\src\TUIO\TuioObject.h" />
+    <ClInclude Include="..\..\..\addons\ofxTuioWrapper\src\TUIO\TuioPoint.h" />
+    <ClInclude Include="..\..\..\addons\ofxTuioWrapper\src\TUIO\TuioServer.h" />
+    <ClInclude Include="..\..\..\addons\ofxTuioWrapper\src\TUIO\TuioTime.h" />
+    <ClInclude Include="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
+    <ClInclude Include="..\..\..\addons\ofxXmlSettings\libs\tinyxml.h" />
+    <ClInclude Include="src\AudioMgr.h" />
+    <ClInclude Include="src\blurShader.h" />
+    <ClInclude Include="src\closeUI.h" />
+    <ClInclude Include="src\configMgr.h" />
+    <ClInclude Include="src\constParameter.h" />
+    <ClInclude Include="src\ctbcEvent.h" />
+    <ClInclude Include="src\dataHolder.h" />
+    <ClInclude Include="src\fontMgr.h" />
+    <ClInclude Include="src\imageRender.h" />
+    <ClInclude Include="src\inputEventMgr.h" />
+    <ClInclude Include="src\mainUI.h" />
+    <ClInclude Include="src\nameManager.h" />
+    <ClInclude Include="src\ofCtbcPhotoWall.h" />
+    <ClInclude Include="src\ofxWinTouchHook.h" />
+    <ClInclude Include="src\photoRender.h" />
+    <ClInclude Include="src\scrollUI.h" />
+    <ClInclude Include="src\textUI.h" />
+    <ClInclude Include="src\textUnit.h" />
+    <ClInclude Include="src\wallList.h" />
+    <ClInclude Include="src\wallMgr.h" />
+    <ClInclude Include="src\wallUnit.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">
+      <Project>{5837595d-aca9-485c-8e76-729040ce4b0b}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icon.rc">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(OF_ROOT)\libs\openFrameworksCompiled\project\vs</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="icon.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

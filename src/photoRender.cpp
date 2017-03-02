@@ -1,10 +1,8 @@
 #include "photoRender.h"
 
 //--------------------------------------------------------------
-void photoRender::setup(string thumbPath, string sourcePath)
+void photoRender::setup()
 {
-	_thumbPath = thumbPath;
-	_sourcePath = sourcePath;
 	startThread();
 	setupDefault();	
 	ofAddListener(ofEvents().update, this, &photoRender::update);
@@ -185,16 +183,8 @@ void photoRender::addImage(int id, string path, bool isThumb)
 {
 	photoEntry entry_;
 	entry_.isThumbanil = isThumb;
-	if (isThumb)
-	{
-		entry_.path = _thumbPath + path;
-		_thumbChecker.insert(id);
-	}
-	else
-	{
-		entry_.path = _sourcePath + path;
-		_sourceChecker.insert(id);
-	}	
+	entry_.path = path;
+	_thumbChecker.insert(id);
 	entry_.photoId = id;
 	
 	_imgQueue.push(entry_);

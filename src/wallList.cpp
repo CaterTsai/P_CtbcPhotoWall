@@ -2,18 +2,21 @@
 #include "wallMgr.h"
 
 //--------------------------------------
-wallList::wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle drawArea)
+wallList::wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle drawArea, bool defaultSmile)
 	:_baseArea(drawArea)
 	,_eSelectState(eDeselect)
 	, _eMoveCenterYState(eStable)
 	,_centerUnitPos(0.0)
 	, _eCategroy(eCategroy)
-	,_parent(parent)
-	, _isInsert(false)
+	, _parent(parent)
+	, _needRemove(false)
+	, _isChangeType(false)
+	, _isSmile(false)
 {
+	_defaultSmile = defaultSmile;
 	setupAnimation(drawArea.getCenter().x, _baseArea.getWidth());
-	resetWallUnits();
-	resetCenter();	
+	initWallUnits((eCategroy == ePhotoCategory_4) && defaultSmile);
+	resetCenter();
 }
 
 //--------------------------------------
@@ -43,6 +46,15 @@ void wallList::draw()
 	drawWallUnitDown();
 
 	ofPopMatrix();
+}
+
+//--------------------------------------
+void wallList::reset()
+{	
+	if (_isChangeType)
+	{
+		changeCategory(_eCategroy);
+	}
 }
 
 //--------------------------------------
@@ -506,7 +518,7 @@ void wallList::checkMoveCenterYState()
 	
 		}
 
-		if (_isInsert)
+		if (_needRemove)
 		{
 			removeWallUnits(0, _insertStart);
 			removeWallUnits(_insertEnd - _insertStart + 1, _wallUnitList.size());
@@ -522,7 +534,7 @@ void wallList::checkMoveCenterYState()
 				fixCenterUnitPosByUnit(id_ - _insertStart, _baseArea.getHeight() * 0.5);
 			}
 
-			_isInsert = false;
+			_needRemove = false;
 		}
 	}
 }
@@ -593,7 +605,17 @@ void wallList::selectType(PHOTO_TYPE type)
 	int insertNum_ = insertWallUnits(start.id, type);
 	auto insert_ = foundWallUnit(start.id + (insertNum_ * 0.5) - 1);
 	
-	_isInsert = true;
+	if (_eCategroy == ePhotoCategory_4 && type == dataHolder::GetInstance()->getSmileType())
+	{
+		registerSmilePhoto();
+	}
+	else
+	{
+		unregisterSmilePhoto();
+	}
+
+	_isChangeType = true;
+	_needRemove = true;
 	_insertStart = start.id;
 	_insertEnd = start.id + insertNum_ - 1;
 	
@@ -607,10 +629,21 @@ void wallList::changeCategory(ePhotoPrimaryCategory category)
 	wallUnitInfo start, end;
 	findDisplayRange(start, end);
 
-	int insertNum_ = insertWallUnits(start.id);
+	int insertNum_ = 0;
+	if ((_eCategroy == ePhotoCategory_4) && _defaultSmile)
+	{
+		registerSmilePhoto();
+		insertNum_ = insertWallUnits(start.id, dataHolder::GetInstance()->getSmileType());
+	}
+	else
+	{
+		unregisterSmilePhoto();
+		insertNum_ = insertWallUnits(start.id);
+	}
 	auto insert_ = foundWallUnit(start.id + (insertNum_ * 0.5) - 1);
 
-	_isInsert = true;
+	_needRemove = true;
+	_isChangeType = false;
 	_insertStart = start.id;
 	_insertEnd = start.id + insertNum_ - 1;
 	float diffY_ = _wallTotalHeight - abs(insert_.pos.y - _baseArea.getHeight() * 0.5);
@@ -699,9 +732,22 @@ void wallList::addWallUnit(int index, ofPtr<wallUnit> newUnil)
 }
 
 //--------------------------------------
-void wallList::resetWallUnits()
+void wallList::initWallUnits(bool isSmile)
 {
-	auto photoIDList_ = dataHolder::GetInstance()->getPhotoID(_eCategroy);
+	vector<int> photoIDList_;
+
+	if (isSmile)
+	{
+		photoIDList_ = dataHolder::GetInstance()->getPhotoID(
+			_eCategroy, 
+			dataHolder::GetInstance()->getSmileType()
+			);
+		registerSmilePhoto();
+	}
+	else
+	{
+		photoIDList_ = dataHolder::GetInstance()->getPhotoID(_eCategroy);
+	}
 
 	random_shuffle(photoIDList_.begin(), photoIDList_.end());
 
@@ -759,9 +805,15 @@ int wallList::insertWallUnits(int index)
 }
 
 //--------------------------------------
+void wallList::insertWallUnit(int index, stPhotoHeader newPhotoHeader)
+{
+	addWallUnit(index, ofPtr<wallUnit>(new photoUnit(newPhotoHeader, _animDrawWidth.getCurrentValue())));
+	updateWallTotalHeight();
+}
+
+//--------------------------------------
 void wallList::removeWallUnits(int start, int end)
 {
-
 	if (start < 0 || _wallUnitList.size() < end)
 	{
 		ofLog(OF_LOG_ERROR, "[wallList::removeWallUnits]Wrong index");
@@ -800,7 +852,49 @@ void wallList::updateWallTotalHeight()
 		_wallTotalHeight += iter_->getHeight();
 	}
 }
+
 #pragma endregion
+
+#pragma region Smile
+//--------------------------------------
+void wallList::onNewSmilePhoto(stPhotoHeader & smilePhoto)
+{	
+	wallUnitInfo start, end;
+	findDisplayRange(start, end);
+	insertWallUnit(start.id, smilePhoto);
+	
+	if (getIsDeselect())
+	{
+		_needRemove = false;
+		auto insert_ = foundWallUnit(start.id);		
+		float diffY_ = _wallTotalHeight - abs(insert_.pos.y - _baseArea.getHeight() * 0.5);
+		movePosY(_centerUnitPos.y + diffY_, cMoveWallListPosYLength);
+	}	
+}
+
+//--------------------------------------
+void wallList::registerSmilePhoto()
+{
+	if (!_isSmile)
+	{
+		ofAddListener(dataHolder::GetInstance()->_onNewSmilePhoto, this, &wallList::onNewSmilePhoto);
+		_isSmile = true;
+	}
+	
+}
+
+//--------------------------------------
+void wallList::unregisterSmilePhoto()
+{
+	if (_isSmile)
+	{
+		ofRemoveListener(dataHolder::GetInstance()->_onNewSmilePhoto, this, &wallList::onNewSmilePhoto);
+		_isSmile = false;
+	}
+	
+}
+#pragma endregion
+
 
 #pragma region Input
 //--------------------------------------

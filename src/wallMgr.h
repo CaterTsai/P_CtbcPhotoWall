@@ -22,7 +22,7 @@ public:
 	void start();
 	void end();
 
-	void addWallList(int width);
+	void addWallList(int width, bool canBeSmile = false);
 
 	ofVec2f getWallRectPos();
 	int getWallRectWidth();
@@ -30,6 +30,7 @@ public:
 private:
 	void setupCheck();
 	int getListTotalWidth();
+	void resetWallList();
 
 	void enableWallListInput();
 	void disableWallListInput();

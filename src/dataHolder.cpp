@@ -7,7 +7,15 @@ void dataHolder::setup(string url)
 	loadPhotoCategoryName();
 	loadPhotoTypeName();
 	loadPhotoHeader();
+	loadSmilePhoto();
 	_isSetup = true;
+	_timer = cPhotoSmileCheckTime;
+}
+
+//--------------------------------------------------------------
+void dataHolder::update(float delta)
+{
+	checkSmileFile(delta);
 }
 
 //--------------------------------------------------------------
@@ -71,6 +79,12 @@ string dataHolder::getTypeName(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type,
 }
 
 //--------------------------------------------------------------
+PHOTO_TYPE dataHolder::getSmileType()
+{
+	return _smileType;
+}
+
+//--------------------------------------------------------------
 void dataHolder::loadPhotoTypeName()
 {
 	//TODO
@@ -85,6 +99,80 @@ void dataHolder::loadPhotoTypeName()
 		}
 		_photoTypeName.insert(make_pair((ePhotoPrimaryCategory)idx_, photoTypeName_));
 	}
+	_smileType = 2;
+}
+#pragma endregion
+
+#pragma region Smile Photo
+//--------------------------------------------------------------
+void dataHolder::loadSmilePhoto()
+{
+	ofDirectory dir_(configMgr::exSmilePath + configMgr::exThumbFolderName);
+	dir_.allowExt("png");
+	dir_.listDir();
+	
+	_smileBaseID = (ePhotoCategory_4 << 28) + (_smileType << 20) + (ePhotoWideVertical << 16);
+	for (int idx_ = 0; idx_ < dir_.numFiles(); idx_++)
+	{
+		string fileName_ = dir_.getName(idx_);
+		stPhotoHeader header_;
+		header_.id = _smileBaseID + idx_;
+		header_.shape = ePhotoWideVertical;
+		header_.type = _smileType;
+		header_.category = ePhotoCategory_4;
+		header_.thumbnailPath = configMgr::exSmilePath + configMgr::exThumbFolderName + fileName_;
+		header_.sourcePath = configMgr::exSmilePath + configMgr::exSourceFolderName + fileName_;
+		header_.title = "";
+		header_.msg = "";
+
+		addPhotoMap(header_);
+	}
+}
+
+//--------------------------------------------------------------
+void dataHolder::checkSmileFile(float delta)
+{
+	_timer -= delta;
+
+	if (_timer <= 0.0f)
+	{
+		_timer = cPhotoSmileCheckTime;
+
+		WIN32_FIND_DATAA Fd_;
+		HANDLE pH_ = FindFirstFileA((configMgr::exSmilePath + configMgr::exSmileOrderFolderName + "*.order").c_str(), &Fd_);
+
+		if (pH_ != INVALID_HANDLE_VALUE)
+		{
+			string orderName_ = string(Fd_.cFileName);
+			addSmileHeader(orderName_);
+
+			string removeCmd_ = "del " + configMgr::exSmilePath + configMgr::exSmileOrderFolderName + orderName_;
+			system(removeCmd_.c_str());
+		}
+	}
+
+}
+
+//--------------------------------------------------------------
+void dataHolder::addSmileHeader(string order)
+{
+	int dotIdx_ = order.find(".order");
+	string fileName_ = order.substr(0, dotIdx_) + ".png";
+	
+	int newID_ = _smileBaseID + _typeToPhotoID[ePhotoCategory_4][_smileType].size();
+	stPhotoHeader header_;
+	header_.id = newID_;
+	header_.shape = ePhotoWideVertical;
+	header_.type = _smileType;
+	header_.category = ePhotoCategory_4;
+	header_.thumbnailPath = configMgr::exSmilePath + configMgr::exThumbFolderName + fileName_;
+	header_.sourcePath = configMgr::exSmilePath + configMgr::exSourceFolderName + fileName_;
+	header_.title = "";
+	header_.msg = "";
+
+	addPhotoMap(header_);
+	
+	ofNotifyEvent(_onNewSmilePhoto, header_);
 }
 #pragma endregion
 
@@ -135,11 +223,11 @@ vector<int> dataHolder::getPhotoID(ePhotoPrimaryCategory eCategory, PHOTO_TYPE t
 void dataHolder::loadPhotoHeader()
 {
 	//TODO
-	ofDirectory dir_("thumbnail");
+	ofDirectory dir_(configMgr::exPhotoPath + configMgr::exThumbFolderName);
 	dir_.allowExt("jpg");
 	dir_.listDir();
 	for (int idx_ = 0; idx_ < dir_.numFiles(); idx_++)
-	{
+	{	
 		string fileName_ = dir_.getName(idx_);
 		int imageData_ = stoi(fileName_.substr(0, 10));
 		stPhotoHeader header_;
@@ -147,8 +235,8 @@ void dataHolder::loadPhotoHeader()
 		header_.shape = (ePhotoShape)((imageData_ & PHOTO_SHAPE_MASK) >> 16);
 		header_.type = (imageData_ & PHOTO_TYPE_MASK) >> 20;
 		header_.category = (ePhotoPrimaryCategory)((imageData_ & PHOTO_CATEGORY_MASK) >> 28);
-		header_.thumbnailPath = fileName_;
-		header_.sourcePath = fileName_;
+		header_.thumbnailPath = configMgr::exPhotoPath + configMgr::exThumbFolderName + fileName_;
+		header_.sourcePath = configMgr::exPhotoPath + configMgr::exSourceFolderName + fileName_;
 		header_.title = "";
 		header_.msg = "";
 

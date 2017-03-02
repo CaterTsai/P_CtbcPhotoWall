@@ -5,13 +5,13 @@
 #include "ctbcEvent.h"
 
 #pragma region Define
-//#define USE_MOUSE
+#define USE_MOUSE
 
 #ifndef USE_MOUSE
 //#define USE_TUIO
 #endif
 
-#define PHOTO_TYPE unsigned int
+#define PHOTO_TYPE int
 
 #define PHOTO_ID_MASK 0x0000ffff
 #define PHOTO_HEADER_MASK 0xffff0000
@@ -19,7 +19,6 @@
 #define PHOTO_TYPE_MASK 0x0ff00000
 #define PHOTO_CATEGORY_MASK 0xf0000000
 #pragma endregion
-
 
 #pragma region ENUM
 enum eWallUnitType : int
@@ -73,12 +72,15 @@ struct stPhotoHeader
 #pragma endregion
 
 #pragma region const parameter
-const int cWindowWidth = 3840;
+const int cWindowWidth = 1920;
 const int cWindowHeight = cWindowWidth * 0.421875;
 const int cPhotoWallCategoryWidth = cWindowWidth * 0.25;
 
 //Photo Render
-const float cSingnalCheckTime = 3.0f;
+const float cSingnalCheckTime = 1.0f;
+
+//Data Holder
+const float cPhotoSmileCheckTime = 5.0f;
 
 //input event manager
 const int cInputEventLevel = 10;
@@ -90,12 +92,11 @@ const int cInputTUIOPort = 3333;
 const int cInputTUIOCircleSize = cWindowHeight * 0.02;
 
 //Wall
-const float cWallListMoveVecRatio = 5.0f;
-const float cWallListMoveVecMax = 40.0f;
-const float cWallListMoveVecMin = 10.0f;
+const float cWallListMoveVecMax = 6.0f;
+const float cWallListMoveVecMin = 3.0f;
 const int cMinimumPhotoWidth = (int)cPhotoWallCategoryWidth / 10.0;
 const int cMinimumPhotoHeight = (int)cMinimumPhotoWidth * 9.0/16.0;
-const int cPhotoUnitInterval = 5;
+const int cPhotoUnitInterval = cWindowWidth * (5.0 / 3840.0);
 const int cDefaultPhotoListNum = (int)ceil(cWindowHeight / (float)cMinimumPhotoHeight);
 const ofColor cSelectCoverColor(0, 167, 157);
 const float cSelectCoverAlpha = 255 * 0.8;
