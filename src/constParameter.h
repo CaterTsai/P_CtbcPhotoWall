@@ -128,7 +128,7 @@ const int cMainSmallUIHeight = cMinimumPhotoHeight;
 const int cTextUIWidth = cSelectWidth;
 const int cTextUIHeight = cTextUIWidth * 0.5f;
 const int cTextUIContextLimitWidth = cTextUIWidth * 0.9f;
-const int cTextUIFontSize = cTextUIWidth * 0.1f;
+const int cTextUIFontSize = cTextUIWidth * 0.05f;
 const int cTextUIContextFontSize = cTextUIFontSize * 0.5f;
 const float cTextUIAnimDuration = 0.3f;
 

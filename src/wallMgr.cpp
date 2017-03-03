@@ -295,7 +295,7 @@ void wallMgr::setTextUIVisible(bool val)
 void wallMgr::updateTextUI(int photoID)
 {
 	//TODO
-	string titleZH_ = "標題:" + ofToString(photoID);
+	string titleZH_ = "標題:零一二三四五六七八九";
 	string titleEN_ = "TITLE:" + ofToString(photoID);
 	string msgZH_ = "零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九";
 	string msgEN_ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ012345678901234567890123456789";

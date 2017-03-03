@@ -520,22 +520,38 @@ void wallList::checkMoveCenterYState()
 
 		if (_needRemove)
 		{
-			removeWallUnits(0, _insertStart);
-			removeWallUnits(_insertEnd - _insertStart + 1, _wallUnitList.size());
-
-			if (getIsSelect())
-			{
-				_selectWallUnit.id -= _insertStart;
-				fixCenterUnitPosByUnit(_selectWallUnit.id, _selectWallUnit.pos.y);
-			}
-			else if(getIsDeselect())
-			{
-				int id_ = (_insertStart + _insertEnd - 1) * 0.5;
-				fixCenterUnitPosByUnit(id_ - _insertStart, _baseArea.getHeight() * 0.5);
-			}
-
+			removeWallUnitCheck();
 			_needRemove = false;
 		}
+	}
+}
+
+//--------------------------------------
+void wallList::removeWallUnitCheck()
+{
+	//TODO
+	int fixID_, fixPosY_;
+	int insertNum_ = _insertEnd - _insertStart + 1;
+
+	if (_wallUnitList.size() - insertNum_ >= cDefaultPhotoListNum)
+	{
+		removeWallUnits(0, _insertStart);
+		removeWallUnits(insertNum_, _wallUnitList.size());
+
+		if (getIsSelect())
+		{
+			_selectWallUnit.id -= _insertStart;
+			fixID_ = _selectWallUnit.id;
+			fixPosY_ = _selectWallUnit.pos.y;
+		}
+		else if (getIsDeselect())
+		{
+			int id_ = (insertNum_) * 0.5;
+			fixID_ = id_ - _insertStart;
+			fixPosY_ = _baseArea.getHeight() * 0.5;
+		}
+
+		fixCenterUnitPosByUnit(fixID_, fixPosY_);
 	}
 }
 
@@ -894,7 +910,6 @@ void wallList::unregisterSmilePhoto()
 	
 }
 #pragma endregion
-
 
 #pragma region Input
 //--------------------------------------

@@ -79,6 +79,7 @@ private:
 
 	void checkSelectState();
 	void checkMoveCenterYState();
+	void removeWallUnitCheck();
 	
 	int getAnimMoveX();
 
