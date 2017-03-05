@@ -1,14 +1,14 @@
 #include "dataHolder.h"
 
 //--------------------------------------------------------------
-void dataHolder::setup(string url)
-{
-	_backendUrl = url;
-	loadPhotoCategoryName();
-	loadPhotoTypeName();
-	loadPhotoHeader();
+void dataHolder::setup()
+{	
+
+	setupServer();
+	postToServer(NAME_MGR::S_ReqInitData);
+	postToServer(NAME_MGR::S_ReqPhotoList);
+
 	loadSmilePhoto();
-	_isSetup = true;
 	_timer = cPhotoSmileCheckTime;
 }
 
@@ -19,12 +19,9 @@ void dataHolder::update(float delta)
 }
 
 //--------------------------------------------------------------
-void dataHolder::setupCheck()
+bool dataHolder::setupCheck()
 {
-	if (!_isSetup)
-	{
-		throw std::runtime_error(("setupCheck : need setup"));
-	}
+	return _categorySetup && _typeSetup && _headerSetup;
 }
 
 #pragma region Photo Category
@@ -48,6 +45,19 @@ void dataHolder::loadPhotoCategoryName()
 	_categoryName[ePhotoCategory_2] = textUnit("成長印記", "We are growing");
 	_categoryName[ePhotoCategory_3] = textUnit("掌聲響起", "You're my star");
 	_categoryName[ePhotoCategory_4] = textUnit("家在一起", "We are family");
+}
+
+//--------------------------------------------------------------
+void dataHolder::setPhotoCategoryName(Json::Value & root)
+{
+	int size_ = root.size();
+	for (int idx_ = 0; idx_ < size_; idx_++)
+	{
+		string zhName_ = root[idx_].get("zhName", 0).asString();
+		string enName_ = root[idx_].get("enName", 0).asString();
+		_categoryName[(ePhotoPrimaryCategory)idx_] = textUnit(zhName_, enName_);
+	}
+	_categorySetup = true;
 }
 
 #pragma endregion
@@ -99,7 +109,39 @@ void dataHolder::loadPhotoTypeName()
 		}
 		_photoTypeName.insert(make_pair((ePhotoPrimaryCategory)idx_, photoTypeName_));
 	}
+	
+}
+
+//--------------------------------------------------------------
+void dataHolder::setPhotoTypeName(Json::Value & root)
+{
+	int size_ = root.size();
+
+
+	for (int idx_ = 0; idx_ < size_; idx_++)
+	{
+		int cid_ = stoi(root[idx_].get("cid", "-1").asString());
+		int tid_ = stoi(root[idx_].get("tid", "-1").asString());
+		string nameZH_ = root[idx_].get("zhName", "").asString();
+		string nameEN_ = root[idx_].get("enName", "").asString();
+
+
+		auto categoryMapIter_ = _photoTypeName.find((ePhotoPrimaryCategory)cid_);
+		if (categoryMapIter_ == _photoTypeName.end())
+		{
+			map<PHOTO_TYPE, textUnit> photoTypeName_;
+			_photoTypeName.insert(make_pair((ePhotoPrimaryCategory)cid_, photoTypeName_));
+			categoryMapIter_ = _photoTypeName.find((ePhotoPrimaryCategory)cid_);
+		}
+
+		auto typeMapIter_ = categoryMapIter_->second.find(tid_);
+		if (typeMapIter_ == categoryMapIter_->second.end())
+		{
+			categoryMapIter_->second.insert(make_pair(tid_, textUnit(nameZH_, nameEN_)));
+		}
+	}
 	_smileType = 2;
+	_typeSetup = true;
 }
 #pragma endregion
 
@@ -108,7 +150,7 @@ void dataHolder::loadPhotoTypeName()
 void dataHolder::loadSmilePhoto()
 {
 	ofDirectory dir_(configMgr::exSmilePath + configMgr::exThumbFolderName);
-	dir_.allowExt("png");
+	dir_.allowExt("jpg");
 	dir_.listDir();
 	
 	_smileBaseID = (ePhotoCategory_4 << 28) + (_smileType << 20) + (ePhotoWideVertical << 16);
@@ -245,6 +287,29 @@ void dataHolder::loadPhotoHeader()
 }
 
 //--------------------------------------------------------------
+void dataHolder::setPhotoHeader(Json::Value & root)
+{
+	int size_ = root.size();
+	for (int idx_ = 0; idx_ < size_; idx_++)
+	{
+		stPhotoHeader header_;
+		string fileName_ = root[idx_].get("fileName", "").asString();
+		header_.id = stoi(root[idx_].get("pid", "0").asString());
+		header_.shape = (ePhotoShape)stoi(root[idx_].get("shape", "0").asString());
+		header_.type = stoi(root[idx_].get("tid", "0").asString());
+		header_.category = (ePhotoPrimaryCategory)stoi(root[idx_].get("cid", "0").asString());
+		header_.thumbnailPath = configMgr::exPhotoPath + configMgr::exThumbFolderName + fileName_ + cPhotoExt;
+		header_.sourcePath = configMgr::exPhotoPath + configMgr::exSourceFolderName + fileName_ + cPhotoExt;
+		header_.title = "";
+		header_.msg = "";
+
+		addPhotoMap(header_);
+	}
+
+	_headerSetup = true;
+}
+
+//--------------------------------------------------------------
 void dataHolder::addPhotoMap(stPhotoHeader & photoHeader)
 {
 	auto iter_ = _photoMap.find(photoHeader.id);
@@ -276,6 +341,88 @@ void dataHolder::addIndex(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type, int 
 	iter_->second.push_back(photoid);
 }
 
+
+
+#pragma endregion
+
+#pragma region Server
+//--------------------------------------------------------------
+void dataHolder::setupServer()
+{
+	ofAddListener(_server.newResponseEvent, this, &dataHolder::onServerResponse);
+	_server.start();
+	
+}
+
+//--------------------------------------------------------------
+void dataHolder::postToServer(string active, string param)
+{
+	ofxHttpForm form_;
+	form_.action = configMgr::exServerUrl;
+	form_.method = OFX_HTTP_POST;
+	form_.addFormField("active", active);
+	form_.addFormField("cmd", param);
+	_server.addForm(form_);
+}
+
+//--------------------------------------------------------------
+void dataHolder::handleActive(string active, Json::Value& root)
+{
+	Json::Reader reader_;
+	if (active == NAME_MGR::S_ReqInitData)
+	{
+		setPhotoCategoryName(root.get("CategoryList", 0));
+		setPhotoTypeName(root.get("TypeList", 0));
+
+	}
+	else if (active == NAME_MGR::S_ReqPhotoList)
+	{
+		setPhotoHeader(root.get("photoList", 0));
+	}
+	else if (active == NAME_MGR::S_ReqPhotoData)
+	{
+		
+	}
+	else
+	{
+		ofLog(OF_LOG_WARNING, "[dataHolder::handleActive]Unknow active :" + active);
+	}
+
+	//Check Setup Finish
+	if ((active == NAME_MGR::S_ReqInitData || active == NAME_MGR::S_ReqPhotoList) && setupCheck())
+	{
+		ofNotifyEvent(_onSetupFinish);
+	}
+}
+
+//--------------------------------------------------------------
+void dataHolder::onServerResponse(ofxHttpResponse & e)
+{
+	if (e.status != 200)
+	{
+		ofLog(OF_LOG_WARNING, "[dataHolder::onServerResponse] Http error :" + e.reasonForStatus);
+		return;
+	}
+
+	Json::Value root_;
+	Json::Reader reader_;
+
+	if (!reader_.parse(e.responseBody.getText(), root_))
+	{
+		ofLog(OF_LOG_WARNING, "[dataHolder::onServerResponse] Decode json failed");
+		return;
+	}
+
+	string result_ = root_.get("result", 0).asString();
+	if (result_ != "1")
+	{
+		ofLog(OF_LOG_WARNING, "[dataHolder::onServerResponse] Http request failed");
+		return;
+	}
+	string active_ = root_.get("active", 0).asString();
+	handleActive(active_, root_);
+	
+}
 #pragma endregion
 
 #pragma region Singletion

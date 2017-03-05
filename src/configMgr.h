@@ -13,5 +13,6 @@ public:
 	static string exSmileOrderFolderName;
 	static string exPhotoPath;
 	static string exSmilePath;
+	static string exServerUrl;
 
 };

@@ -41,7 +41,6 @@ enum ePhotoShape : int
 	,ePhotoNormalVertical		// 3:4
 	,ePhotoWideHorizontal		// 16:9
 	,ePhotoWideVertical			// 9:16
-
 };
 
 enum eInputSystemLevel : int
@@ -61,6 +60,15 @@ enum eInputSystemLevel : int
 #pragma region Struct
 struct stPhotoHeader
 {
+	stPhotoHeader()
+		:id(-1)
+		,type(-1)
+		,category(ePhotoCategory_Num)
+		,title("")
+		,msg("")
+		,thumbnailPath("")
+		,sourcePath("")
+	{}
 	int id;
 	PHOTO_TYPE type;
 	ePhotoPrimaryCategory category;
@@ -72,7 +80,7 @@ struct stPhotoHeader
 #pragma endregion
 
 #pragma region const parameter
-const int cWindowWidth = 1920;
+const int cWindowWidth = 3840;
 const int cWindowHeight = cWindowWidth * 0.421875;
 const int cPhotoWallCategoryWidth = cWindowWidth * 0.25;
 
@@ -81,6 +89,7 @@ const float cSingnalCheckTime = 1.0f;
 
 //Data Holder
 const float cPhotoSmileCheckTime = 5.0f;
+const string cPhotoExt = ".png";
 
 //input event manager
 const int cInputEventLevel = 10;

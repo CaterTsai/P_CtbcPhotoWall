@@ -4,24 +4,42 @@
 void ofCtbcPhotoWall::setup()
 {
 	_displayMsg = false;
-	ofHideCursor();
+	
 	ofBackground(0);
 	ofSetVerticalSync(false);
 	ofSetFrameRate(60);
 		
 	configMgr::load("config/_config.xml");
 	photoRender::GetInstance()->setup();
-	dataHolder::GetInstance()->setup("");
+	
+	ofAddListener(dataHolder::GetInstance()->_onSetupFinish, this, &ofCtbcPhotoWall::onDataHolderLoadFinish);
+	dataHolder::GetInstance()->setup();
+
+
 	fontMgr::GetInstance()->setup("fonts/");
 	inputEventMgr::GetInstance()->enableInput();
 	
 	setupImageRender("images/");
 	setupAudio();
 
+	while (true)
+	{
+		if (_canSetup)
+		{
+			setupAfterDataHolder();
+			break;
+		}
+		Sleep(500);
+	}
 #ifndef _DEBUG
+	ofHideCursor();
 	ofToggleFullscreen();
 #endif // !_DEBUG
+}
 
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::setupAfterDataHolder()
+{
 	AudioMgr::GetInstance()->playAudio(NAME_MGR::BGM);
 	setupWallMgr();
 	enableInput();
@@ -31,6 +49,7 @@ void ofCtbcPhotoWall::setup()
 //--------------------------------------------------------------
 void ofCtbcPhotoWall::update()
 {
+
 	float delta_ = ofGetElapsedTimef() - _timer;
 	_timer += delta_;
 
@@ -42,6 +61,11 @@ void ofCtbcPhotoWall::update()
 //--------------------------------------------------------------
 void ofCtbcPhotoWall::draw()
 {
+	if (!dataHolder::GetInstance()->setupCheck())
+	{
+		return;
+	}
+
 	drawWallMgr();
 
 	if (_displayMsg)
@@ -356,4 +380,14 @@ ofRectangle ofCtbcPhotoWall::getInputArea()
 {
 	return ofRectangle(0, 0, cWindowWidth, cWindowHeight);
 }
+
 #pragma endregion
+
+#pragma region Data Holder
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::onDataHolderLoadFinish()
+{
+	_canSetup = true;
+}
+#pragma endregion
+

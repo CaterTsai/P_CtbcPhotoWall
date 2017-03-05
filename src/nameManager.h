@@ -3,8 +3,8 @@
 #include <string>
 using namespace std;
 
-#define CREATE_VALUE(NAME) static const string NAME = #NAME;
-#define CREATE_VALUE_WITH_VALUE(NAME, VALUE) static const string NAME = VALUE;
+#define CREATE_VALUE(NAME) static const string NAME = #NAME
+#define CREATE_VALUE_WITH_VALUE(NAME, VALUE) static const string NAME = #VALUE
 
 namespace NAME_MGR
 {
@@ -23,4 +23,9 @@ namespace NAME_MGR
 	//Audio
 	CREATE_VALUE(BTN_CLICK);
 	CREATE_VALUE(BGM);
+
+	//Server Active
+	CREATE_VALUE_WITH_VALUE(S_ReqPhotoList, getPhotoList);
+	CREATE_VALUE_WITH_VALUE(S_ReqPhotoData, getPhotoData);
+	CREATE_VALUE_WITH_VALUE(S_ReqInitData, initData);
 }

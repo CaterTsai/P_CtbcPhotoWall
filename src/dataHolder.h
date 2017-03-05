@@ -1,17 +1,21 @@
 #pragma once
 
+#include "ofxHttpUtils.h"
+#include "json.h"
+
 #include "constParameter.h"
 #include "photoRender.h"
 #include "configMgr.h"
 #include "textUnit.h"
 
+
 class dataHolder
 {
 public:
-	void setup(string url);
+	void setup();
 	void update(float delta);
-private:
-	void setupCheck();
+public:
+	bool setupCheck();
 
 #pragma region Photo Category
 public:
@@ -20,7 +24,9 @@ public:
 
 private:
 	void loadPhotoCategoryName();
+	void setPhotoCategoryName(Json::Value& root);
 private:
+	bool _categorySetup;
 	map<ePhotoPrimaryCategory, textUnit>	_categoryName;
 #pragma endregion
 
@@ -32,8 +38,10 @@ public:
 
 private:
 	void loadPhotoTypeName();
+	void setPhotoTypeName(Json::Value& root);
 
-private:	
+private:
+	bool _typeSetup;
 	map<ePhotoPrimaryCategory, map<PHOTO_TYPE, textUnit>>	_photoTypeName;
 #pragma endregion
 
@@ -59,15 +67,28 @@ public:
 	vector<int> getPhotoID(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type);
 private:	
 	void loadPhotoHeader();
+	void setPhotoHeader(Json::Value& root);
 	void addPhotoMap(stPhotoHeader& photoHeader);
 	void addIndex(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type, int photoid);
 	
 private:
-	bool _isSetup;
-	string _backendUrl;
+	bool _headerSetup;
 	map<int, stPhotoHeader> _photoMap;
 	map<PHOTO_TYPE, vector<int>> _typeToPhotoID[ePhotoCategory_Num];
 
+#pragma endregion
+	
+#pragma region Server
+private:
+	void setupServer();
+	void postToServer(string active, string param = "");
+	void handleActive(string active, Json::Value& root);
+
+public:
+	void onServerResponse(ofxHttpResponse& e);
+	ofEvent<void> _onSetupFinish;
+private:
+	ofxHttpUtils	_server;
 #pragma endregion
 	
 #pragma region Singleton
@@ -76,11 +97,12 @@ private:
 //-------------------
 private:
 	dataHolder()
-		:_isSetup(false)
-		,_backendUrl("")
+		:_headerSetup(false)
+		,_categorySetup(false)
+		,_typeSetup(false)
 	{};
 	~dataHolder() {
-		Destroy();
+		_server.stop();
 	}
 	dataHolder(dataHolder const&) {};
 	void operator=(dataHolder const&) {};

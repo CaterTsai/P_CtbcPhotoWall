@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "constParameter.h"
 #include "dataHolder.h"
 #include "photoRender.h"
@@ -15,7 +16,11 @@
 class ofCtbcPhotoWall : public ofBaseApp, public inputEvent {
 
 public:
+	ofCtbcPhotoWall()
+		:_canSetup(false)
+	{}
 	void setup();
+	void setupAfterDataHolder();
 	void update();
 	void draw();
 
@@ -86,7 +91,13 @@ private:
 	ofRectangle	getInputArea() override;
 #pragma endregion
 
-#pragma region Debug
+#pragma region Data holder
+public:
+	void onDataHolderLoadFinish();
+
+
+private:
+	bool _canSetup;
 
 #pragma endregion
 

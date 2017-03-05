@@ -5,6 +5,7 @@ string configMgr::exSourceFolderName = "";
 string configMgr::exSmileOrderFolderName = "";
 string configMgr::exPhotoPath = "";
 string configMgr::exSmilePath = "";
+string configMgr::exServerUrl = "";
 
 void configMgr::load(string path)
 {
@@ -20,6 +21,7 @@ void configMgr::load(string path)
 	exSmileOrderFolderName = xml_.getValue("orderFolderName", "", 0);
 	exPhotoPath = xml_.getValue("photoPath", "", 0);
 	exSmilePath = xml_.getValue("smilePath", "", 0);
+	exServerUrl = xml_.getValue("serverUrl", "", 0);
 }
 
 
