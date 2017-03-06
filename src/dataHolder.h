@@ -23,7 +23,6 @@ public:
 	textUnit getCategoryName(ePhotoPrimaryCategory eCategory);
 
 private:
-	void loadPhotoCategoryName();
 	void setPhotoCategoryName(Json::Value& root);
 private:
 	bool _categorySetup;
@@ -37,7 +36,6 @@ public:
 	PHOTO_TYPE getSmileType();
 
 private:
-	void loadPhotoTypeName();
 	void setPhotoTypeName(Json::Value& root);
 
 private:
@@ -63,14 +61,16 @@ public:
 #pragma region PhotoHeader
 public:
 	stPhotoHeader& getPhotoHeader(int photoId);
+	bool getPhotoText(int photoID, bool isZH, string& title, string& msg);
+
 	vector<int> getPhotoID(ePhotoPrimaryCategory eCategory);
 	vector<int> getPhotoID(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type);
 private:	
-	void loadPhotoHeader();
 	void setPhotoHeader(Json::Value& root);
+	void setPhotoHeaderData(int photoID, Json::Value& root);
 	void addPhotoMap(stPhotoHeader& photoHeader);
 	void addIndex(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type, int photoid);
-	
+	void setPhotoMap(stPhotoHeader& newPhotoHeader);
 private:
 	bool _headerSetup;
 	map<int, stPhotoHeader> _photoMap;
@@ -87,6 +87,7 @@ private:
 public:
 	void onServerResponse(ofxHttpResponse& e);
 	ofEvent<void> _onSetupFinish;
+	ofEvent<int> _onPhotoDataLoad;
 private:
 	ofxHttpUtils	_server;
 #pragma endregion

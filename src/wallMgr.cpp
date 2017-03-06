@@ -6,6 +6,7 @@ wallMgr::wallMgr()
 	:_isSetup(false)
 	, _selectWallList(nullptr)
 	, _eWallState(eWallIdle)
+	, _needUpdateText(false)
 	, _isDisplayZH(true)
 	, _canSelect(true)
 {
@@ -24,12 +25,14 @@ void wallMgr::setup(ePhotoPrimaryCategory category, ofRectangle wallRect)
 {
 	_eCategory = _backupCategory = category;
 	_wallRect = wallRect;
-
+	
 	_mainUI.setup(this, ofVec2f(cPhotoWallCategoryWidth * 0.5, cWindowHeight * 0.5), category);
 	_textUI.setup(this);
 	_scrollUI.setup(this);
 	_closeUI.setup(this);
 	
+	ofAddListener(dataHolder::GetInstance()->_onPhotoDataLoad, this, &wallMgr::onTextIsLoad);
+
 	_isSetup = true;
 }
 
@@ -43,6 +46,8 @@ void wallMgr::update(float delta)
 		iter_->update(delta);
 	}
 	_mainUI.update(delta);
+
+	checkUpdateText();
 	_textUI.update(delta);
 	_scrollUI.update(delta);
 }
@@ -294,20 +299,10 @@ void wallMgr::setTextUIVisible(bool val)
 //--------------------------------
 void wallMgr::updateTextUI(int photoID)
 {
-	//TODO
-	string titleZH_ = "標題:零一二三四五六七八九";
-	string titleEN_ = "TITLE:" + ofToString(photoID);
-	string msgZH_ = "零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九零一二三四五六七八九";
-	string msgEN_ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ012345678901234567890123456789";
-	
-	if (_isDisplayZH)
-	{
-		_textUI.updateText(titleZH_, msgZH_, _isDisplayZH);
-	}
-	else
-	{
-		_textUI.updateText(titleEN_, msgEN_, _isDisplayZH);
-	}
+	string title_, msg_;
+	title_ = msg_ = "Loading";
+	dataHolder::GetInstance()->getPhotoText(photoID, _isDisplayZH, title_, msg_);
+	_textUI.updateText(title_, msg_, _isDisplayZH);
 	
 }
 
@@ -320,6 +315,25 @@ ofVec2f wallMgr::getTextUIPos()
 		rVal_.set(_selectWallList->getDrawPosX(), _selectWallList->getSelectBottomPosY());
 	}
 	return rVal_;
+}
+
+//--------------------------------
+void wallMgr::checkUpdateText()
+{
+	if (_needUpdateText)
+	{
+		updateTextUI(_selectWallList->getSelectPhotoID());
+		_needUpdateText = false;
+	}
+}
+
+//--------------------------------
+void wallMgr::onTextIsLoad(int & pid)
+{
+	if (_selectWallList && pid == _selectWallList->getSelectPhotoID())
+	{
+		_needUpdateText = true;
+	}
 }
 
 //--------------------------------

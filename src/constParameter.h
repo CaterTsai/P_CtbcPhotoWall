@@ -64,8 +64,10 @@ struct stPhotoHeader
 		:id(-1)
 		,type(-1)
 		,category(ePhotoCategory_Num)
-		,title("")
-		,msg("")
+		,titleZH("")
+		,msgZH("")
+		,titleEN("")
+		,msgEN("")
 		,thumbnailPath("")
 		,sourcePath("")
 	{}
@@ -73,7 +75,8 @@ struct stPhotoHeader
 	PHOTO_TYPE type;
 	ePhotoPrimaryCategory category;
 	ePhotoShape shape;
-	string title, msg;
+	string titleZH, msgZH;
+	string titleEN, msgEN;
 	string thumbnailPath, sourcePath;
 };
 
@@ -137,7 +140,7 @@ const int cMainSmallUIHeight = cMinimumPhotoHeight;
 const int cTextUIWidth = cSelectWidth;
 const int cTextUIHeight = cTextUIWidth * 0.5f;
 const int cTextUIContextLimitWidth = cTextUIWidth * 0.9f;
-const int cTextUIFontSize = cTextUIWidth * 0.05f;
+const int cTextUIFontSize = cTextUIWidth * 0.075f;
 const int cTextUIContextFontSize = cTextUIFontSize * 0.5f;
 const float cTextUIAnimDuration = 0.3f;
 

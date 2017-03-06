@@ -3,7 +3,6 @@
 //--------------------------------------------------------------
 void dataHolder::setup()
 {	
-
 	setupServer();
 	postToServer(NAME_MGR::S_ReqInitData);
 	postToServer(NAME_MGR::S_ReqPhotoList);
@@ -35,16 +34,6 @@ string dataHolder::getCategoryName(ePhotoPrimaryCategory eCategory, bool isZH)
 textUnit dataHolder::getCategoryName(ePhotoPrimaryCategory eCategory)
 {
 	return _categoryName[eCategory];
-}
-
-//--------------------------------------------------------------
-void dataHolder::loadPhotoCategoryName()
-{
-	//TODO
-	_categoryName[ePhotoCategory_1] = textUnit("榮耀足跡", "CTBC Glory");
-	_categoryName[ePhotoCategory_2] = textUnit("成長印記", "We are growing");
-	_categoryName[ePhotoCategory_3] = textUnit("掌聲響起", "You're my star");
-	_categoryName[ePhotoCategory_4] = textUnit("家在一起", "We are family");
 }
 
 //--------------------------------------------------------------
@@ -95,28 +84,9 @@ PHOTO_TYPE dataHolder::getSmileType()
 }
 
 //--------------------------------------------------------------
-void dataHolder::loadPhotoTypeName()
-{
-	//TODO
-	for (int idx_ = 0; idx_ < 4; idx_++)
-	{
-		map<PHOTO_TYPE, textUnit> photoTypeName_;
-		for (int pIdx_ = 0; pIdx_ < 10; pIdx_++)
-		{
-			string nameZH_ = "類:" + ofToString(idx_) + " 項:" + ofToString(pIdx_);
-			string nameEN_ = "C:" + ofToString(idx_) + " T:" + ofToString(pIdx_);
-			photoTypeName_.insert(make_pair(pIdx_, textUnit(nameZH_, nameEN_)));
-		}
-		_photoTypeName.insert(make_pair((ePhotoPrimaryCategory)idx_, photoTypeName_));
-	}
-	
-}
-
-//--------------------------------------------------------------
 void dataHolder::setPhotoTypeName(Json::Value & root)
 {
 	int size_ = root.size();
-
 
 	for (int idx_ = 0; idx_ < size_; idx_++)
 	{
@@ -164,8 +134,7 @@ void dataHolder::loadSmilePhoto()
 		header_.category = ePhotoCategory_4;
 		header_.thumbnailPath = configMgr::exSmilePath + configMgr::exThumbFolderName + fileName_;
 		header_.sourcePath = configMgr::exSmilePath + configMgr::exSourceFolderName + fileName_;
-		header_.title = "";
-		header_.msg = "";
+		header_.titleZH = "Smile Photo";
 
 		addPhotoMap(header_);
 	}
@@ -209,8 +178,7 @@ void dataHolder::addSmileHeader(string order)
 	header_.category = ePhotoCategory_4;
 	header_.thumbnailPath = configMgr::exSmilePath + configMgr::exThumbFolderName + fileName_;
 	header_.sourcePath = configMgr::exSmilePath + configMgr::exSourceFolderName + fileName_;
-	header_.title = "";
-	header_.msg = "";
+
 
 	addPhotoMap(header_);
 	
@@ -231,6 +199,30 @@ stPhotoHeader & dataHolder::getPhotoHeader(int photoId)
 	else
 	{
 		throw std::runtime_error(("getPhotoHeader : can't photo"));
+	}
+}
+
+//--------------------------------------------------------------
+bool dataHolder::getPhotoText(int photoID, bool isZH, string& title, string& msg)
+{
+	setupCheck();
+	auto Iter_ = _photoMap.find(photoID);
+	if (Iter_ == _photoMap.end())
+	{
+		ofLog(OF_LOG_ERROR, "[dataHolder::getPhotoText]Request unknow photo");
+		return false;
+	}	
+	if (Iter_->second.titleZH == "")
+	{	
+		postToServer(NAME_MGR::S_ReqPhotoData, ofToString(photoID));
+		return false;
+	}
+	else
+	{
+		//TODO
+		title = Iter_->second.titleZH;
+		msg = Iter_->second.msgZH;
+		return true;
 	}
 }
 
@@ -262,31 +254,6 @@ vector<int> dataHolder::getPhotoID(ePhotoPrimaryCategory eCategory, PHOTO_TYPE t
 }
 
 //--------------------------------------------------------------
-void dataHolder::loadPhotoHeader()
-{
-	//TODO
-	ofDirectory dir_(configMgr::exPhotoPath + configMgr::exThumbFolderName);
-	dir_.allowExt("jpg");
-	dir_.listDir();
-	for (int idx_ = 0; idx_ < dir_.numFiles(); idx_++)
-	{	
-		string fileName_ = dir_.getName(idx_);
-		int imageData_ = stoi(fileName_.substr(0, 10));
-		stPhotoHeader header_;
-		header_.id = imageData_;
-		header_.shape = (ePhotoShape)((imageData_ & PHOTO_SHAPE_MASK) >> 16);
-		header_.type = (imageData_ & PHOTO_TYPE_MASK) >> 20;
-		header_.category = (ePhotoPrimaryCategory)((imageData_ & PHOTO_CATEGORY_MASK) >> 28);
-		header_.thumbnailPath = configMgr::exPhotoPath + configMgr::exThumbFolderName + fileName_;
-		header_.sourcePath = configMgr::exPhotoPath + configMgr::exSourceFolderName + fileName_;
-		header_.title = "";
-		header_.msg = "";
-
-		addPhotoMap(header_);
-	}
-}
-
-//--------------------------------------------------------------
 void dataHolder::setPhotoHeader(Json::Value & root)
 {
 	int size_ = root.size();
@@ -300,13 +267,23 @@ void dataHolder::setPhotoHeader(Json::Value & root)
 		header_.category = (ePhotoPrimaryCategory)stoi(root[idx_].get("cid", "0").asString());
 		header_.thumbnailPath = configMgr::exPhotoPath + configMgr::exThumbFolderName + fileName_ + cPhotoExt;
 		header_.sourcePath = configMgr::exPhotoPath + configMgr::exSourceFolderName + fileName_ + cPhotoExt;
-		header_.title = "";
-		header_.msg = "";
+
 
 		addPhotoMap(header_);
 	}
 
 	_headerSetup = true;
+}
+
+//--------------------------------------------------------------
+void dataHolder::setPhotoHeaderData(int photoID, Json::Value & root)
+{
+	auto photoHeader_ = getPhotoHeader(photoID);
+	photoHeader_.titleEN = root[0].get("enTitle", "").asString();
+	photoHeader_.titleZH = root[0].get("zhTitle", "").asString();
+	photoHeader_.msgEN = root[0].get("enMsg", "").asString();
+	photoHeader_.msgZH = root[0].get("zhMsg", "").asString();
+	setPhotoMap(photoHeader_);
 }
 
 //--------------------------------------------------------------
@@ -341,6 +318,14 @@ void dataHolder::addIndex(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type, int 
 	iter_->second.push_back(photoid);
 }
 
+//--------------------------------------------------------------
+void dataHolder::setPhotoMap(stPhotoHeader & newPhotoHeader)
+{
+	if (_photoMap.find(newPhotoHeader.id) != _photoMap.end())
+	{
+		_photoMap[newPhotoHeader.id] = newPhotoHeader;
+	}
+}
 
 
 #pragma endregion
@@ -381,7 +366,9 @@ void dataHolder::handleActive(string active, Json::Value& root)
 	}
 	else if (active == NAME_MGR::S_ReqPhotoData)
 	{
-		
+		int photoID_ = stoi(root.get("photoID", 0).asString());
+		setPhotoHeaderData(photoID_, root.get("photoData", 0));
+		ofNotifyEvent(_onPhotoDataLoad, photoID_);
 	}
 	else
 	{

@@ -17,6 +17,11 @@ public:
 	{
 		return isZH ? _textZH : _textEN;
 	}
+	void setText(std::string textZH, std::string textEN)
+	{
+		_textZH = textZH;
+		_textEN = textEN;
+	}
 private:
 	std::string _textZH, _textEN;
 };

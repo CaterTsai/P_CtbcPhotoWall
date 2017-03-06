@@ -69,11 +69,16 @@ public:
 	void updateTextUI(int photoID);
 
 	ofVec2f getTextUIPos();
+public:
+	void checkUpdateText();
+	void onTextIsLoad(int &pid);
+
 private:
 	
 	void drawTextUI();
 private:
-	bool _isTextUIVisible;
+	bool _isTextUIVisible, _needUpdateText;
+	
 	textUI	_textUI;
 #pragma endregion
 
