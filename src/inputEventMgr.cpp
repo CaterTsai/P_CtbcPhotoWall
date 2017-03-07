@@ -62,6 +62,7 @@ bool inputEventMgr::isInputEventExist(inputEvent * input, int level)
 //--------------------------------
 bool inputEventMgr::pressCheck(ofVec2f & pos, inputEventParam & param)
 {
+	resetIdle();
 	bool isTrigger_ = false;
 	for (int idx_ = 0; idx_ < cInputEventLevel; idx_++)
 	{
@@ -125,6 +126,38 @@ void inputEventMgr::releaseCheck(ofVec2f & pos, inputEventParam & param)
 		param.clear();
 	}
 }
+
+#pragma region Idle Check
+//--------------------------------
+void inputEventMgr::idleCheck(float delta)
+{
+	if (_isIdleCheck)
+	{
+		_timer -= delta;
+		if (_timer <= 0.0f)
+		{
+			ofNotifyEvent(_onIdleTrigger);
+			_isIdleCheck = false;
+		}
+	}
+}
+
+//--------------------------------
+void inputEventMgr::enalbeIdleCheck()
+{
+	_isIdleCheck = true;
+	_timer = configMgr::exIdleTime;
+}
+
+//--------------------------------
+void inputEventMgr::resetIdle()
+{
+	if (_isIdleCheck)
+	{
+		_timer = configMgr::exIdleTime;
+	}
+}
+#pragma endregion
 
 #pragma region Input
 //--------------------------------
@@ -268,6 +301,7 @@ void inputEventMgr::setupTUIO()
 #pragma region Singleton
 //--------------------------------------------------------------
 inputEventMgr::inputEventMgr()
+	:_isIdleCheck(false)
 {
 #ifdef USE_MOUSE
 	_inputEventParam.clear();
@@ -299,5 +333,3 @@ void inputEventMgr::Destroy()
 	}
 }
 #pragma endregion
-
-

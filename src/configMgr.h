@@ -14,5 +14,6 @@ public:
 	static string exPhotoPath;
 	static string exSmilePath;
 	static string exServerUrl;
+	static float exIdleTime;
 
 };

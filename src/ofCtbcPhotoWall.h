@@ -76,9 +76,7 @@ private:
 	void drawIdleVideo();
 private:
 	ofxDSHapVideoPlayer	_idleVideo;
-
 #pragma endregion
-
 
 #pragma endregion
 
@@ -89,17 +87,17 @@ public:
 private:
 	void inputRelease(inputEventArgs e) override;
 	ofRectangle	getInputArea() override;
+
+public:
+	void onIdleTrigger();
+
 #pragma endregion
 
 #pragma region Data holder
 public:
 	void onDataHolderLoadFinish();
-
-
 private:
 	bool _canSetup;
 
 #pragma endregion
-
-
 };

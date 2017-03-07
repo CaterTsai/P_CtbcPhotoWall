@@ -462,8 +462,8 @@ ofVec2f wallMgr::getCloseUIPos()
 	if (_selectWallList)
 	{
 		rVal_.set(
-			_selectWallList->getDrawPosX() + cSelectWidth * -0.4,
-			_selectWallList->getSelectTopPosY() + cCloseUIBGRadius * 1.8
+			_selectWallList->getDrawPosX() + cSelectWidth * -0.5 + cCloseUIBGSize * 0.5,
+			_selectWallList->getSelectBottomPosY() + cCloseUIBGSize * -0.5
 		);
 	}
 	return rVal_;

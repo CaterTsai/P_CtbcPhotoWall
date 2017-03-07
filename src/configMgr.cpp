@@ -6,7 +6,7 @@ string configMgr::exSmileOrderFolderName = "";
 string configMgr::exPhotoPath = "";
 string configMgr::exSmilePath = "";
 string configMgr::exServerUrl = "";
-
+float configMgr::exIdleTime = 30.0f;
 void configMgr::load(string path)
 {
 	ofxXmlSettings xml_;
@@ -22,6 +22,7 @@ void configMgr::load(string path)
 	exPhotoPath = xml_.getValue("photoPath", "", 0);
 	exSmilePath = xml_.getValue("smilePath", "", 0);
 	exServerUrl = xml_.getValue("serverUrl", "", 0);
+	exIdleTime = xml_.getValue("idleTime", 30.0f, 0);
 }
 
 

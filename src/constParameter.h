@@ -5,7 +5,7 @@
 #include "ctbcEvent.h"
 
 #pragma region Define
-#define USE_MOUSE
+//#define USE_MOUSE
 
 #ifndef USE_MOUSE
 //#define USE_TUIO
@@ -88,7 +88,7 @@ const int cWindowHeight = cWindowWidth * 0.421875;
 const int cPhotoWallCategoryWidth = cWindowWidth * 0.25;
 
 //Photo Render
-const float cSingnalCheckTime = 1.0f;
+const float cSingnalCheckTime = 0.5f;
 
 //Data Holder
 const float cPhotoSmileCheckTime = 5.0f;
@@ -157,10 +157,10 @@ const int cScrollUIFontSize = cScrollUIWidth * 0.1f;
 const float cScrollUIAnimDuration = 0.3f;
 
 //Close UI
-const int cCloseUIBGRadius = cSelectWidth * 0.05;
-const int cCloseUILength = cCloseUIBGRadius * 1.5;
-const int cCloseUIWidth = cCloseUILength * 0.2;
-const ofColor cCloseUIBGColor = ofColor(20, 200);
+const int cCloseUIBGSize = cSelectWidth * 0.16;
+const int cCloseUILength = cCloseUIBGSize * 0.75;
+const int cCloseUIWidth = cCloseUILength * 0.1;
+const ofColor cCloseUIBGColor = ofColor(0, 220);
 const ofColor cCloseUIColor = ofColor(255);
 #pragma endregion
 
@@ -170,30 +170,30 @@ static ofColor getCategoryColor(ePhotoPrimaryCategory category)
 	ofColor returnColor_;
 	switch (category)
 	{
-	case ePhotoCategory_1:
-	{
-		returnColor_.set(0, 167, 157);
-		break;
-	}
-	case ePhotoCategory_2:
-	{
-		returnColor_.set(254, 188, 16);
-		break;
-	}
-	case ePhotoCategory_3:
-	{
-		returnColor_.set(245, 130, 59);
-		break;
-	}
-	case ePhotoCategory_4:
-	{
-		returnColor_.set(240, 78, 104);
-		break;
-	}
-	default:
-	{
-		returnColor_.set(0);
-	}
+		case ePhotoCategory_1:
+		{
+			returnColor_.set(0, 167, 157);
+			break;
+		}
+		case ePhotoCategory_2:
+		{
+			returnColor_.set(254, 188, 16);
+			break;
+		}
+		case ePhotoCategory_3:
+		{
+			returnColor_.set(245, 130, 59);
+			break;
+		}
+		case ePhotoCategory_4:
+		{
+			returnColor_.set(240, 78, 104);
+			break;
+		}
+		default:
+		{
+			returnColor_.set(0);
+		}
 	}
 	return returnColor_;
 }

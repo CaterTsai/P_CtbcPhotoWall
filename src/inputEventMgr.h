@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constParameter.h"
+#include "configMgr.h"
 #include "ofxWinTouchHook.h"
 #ifdef USE_TUIO
 #include "ofxTuioClient.h"
@@ -66,6 +67,22 @@ private:
 #else
 	map<int, inputEventParam> _inputEventParamMgr;
 #endif // USE_MOUSE
+	
+#pragma region idle check
+public:
+	void idleCheck(float delta);
+	void enalbeIdleCheck();
+
+private:
+	void resetIdle();
+
+private:
+	bool _isIdleCheck;
+	float _timer;
+
+public:
+	ofEvent<void> _onIdleTrigger;
+#pragma endregion
 	
 #pragma region Input
 public:

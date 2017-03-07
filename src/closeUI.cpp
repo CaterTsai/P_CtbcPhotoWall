@@ -26,7 +26,7 @@ void closeUI::draw(ofVec2f pos)
 	ofTranslate(pos);
 	{
 		ofSetColor(cCloseUIBGColor);
-		ofCircle(0, 0, cCloseUIBGRadius);
+		ofRect(cCloseUIBGSize * -0.5, cCloseUIBGSize * -0.5, cCloseUIBGSize, cCloseUIBGSize);
 
 		ofSetColor(cCloseUIColor);
 		ofSetLineWidth(cCloseUIWidth);
@@ -85,7 +85,7 @@ ofRectangle closeUI::getInputArea()
 	if (_parent != nullptr && _isDisplay)
 	{
 		auto drawPos_ = _parent->getWallRectPos() + _parent->getCloseUIPos();
-		int size_ = cCloseUIBGRadius * 2;
+		int size_ = cCloseUIBGSize * 2;
 		rVal_.setFromCenter(drawPos_, size_, size_);
 	}
 

@@ -14,10 +14,10 @@ void ofCtbcPhotoWall::setup()
 	
 	ofAddListener(dataHolder::GetInstance()->_onSetupFinish, this, &ofCtbcPhotoWall::onDataHolderLoadFinish);
 	dataHolder::GetInstance()->setup();
-
-
 	fontMgr::GetInstance()->setup("fonts/");
+
 	inputEventMgr::GetInstance()->enableInput();
+	ofAddListener(inputEventMgr::GetInstance()->_onIdleTrigger, this, &ofCtbcPhotoWall::onIdleTrigger);
 	
 	setupImageRender("images/");
 	setupAudio();
@@ -49,12 +49,12 @@ void ofCtbcPhotoWall::setupAfterDataHolder()
 //--------------------------------------------------------------
 void ofCtbcPhotoWall::update()
 {
-
 	float delta_ = ofGetElapsedTimef() - _timer;
 	_timer += delta_;
 
 	updateWallMgr(delta_);
 	dataHolder::GetInstance()->update(delta_);
+	inputEventMgr::GetInstance()->idleCheck(delta_);
 	ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
 
@@ -207,8 +207,8 @@ void ofCtbcPhotoWall::inIdle()
 	{
 		endAll();
 		_idleVideo.play();
-		_idleVideo.setFrame(0);
-		_idleVideo.update();
+		//_idleVideo.setFrame(0);
+		//_idleVideo.update();
 
 		_wallState = ePhotoWall_BlurIn;
 		_blurLevel.animateTo(1.0f);
@@ -224,6 +224,7 @@ void ofCtbcPhotoWall::outIdle()
 		_wallState = ePhotoWall_BlurOut;
 		_blurLevel.animateTo(0.0f);
 		disableInput();
+		inputEventMgr::GetInstance()->enalbeIdleCheck();
 	}
 }
 
@@ -330,7 +331,7 @@ void ofCtbcPhotoWall::setupIdleVideo(string path)
 	{
 		ofLog(OF_LOG_ERROR, "[ofCtbcPhotoWall::setupIdleVideo]load video faield");
 	}
-	_idleVideo.setLoopState(ofLoopType::OF_LOOP_NORMAL);
+	_idleVideo.setLoopState(ofLoopType::OF_LOOP_NONE);
 }
 
 //--------------------------------------------------------------
@@ -339,6 +340,11 @@ void ofCtbcPhotoWall::updateIdleVideo()
 	if (_wallState != ePhotoWall_Play && _idleVideo.isLoaded())
 	{
 		_idleVideo.update();
+
+		if (_idleVideo.getIsMovieDone())
+		{
+			outIdle();
+		}
 	}
 }
 
@@ -379,6 +385,12 @@ void ofCtbcPhotoWall::inputRelease(inputEventArgs e)
 ofRectangle ofCtbcPhotoWall::getInputArea()
 {
 	return ofRectangle(0, 0, cWindowWidth, cWindowHeight);
+}
+
+//--------------------------------------------------------------
+void ofCtbcPhotoWall::onIdleTrigger()
+{
+	inIdle();
 }
 
 #pragma endregion
