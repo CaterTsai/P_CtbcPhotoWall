@@ -5,7 +5,7 @@
 #include "ctbcEvent.h"
 
 #pragma region Define
-//#define USE_MOUSE
+#define USE_MOUSE
 
 #ifndef USE_MOUSE
 //#define USE_TUIO
@@ -110,14 +110,17 @@ const int cMinimumPhotoWidth = (int)cPhotoWallCategoryWidth / 10.0;
 const int cMinimumPhotoHeight = (int)cMinimumPhotoWidth * 9.0/16.0;
 const int cPhotoUnitInterval = cWindowWidth * (5.0 / 3840.0);
 const int cDefaultPhotoListNum = (int)ceil(cWindowHeight / (float)cMinimumPhotoHeight);
+
+const int cMaximumInsertPhotoNum = cDefaultPhotoListNum * 5;
 const ofColor cSelectCoverColor(0, 167, 157);
 const float cSelectCoverAlpha = 255 * 0.8;
 
 const float cMoveWallListPosYLength = 1.5f;
 const float cSelectAnimLength = 0.5f;
 const int cSelectWidth = cPhotoWallCategoryWidth * 0.4f;
+const int cMaxSelectPhotoDisplayNum = (int)ceil(cWindowHeight / (cSelectWidth * 9.0 / 16.0));
 const int cSelectShdowWidth = cSelectWidth * 3.0;
-const int cCategoryNum = 4;
+const int cCategoryNum = 1;
 
 //Main UI
 const int cMainUIWidth = cPhotoWallCategoryWidth * 0.74;

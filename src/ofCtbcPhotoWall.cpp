@@ -71,13 +71,18 @@ void ofCtbcPhotoWall::draw()
 	if (_displayMsg)
 	{
 		ofPushStyle();
+		ofSetColor(255, 0, 0);
+		{
+			ofLine(0, cWindowHeight / 3, cWindowWidth, cWindowHeight / 3);
+			ofLine(0, (cWindowHeight * 2) / 3, cWindowWidth, (cWindowHeight * 2) / 3);
+		}
+
 #ifndef USE_MOUSE
 		inputEventMgr::GetInstance()->displayTouch();
 #endif // USE_MOUSE
 		ofDrawBitmapStringHighlight("FPS:" + ofToString(ofGetFrameRate()), 0, 100);
 		ofPopStyle();
-	}
-	
+	}	
 }
 
 //--------------------------------------------------------------

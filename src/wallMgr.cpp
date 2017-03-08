@@ -6,6 +6,7 @@ wallMgr::wallMgr()
 	:_isSetup(false)
 	, _selectWallList(nullptr)
 	, _eWallState(eWallIdle)
+	, _isTextUIVisible(false)
 	, _needUpdateText(false)
 	, _isDisplayZH(true)
 	, _canSelect(true)
@@ -352,14 +353,15 @@ void wallMgr::drawTextUI()
 void wallMgr::scrollUIin()
 {
 	_isScrollUIVisible = true;
+	PHOTO_TYPE selectType_ = _selectWallList->getSelectType();
 
 	if (_wallRect.getWidth() < _selectWallList->getDrawPosX() + cSelectWidth * 0.5 + cScrollUIWidth)
 	{
-		_scrollUI.open(false);
+		_scrollUI.open(false, selectType_);
 	}
 	else
 	{
-		_scrollUI.open(true);
+		_scrollUI.open(true, selectType_);
 	}
 	
 	_scrollUI.enableInput();

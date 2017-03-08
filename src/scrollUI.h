@@ -17,7 +17,7 @@ public:
 	void draw(ofVec2f pos);
 
 	void updateScroll(ePhotoPrimaryCategory eCategory, bool isZH);
-	void open(bool isRight = true);
+	void open(bool isRight = true, PHOTO_TYPE selectPhotoType = -1);
 	void close();
 
 private:

@@ -65,11 +65,18 @@ void scrollUI::updateScroll(ePhotoPrimaryCategory eCategory, bool isZH)
 }
 
 //---------------------------------
-void scrollUI::open(bool isRight)
+void scrollUI::open(bool isRight, PHOTO_TYPE selectPhotoType)
 {
 	if (!_isSetup || _eState != eClose)
 	{
 		return;
+	}
+
+	if (selectPhotoType != -1 && _itemList.size() > selectPhotoType)
+	{
+		_itemList[selectPhotoType].setSelect(true);
+		_selectItemIdx = selectPhotoType;
+		updateCanvas();
 	}
 
 	_isRight = isRight;
@@ -158,6 +165,12 @@ void scrollUI::animStateCheck()
 			if (_animRotate.hasFinishedAnimating() && _animRotate.getPercentDone() == 1.0f)
 			{
 				_eState = eClose;
+				if (_selectItemIdx != -1)
+				{
+					_itemList[_selectItemIdx].setSelect(false);
+					updateCanvas();
+				}
+				_selectItemIdx = -1;
 			}
 			break;
 		}

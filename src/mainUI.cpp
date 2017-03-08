@@ -88,7 +88,7 @@ void mainUI::baseUnit::draw(ofVec2f pos, int width, int height, bool displayZH)
 		ofSetColor(_color, cMainUIAlpha);
 		ofFill();
 		ofRect(bpDrawX_, height * -0.5, bpDrawWidth_, height);
-
+		
 		ofSetColor(255);
 
 		if (displayZH)

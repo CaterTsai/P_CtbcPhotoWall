@@ -11,6 +11,7 @@ wallList::wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle
 	, _parent(parent)
 	, _needRemove(false)
 	, _isChangeType(false)
+	, _selectPhotoType(-1)
 	, _isSmile(false)
 {
 	_defaultSmile = defaultSmile;
@@ -547,7 +548,7 @@ void wallList::removeWallUnitCheck()
 		else if (getIsDeselect())
 		{
 			int id_ = (insertNum_) * 0.5;
-			fixID_ = id_ - _insertStart;
+			fixID_ = id_;
 			fixPosY_ = _baseArea.getHeight() * 0.5;
 		}
 
@@ -619,7 +620,12 @@ void wallList::selectType(PHOTO_TYPE type)
 	wallUnitInfo start, end;
 	findDisplayRange(start, end);
 	int insertNum_ = insertWallUnits(start.id, type);
-	auto insert_ = foundWallUnit(start.id + (insertNum_ * 0.5) - 1);
+	_insertID = start.id + insertNum_ - cMaxSelectPhotoDisplayNum;
+	if (_insertID < 0)
+	{
+		_insertID += _wallUnitList.size();
+	}
+	auto insert_ = foundWallUnit(_insertID);
 	
 	if (_eCategroy == ePhotoCategory_4 && type == dataHolder::GetInstance()->getSmileType())
 	{
@@ -631,6 +637,7 @@ void wallList::selectType(PHOTO_TYPE type)
 	}
 
 	_isChangeType = true;
+	_selectPhotoType = type;
 	_needRemove = true;
 	_insertStart = start.id;
 	_insertEnd = start.id + insertNum_ - 1;
@@ -656,14 +663,27 @@ void wallList::changeCategory(ePhotoPrimaryCategory category)
 		unregisterSmilePhoto();
 		insertNum_ = insertWallUnits(start.id);
 	}
-	auto insert_ = foundWallUnit(start.id + (insertNum_ * 0.5) - 1);
+	auto insert_ = foundWallUnit(start.id + (insertNum_ * 0.5));
 
 	_needRemove = true;
 	_isChangeType = false;
+	_selectPhotoType = -1;
 	_insertStart = start.id;
 	_insertEnd = start.id + insertNum_ - 1;
 	float diffY_ = _wallTotalHeight - abs(insert_.pos.y - _baseArea.getHeight() * 0.5);
 	movePosY(_centerUnitPos.y + diffY_, cMoveWallListPosYLength);
+}
+
+//--------------------------------------
+PHOTO_TYPE wallList::getSelectType()
+{
+	return _selectPhotoType;
+}
+
+//--------------------------------------
+bool wallList::isChangeType()
+{
+	return _isChangeType;
 }
 
 //--------------------------------------
@@ -765,21 +785,32 @@ void wallList::initWallUnits(bool isSmile)
 		photoIDList_ = dataHolder::GetInstance()->getPhotoID(_eCategroy);
 	}
 
-	random_shuffle(photoIDList_.begin(), photoIDList_.end());
-
-	int idx_ = 0;
-	for (auto& iter_ : photoIDList_)
+	try
 	{
-		auto photoHeader_ = dataHolder::GetInstance()->getPhotoHeader(iter_);
-		addWallUnit(ofPtr<wallUnit>(new photoUnit(photoHeader_, _animDrawWidth.getCurrentValue())));
+		random_shuffle(photoIDList_.begin(), photoIDList_.end());
 
-		idx_++;
-		if (idx_ > cDefaultPhotoListNum)
+		int idx_ = 0;
+		for (auto& iter_ : photoIDList_)
 		{
-			break;
+			if (idx_ > cDefaultPhotoListNum)
+			{
+				break;
+			}
+
+			auto photoHeader_ = dataHolder::GetInstance()->getPhotoHeader(iter_);
+			addWallUnit(ofPtr<wallUnit>(new photoUnit(photoHeader_, _animDrawWidth.getCurrentValue())));
+
+			idx_++;
+
 		}
+		updateWallTotalHeight();
 	}
-	updateWallTotalHeight();
+	catch (const std::exception&)
+	{
+		ofLog(OF_LOG_ERROR, "[initWallUnits]Get photoIDList exception");
+	}
+
+	
 }
 
 //--------------------------------------
@@ -787,14 +818,23 @@ int wallList::insertWallUnits(int index, PHOTO_TYPE type)
 {
 	auto photoIDList_ = dataHolder::GetInstance()->getPhotoID(_eCategroy, type);
 
+	random_shuffle(photoIDList_.begin(), photoIDList_.end());
+
+	int idx_ = 0;
 	for (auto& iter_ : photoIDList_)
 	{
+		if (idx_ >= cMaximumInsertPhotoNum)
+		{
+			break;
+		}
 		auto photoHeader_ = dataHolder::GetInstance()->getPhotoHeader(iter_);
 		addWallUnit(index, ofPtr<wallUnit>(new photoUnit(photoHeader_, _animDrawWidth.getCurrentValue())));
+		idx_++;
+
 	}
 	updateWallTotalHeight();
 
-	return photoIDList_.size();
+	return idx_;
 }
 
 //--------------------------------------
@@ -807,14 +847,16 @@ int wallList::insertWallUnits(int index)
 	int idx_ = 0;
 	for (auto& iter_ : photoIDList_)
 	{
-		auto photoHeader_ = dataHolder::GetInstance()->getPhotoHeader(iter_);
-		addWallUnit(index, ofPtr<wallUnit>(new photoUnit(photoHeader_, _animDrawWidth.getCurrentValue())));
-
-		idx_++;
 		if (idx_ > cDefaultPhotoListNum)
 		{
 			break;
 		}
+
+		auto photoHeader_ = dataHolder::GetInstance()->getPhotoHeader(iter_);
+		addWallUnit(index, ofPtr<wallUnit>(new photoUnit(photoHeader_, _animDrawWidth.getCurrentValue())));
+
+		idx_++;
+
 	}
 	updateWallTotalHeight();
 	return cDefaultPhotoListNum;

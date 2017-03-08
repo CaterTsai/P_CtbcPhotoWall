@@ -110,7 +110,9 @@ private:
 public:
 	void selectType(PHOTO_TYPE type);
 	void changeCategory(ePhotoPrimaryCategory category);
-	
+	PHOTO_TYPE getSelectType();
+	bool isChangeType();
+
 private:
 	void setupWallUnit();
 	void updateWallUnit(float delta);
@@ -131,9 +133,10 @@ private:
 	void updateWallTotalHeight();
 private:
 	bool _needRemove, _isChangeType;
+	PHOTO_TYPE _selectPhotoType;
 	int _wallTotalHeight;
 	vector<ofPtr<wallUnit>>	_wallUnitList;
-	int _insertStart, _insertEnd;
+	int _insertStart, _insertEnd, _insertID;
 #pragma endregion
 
 #pragma region Smile
