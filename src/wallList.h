@@ -112,6 +112,7 @@ public:
 	void changeCategory(ePhotoPrimaryCategory category);
 	PHOTO_TYPE getSelectType();
 	bool isChangeType();
+	bool getCanSelectType();
 
 private:
 	void setupWallUnit();

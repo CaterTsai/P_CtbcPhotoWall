@@ -56,7 +56,7 @@ public:
 	void end();
 	void toBigMenu();
 	void toSmallMenu();
-
+	bool isReady();
 	void changeCategory(ePhotoPrimaryCategory eCategory);
 
 private:

@@ -120,7 +120,7 @@ void dataHolder::setPhotoTypeName(Json::Value & root)
 void dataHolder::loadSmilePhoto()
 {
 	ofDirectory dir_(configMgr::exSmilePath + configMgr::exThumbFolderName);
-	dir_.allowExt("jpg");
+	dir_.allowExt("png");
 	dir_.listDir();
 	
 	_smileBaseID = (ePhotoCategory_4 << 28) + (_smileType << 20) + (ePhotoWideVertical << 16);

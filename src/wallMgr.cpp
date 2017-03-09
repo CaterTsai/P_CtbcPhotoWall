@@ -6,6 +6,7 @@ wallMgr::wallMgr()
 	:_isSetup(false)
 	, _selectWallList(nullptr)
 	, _eWallState(eWallIdle)
+	, _isScrollUIVisible(false)
 	, _isTextUIVisible(false)
 	, _needUpdateText(false)
 	, _isDisplayZH(true)
@@ -404,7 +405,7 @@ ofVec2f wallMgr::getScrollUIPos()
 //--------------------------------
 void wallMgr::selectType(PHOTO_TYPE type)
 {
-	if (_selectWallList)
+	if (_selectWallList && _selectWallList->getCanSelectType())
 	{
 		setTextUIVisible(false);
 		setScrollUIVisible(false);
@@ -539,7 +540,7 @@ void wallMgr::disableInput()
 //--------------------------------------
 void wallMgr::inputRelease(inputEventArgs e)
 {
-	if (_eWallState == eWallMainUI)
+	if (_eWallState == eWallMainUI && _mainUI.isReady())
 	{
 		mainUIout();
 	}

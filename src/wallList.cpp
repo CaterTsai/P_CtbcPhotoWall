@@ -319,7 +319,11 @@ void wallList::fixCenterUnitPos()
 //--------------------------------------
 void wallList::fixCenterUnitPosByUnit(int idx, int posY)
 {
-
+	if (idx < 0 || idx >= _wallUnitList.size())
+	{
+		ofLog(OF_LOG_ERROR, "[wallList::fixCenterUnitPosByUnit]out of range");
+		return;
+	}
 	int dist_ = 0;
 	for (int idx_ = 0; idx_ < idx; idx_++)
 	{
@@ -424,7 +428,15 @@ int wallList::getSelectBottomPosY()
 
 	if (getIsSelect())
 	{
-		rVal_ = _selectWallUnit.pos.y + _wallUnitList[_selectWallUnit.id]->getHeight();
+		try
+		{
+			rVal_ = _selectWallUnit.pos.y + _wallUnitList.at(_selectWallUnit.id)->getHeight();
+		}
+		catch (const std::exception&)
+		{
+			ofLog(OF_LOG_ERROR, "[wallList::getSelectBottomPosY]out of range");
+		}
+		
 	}
 	return rVal_;
 }
@@ -552,6 +564,7 @@ void wallList::removeWallUnitCheck()
 			fixPosY_ = _baseArea.getHeight() * 0.5;
 		}
 
+		
 		fixCenterUnitPosByUnit(fixID_, fixPosY_);
 	}
 }
@@ -684,6 +697,12 @@ PHOTO_TYPE wallList::getSelectType()
 bool wallList::isChangeType()
 {
 	return _isChangeType;
+}
+
+//--------------------------------------
+bool wallList::getCanSelectType()
+{
+	return _eSelectState == eSelect && _eMoveCenterYState == eStable;
 }
 
 //--------------------------------------
@@ -982,8 +1001,9 @@ void wallList::inputPress(inputEventArgs e)
 //--------------------------------------
 void wallList::inputDrag(inputEventArgs e)
 {
-	if (_eSelectState != eZoomIn && _eSelectState != eZoomOut)
-	{
+	if (_eSelectState != eZoomIn && _eSelectState != eZoomOut && _eMoveCenterYState != eMove)
+	{	
+
 		_centerUnitPos.y += e.delta.y;
 
 		if (getIsSelect() && abs(e.diffPos.y) > cInputTriggerDiffLimit && _wallUnitList[_selectWallUnit.id]->getClick())
@@ -1018,7 +1038,7 @@ void wallList::inputRelease(inputEventArgs e)
 			_centerVec = e.delta * ofGetFrameRate() * 0.5;
 			
 		}
-		if (getIsSelect())
+		if (getIsSelect() && _eMoveCenterYState == eStable)
 		{
 			attractDrawPos();
 		}

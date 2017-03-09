@@ -5,7 +5,7 @@
 #include "ctbcEvent.h"
 
 #pragma region Define
-#define USE_MOUSE
+//#define USE_MOUSE
 
 #ifndef USE_MOUSE
 //#define USE_TUIO
@@ -120,7 +120,7 @@ const float cSelectAnimLength = 0.5f;
 const int cSelectWidth = cPhotoWallCategoryWidth * 0.4f;
 const int cMaxSelectPhotoDisplayNum = (int)ceil(cWindowHeight / (cSelectWidth * 9.0 / 16.0));
 const int cSelectShdowWidth = cSelectWidth * 3.0;
-const int cCategoryNum = 1;
+const int cCategoryNum = 4;
 
 //Main UI
 const int cMainUIWidth = cPhotoWallCategoryWidth * 0.74;

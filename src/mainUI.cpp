@@ -262,6 +262,12 @@ void mainUI::toSmallMenu()
 }
 
 //-----------------------------------------------------------------------------
+bool mainUI::isReady()
+{
+	return _eBigUIState == eBigUIOpen || _eSmallUIState == eSmallOpen;
+}
+
+//-----------------------------------------------------------------------------
 void mainUI::changeCategory(ePhotoPrimaryCategory eCategory)
 {
 	_category = eCategory;
@@ -283,7 +289,6 @@ bool mainUI::setupUI()
 
 		baseUnit newUnit_(zhImage_, zhRect_, enImage_, enRect_, getCategoryColor(type_));
 		_mainUIMap.insert(make_pair(type_, newUnit_));
-
 	}
 	return true;
 }
