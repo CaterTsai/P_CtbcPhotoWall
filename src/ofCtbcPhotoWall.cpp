@@ -125,6 +125,8 @@ void ofCtbcPhotoWall::setupImageRender(string path)
 	imageRender::GetInstance()->addImage(NAME_MGR::I_BtnEN3, "btnEN_3.png");
 	imageRender::GetInstance()->addImage(NAME_MGR::I_BtnZH4, "btnZH_4.png");
 	imageRender::GetInstance()->addImage(NAME_MGR::I_BtnEN4, "btnEN_4.png");
+
+	imageRender::GetInstance()->addImage(NAME_MGR::I_BtnBack, "btnBack.png");
 	
 }
 

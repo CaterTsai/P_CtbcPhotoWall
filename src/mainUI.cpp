@@ -3,12 +3,8 @@
 
 #pragma region CLASS baseUnit
 //--------------------------------------------------------------
-mainUI::baseUnit::baseUnit(ofImage& zhText, ofRectangle& zhRect, ofImage& enText, ofRectangle& enRect, ofColor c)
+mainUI::baseUnit::baseUnit(ofColor c)
 	:_color(c)
-	, _textZH(zhText)
-	, _textRectZH(zhRect)
-	,_textEN(enText)
-	, _textRectEN(enRect)
 	, _eState(eClose)
 {
 	_animTextWidth.setDuration(0.2);
@@ -66,7 +62,7 @@ void mainUI::baseUnit::update(float delta)
 }
 
 //--------------------------------------------------------------
-void mainUI::baseUnit::draw(ofVec2f pos, int width, int height, bool displayZH)
+void mainUI::baseUnit::draw(bool isBig, ofVec2f pos, int width, int height, bool displayZH)
 {
 	if (_eState == eClose)
 	{
@@ -76,14 +72,10 @@ void mainUI::baseUnit::draw(ofVec2f pos, int width, int height, bool displayZH)
 	ofPushMatrix();
 	ofTranslate(pos);
 	{
-		float ratio_ = displayZH ? (_textRectZH.getHeight() / _textRectZH.getWidth()) :(_textRectEN.getHeight() / _textRectEN.getWidth());
-		float textHeight_ = width * 0.7 * ratio_;
-		float textDrawWidth_ = width * 0.7* _animTextWidth.getCurrentValue();
-		float textDrawHeight_ = textHeight_;
 		float bpDrawWidth_ = width * _animBackplaneWidth.getCurrentValue();
-		int textDrawX_ = (textDrawWidth_ * -0.5);
 		int bpDrawX_ = (bpDrawWidth_ * -0.5);
 		
+		ofRectangle drawRect_ = getDrawRect(isBig, width, height, displayZH);
 
 		ofSetColor(_color, cMainUIAlpha);
 		ofFill();
@@ -93,16 +85,44 @@ void mainUI::baseUnit::draw(ofVec2f pos, int width, int height, bool displayZH)
 
 		if (displayZH)
 		{
-			_textZH.draw(textDrawX_, textDrawHeight_ * -0.5, textDrawWidth_, textDrawHeight_);
+			if (isBig)
+			{
+				_nameBigZH.draw(drawRect_);
+			}
+			else
+			{
+				_nameSmallZH.draw(drawRect_);
+			}
 		}
 		else
 		{
-			_textEN.draw(textDrawX_, textDrawHeight_ * -0.5, textDrawWidth_, textDrawHeight_);
+			if (isBig)
+			{
+				_nameBigEN.draw(drawRect_);
+			}
+			else
+			{
+				_nameSmallEN.draw(drawRect_);
+			}
 		}
 		
 	}
 	ofPopMatrix();
 	ofPopStyle();
+}
+
+//--------------------------------------------------------------
+void mainUI::baseUnit::setNameBig(ofImage & zhText, ofImage & enText)
+{
+	_nameBigZH = zhText;
+	_nameBigEN = enText;
+}
+
+//--------------------------------------------------------------
+void mainUI::baseUnit::setNameSmall(ofImage & zhText, ofImage & enText)
+{
+	_nameSmallZH = zhText;
+	_nameSmallEN = enText;
 }
 
 //--------------------------------------------------------------
@@ -155,6 +175,44 @@ void mainUI::baseUnit::directClose()
 	_eState = eClose;
 	_animTextWidth.reset(0.0);
 	_animBackplaneWidth.reset(0.0);
+}
+
+//--------------------------------------------------------------
+ofRectangle mainUI::baseUnit::getDrawRect(bool isBig, int width, int height, bool displayZH)
+{
+	ofRectangle rVal_;
+
+	float ratio_ = 0.0;
+	if (displayZH)
+	{
+		if (isBig)
+		{
+			
+			ratio_ = _nameBigZH.getHeight() / _nameBigZH.getWidth();
+		}
+		else
+		{
+			ratio_ = _nameSmallZH.getHeight() / _nameSmallZH.getWidth();
+		}
+	}
+	else
+	{
+		if (isBig)
+		{
+			ratio_ = _nameBigEN.getHeight() / _nameBigEN.getWidth();
+		}
+		else
+		{
+			ratio_ = _nameSmallEN.getHeight() / _nameSmallEN.getWidth();
+		}
+	}
+
+	float textDrawWidth_ = width * 0.9 * _animTextWidth.getCurrentValue();
+	float textDrawHeight_ = width * 0.9 * ratio_;
+	int textDrawX_ = (textDrawWidth_ * -0.5);
+
+	rVal_.set(textDrawX_, textDrawHeight_ * -0.5, textDrawWidth_, textDrawHeight_);
+	return rVal_;
 }
 #pragma endregion
 
@@ -279,15 +337,31 @@ bool mainUI::setupUI()
 	for (int idx_ = 0; idx_ < ePhotoCategory_Num; idx_++)
 	{
 		ePhotoPrimaryCategory type_ = (ePhotoPrimaryCategory)idx_;
-		string zh_ = dataHolder::GetInstance()->getCategoryName(type_, true);
-		string en_ = dataHolder::GetInstance()->getCategoryName(type_, false);
+		string nameTextZH_ = dataHolder::GetInstance()->getCategoryName(type_, true);
+		string nameTextEN_ = dataHolder::GetInstance()->getCategoryName(type_, false);
+		string subtitleTextZH_ = dataHolder::GetInstance()->getCategorySubtitle(type_, true);
+		string subtitleTextEN_ = dataHolder::GetInstance()->getCategorySubtitle(type_, false);
+		
+		ofImage nameBigZH_, nameBigEN_;
+		ofImage subtitleZH_, subtitleEN_;
+		ofImage fullUIZH_, fullUIEN_;
+		ofImage nameSmallZH_, nameSmallEN_;
 
-		ofImage enImage_, zhImage_;
-		ofRectangle enRect_, zhRect_;
-		createTextImgEN(en_, enImage_, enRect_);
-		createTextImg(zh_, zhImage_, zhRect_);
 
-		baseUnit newUnit_(zhImage_, zhRect_, enImage_, enRect_, getCategoryColor(type_));
+		createTextImg(nameTextZH_, eFontType::eFontMainUIZH, nameBigZH_);
+		createTextImg(nameTextEN_, eFontType::eFontMainUIEN, nameBigEN_);
+		createTextImg(subtitleTextZH_, eFontType::eFontMainUISubtitleZH, subtitleZH_);
+		createTextImg(subtitleTextEN_, eFontType::eFontMainUISubtitleEN, subtitleEN_);
+		fullUIZH_ = combineUIName(nameBigZH_, subtitleZH_);
+		fullUIEN_ = combineUIName(nameBigEN_, subtitleEN_);
+
+		subtitleZH_.saveImage("test.png");
+		createTextImg(nameTextZH_, eFontType::eFontMainUISmallZH, nameSmallZH_);
+		createTextImg(nameTextEN_, eFontType::eFontMainUISmallEN, nameSmallEN_);
+
+		baseUnit newUnit_(getCategoryColor(type_));
+		newUnit_.setNameBig(fullUIZH_, fullUIEN_);
+		newUnit_.setNameSmall(nameSmallZH_, nameSmallEN_);
 		_mainUIMap.insert(make_pair(type_, newUnit_));
 	}
 	return true;
@@ -304,13 +378,13 @@ void mainUI::resetUI()
 }
 
 //-----------------------------------------------------------------------------
-void mainUI::createTextImg(string text, ofImage& img, ofRectangle& textRect)
+void mainUI::createTextImg(string text, eFontType eType, ofImage& img)
 {
 	img.clear();
 
-	textRect = fontMgr::GetInstance()->getStringBoundingBox(eFontType::eFontMainUIZH, text);
+	auto textRect_ = fontMgr::GetInstance()->getStringBoundingBox(eType, text);
 	ofFbo	_canvas;
-	_canvas.allocate(textRect.getWidth(), textRect.getHeight(), GL_RGBA);
+	_canvas.allocate(textRect_.getWidth(), textRect_.getHeight(), GL_RGBA);
 
 	_canvas.begin();
 	{
@@ -318,7 +392,7 @@ void mainUI::createTextImg(string text, ofImage& img, ofRectangle& textRect)
 		ofPushMatrix();
 
 		ofSetColor(255);
-		fontMgr::GetInstance()->drawString(eFontType::eFontMainUIZH, text, ofVec2f(-textRect.x, -textRect.y));
+		fontMgr::GetInstance()->drawString(eType, text, ofVec2f(-textRect_.x, -textRect_.y));
 		ofPopMatrix();
 	}
 	_canvas.end();
@@ -329,30 +403,37 @@ void mainUI::createTextImg(string text, ofImage& img, ofRectangle& textRect)
 }
 
 //-----------------------------------------------------------------------------
-void mainUI::createTextImgEN(string text, ofImage& img, ofRectangle& textRect)
+ofImage mainUI::combineUIName(ofImage & name, ofImage & subtitle)
 {
-	img.clear();
+	int width_ = name.getWidth() + subtitle.getWidth();
+	int height_ = name.getHeight() + subtitle.getHeight();
 
-	textRect = fontMgr::GetInstance()->getStringBoundingBox(eFontType::eFontMainUIEN, text);
-
-	ofFbo	_canvas;
-	_canvas.allocate(textRect.getWidth(), textRect.getHeight(), GL_RGBA);
-
+	ofFbo _canvas;
+	_canvas.allocate(cMainUIUnitWidth, cMainUIUnitHeight, GL_RGBA);
 	_canvas.begin();
 	{
-		ofClear(0);
-		ofPushMatrix();
+		ofColor(255);
+		name.draw(
+			(cMainUIUnitWidth - name.getWidth()) * 0.5f,
+			(cMainUIUnitHeight - name.getHeight()) * 0.5 - cMainUIUnitHeight * 0.1
+		);
 
-		ofSetColor(255);
-		fontMgr::GetInstance()->drawString(eFontType::eFontMainUIEN, text, ofVec2f(-textRect.x, -textRect.y));
-		ofPopMatrix();
+		subtitle.draw(
+			(cMainUIUnitWidth - subtitle.getWidth()) * 0.5f,
+			(cMainUIUnitHeight - name.getHeight()) * 0.5 + cMainUIUnitHeight * 0.15
+		);
+
 	}
 	_canvas.end();
 
+	ofImage combineUI_;
 	ofPixels pixel_;
 	_canvas.readToPixels(pixel_);
-	img.setFromPixels(pixel_);
+	combineUI_.setFromPixels(pixel_);
+
+	return combineUI_;
 }
+
 #pragma endregion
 
 #pragma region Big Menu
@@ -398,7 +479,7 @@ void mainUI::drawBigMenu(bool isZH)
 //-----------------------------------------------------------------------------
 void mainUI::drawMain(bool isZH)
 {
-	_mainUIMap[_category].draw(_mainPos, cMainUIUnitWidth, cMainUIUnitHeight, isZH);
+	_mainUIMap[_category].draw(true, _mainPos, cMainUIUnitWidth, cMainUIUnitHeight, isZH);
 }
 
 //-----------------------------------------------------------------------------
@@ -412,7 +493,7 @@ void mainUI::drawMini(bool isZH)
 		if (iter_.first != _category)
 		{
 			categoryPos_.x += _animMiniPosX[idx_].getCurrentValue() * cMainUIUnitMinWidth;
-			iter_.second.draw(categoryPos_, cMainUIUnitMinWidth, cMainUIUnitMinHeight, isZH);
+			iter_.second.draw(false, categoryPos_, cMainUIUnitMinWidth, cMainUIUnitMinHeight, isZH);
 			idx_++;
 		}
 	}
@@ -663,7 +744,7 @@ void mainUI::updateSmallMenu(float delta)
 //-----------------------------------------------------------------------------
 void mainUI::drawSmallMenu(bool isZH)
 {
-	_mainUIMap[_category].draw(_smallPos, cMainSmallUIWidth, cMainSmallUIHeight, isZH);
+	_mainUIMap[_category].draw(false, _smallPos, cMainSmallUIWidth, cMainSmallUIHeight, isZH);
 }
 
 //-----------------------------------------------------------------------------

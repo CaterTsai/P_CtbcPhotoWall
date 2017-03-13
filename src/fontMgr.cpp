@@ -5,6 +5,30 @@ void fontMgr::setup(string fontPath)
 {
 	_isSetup = true;
 
+	//------------------------------------------------
+	//MainUI
+	_fontList[eFontMainUIZH].setGlobalDpi(72);
+	_fontList[eFontMainUIZH].setLetterSpacing(1.2f);
+	_isSetup &= _fontList[eFontMainUIZH].loadFont(fontPath + "black.otf", cMainUIFontSize);
+
+	_fontList[eFontMainUIEN].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontMainUIEN].loadFont(fontPath + "en_black.ttf", cMainUIFontENSize);
+
+	_fontList[eFontMainUISubtitleZH].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontMainUISubtitleZH].loadFont(fontPath + "meidium.otf", cMainUIFontSubtitleSize);
+
+	_fontList[eFontMainUISubtitleEN].setGlobalDpi(72);
+	_fontList[eFontMainUISubtitleEN].setLetterSpacing(0.9);
+	_isSetup &= _fontList[eFontMainUISubtitleEN].loadFont(fontPath + "en_meidium.ttf", cMainUIFontSubtitleENSize);
+
+	_fontList[eFontMainUISmallZH].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontMainUISmallZH].loadFont(fontPath + "meidium.otf", cMainUIFontSmallSize);
+
+	_fontList[eFontMainUISmallEN].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontMainUISmallEN].loadFont(fontPath + "en_black.ttf", cMainUIFontSmallENSize);
+
+	//--------------------------------------------------
+
 	_fontList[eFontMainUIZH].setGlobalDpi(72);
 	_fontList[eFontMainUIZH].setLetterSpacing(1.2f);
 	_isSetup &= _fontList[eFontMainUIZH].loadFont(fontPath + "black.otf", cMainUIFontSize);
@@ -12,6 +36,7 @@ void fontMgr::setup(string fontPath)
 	_fontList[eFontMainUIEN].setGlobalDpi(72);
 	_fontList[eFontMainUIEN].setSpaceSize(0.5);
 	_isSetup &= _fontList[eFontMainUIEN].loadFont(fontPath + "english.TTF", cMainUIFontENSize);
+
 
 	_fontList[eFontTextUIZH].setGlobalDpi(72);
 	_isSetup &= _fontList[eFontTextUIZH].loadFont(fontPath + "regular.otf", cTextUIFontSize);
@@ -25,11 +50,19 @@ void fontMgr::setup(string fontPath)
 	_fontList[eFontTextUIContextEN].setGlobalDpi(72);
 	_isSetup &= _fontList[eFontTextUIContextEN].loadFont(fontPath + "regular.otf", cTextUIContextFontSize);
 
-	_fontList[eFontMenuUIZH].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMenuUIZH].loadFont(fontPath + "black.otf", cScrollUIFontSize);
+	_fontList[eFontMenuUITitleZH].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontMenuUITitleZH].loadFont(fontPath + "meidium.otf", cScrollUITitleFontSize);
 
-	_fontList[eFontMenuUIEN].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMenuUIEN].loadFont(fontPath + "english.TTF", cScrollUIFontSize);
+	_fontList[eFontMenuUITitleEN].setGlobalDpi(72);
+	_fontList[eFontMenuUITitleEN].setLetterSpacing(0.9);
+	_isSetup &= _fontList[eFontMenuUITitleEN].loadFont(fontPath + "en_black.ttf", cScrollUITitleFontENSize);
+
+	_fontList[eFontMenuUIContextZH].setGlobalDpi(72);	
+	_isSetup &= _fontList[eFontMenuUIContextZH].loadFont(fontPath + "meidium.otf", cScrollUIContextFontSize);
+
+	_fontList[eFontMenuUIContextEN].setGlobalDpi(72);
+	_fontList[eFontMenuUIContextEN].setLetterSpacing(0.9);
+	_isSetup &= _fontList[eFontMenuUIContextEN].loadFont(fontPath + "en_meidium.ttf", cScrollUIContextFontENSize);
 	if (!_isSetup)
 	{
 		ofLog(OF_LOG_ERROR, "[fontMgr::setup]load font failed");

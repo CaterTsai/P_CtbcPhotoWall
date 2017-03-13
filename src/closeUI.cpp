@@ -25,25 +25,14 @@ void closeUI::draw(ofVec2f pos)
 	ofPushMatrix();
 	ofTranslate(pos);
 	{
-		ofSetColor(cCloseUIBGColor);
+		ofSetColor(cCloseUIBGColor, 128);
 		ofRect(cCloseUIBGSize * -0.5, cCloseUIBGSize * -0.5, cCloseUIBGSize, cCloseUIBGSize);
 
-		ofSetColor(cCloseUIColor);
-		ofSetLineWidth(cCloseUIWidth);
-		
-		ofPushMatrix();
-		ofRotateZ(45);
-		{
-			ofLine(0, cCloseUILength * -0.5, 0, cCloseUILength * 0.5);
-		}
-		ofPopMatrix();
-
-		ofPushMatrix();
-		ofRotateZ(-45);
-		{
-			ofLine(0, cCloseUILength * -0.5, 0, cCloseUILength * 0.5);
-		}	
-		ofPopMatrix();
+		ofSetColor(255);		
+		imageRender::GetInstance()->drawImage(
+			NAME_MGR::I_BtnBack,
+			ofRectangle(cCloseUISize * -0.5, cCloseUISize * -0.5, cCloseUISize, cCloseUISize)
+		);
 
 	}
 	ofPopMatrix();

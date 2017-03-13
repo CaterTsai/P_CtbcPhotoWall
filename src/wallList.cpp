@@ -96,7 +96,6 @@ void wallList::updateCenter(float delta)
 		}
 
 		float diff_ = _centerVec.y * delta;
-		int height_ = (*_wallUnitList.begin())->getHeight();
 		_centerUnitPos.y += diff_;
 	}
 	else

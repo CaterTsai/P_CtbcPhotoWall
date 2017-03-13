@@ -181,7 +181,7 @@ void scrollUI::animStateCheck()
 void scrollUI::updateTitle(ePhotoPrimaryCategory eCategory)
 {
 	_titleImg.clear();
-	auto eFontType_ = (_isZH ? eFontMenuUIZH : eFontMenuUIEN);
+	auto eFontType_ = (_isZH ? eFontMenuUITitleZH : eFontMenuUITitleEN);
 	string titleName_ = dataHolder::GetInstance()->getCategoryName(eCategory, _isZH);
 
 	auto titleRect_ = fontMgr::GetInstance()->getStringBoundingBox(eFontType_, titleName_);
@@ -190,7 +190,7 @@ void scrollUI::updateTitle(ePhotoPrimaryCategory eCategory)
 
 	_canvas.begin();
 	{
-		ofClear(0);
+		ofClear(255);
 
 		ofSetColor(255);
 		fontMgr::GetInstance()->drawString(eFontType_, titleName_, ofVec2f(-titleRect_.x, -titleRect_.y));
@@ -231,7 +231,7 @@ void scrollUI::itemUnit::draw(ofVec2f pos, ePhotoPrimaryCategory eCategory, bool
 		ofRect(cScrollUIWidth * -0.5, cScrollUIItemHeight * -0.5, cScrollUIWidth, cScrollUIItemHeight);
 		
 		//Text
-		auto eFontType_ = (isZH ? eFontMenuUIZH : eFontMenuUIEN);
+		auto eFontType_ = (isZH ? eFontMenuUIContextZH : eFontMenuUIContextEN);
 		string itemName_ = dataHolder::GetInstance()->getTypeName(eCategory, _photoType, isZH);
 		auto bounding_ = fontMgr::GetInstance()->getStringBoundingBox(eFontType_, itemName_);
 		ofSetColor(255);
@@ -241,6 +241,8 @@ void scrollUI::itemUnit::draw(ofVec2f pos, ePhotoPrimaryCategory eCategory, bool
 	ofPopMatrix();
 	ofPopStyle();
 }
+
+//---------------------------------
 PHOTO_TYPE scrollUI::itemUnit::getPhotoType()
 {
 	return _photoType;

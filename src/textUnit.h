@@ -6,22 +6,22 @@ class textUnit
 public:
 	textUnit()
 		:_textZH("")
-		,_textEN("")
+		,_nameBigEN("")
 	{}
 	textUnit(std::string textZH, std::string textEN)
 		:_textZH(textZH)
-		,_textEN(textEN)
+		,_nameBigEN(textEN)
 	{}
 
 	std::string getText(bool isZH)
 	{
-		return isZH ? _textZH : _textEN;
+		return isZH ? _textZH : _nameBigEN;
 	}
 	void setText(std::string textZH, std::string textEN)
 	{
 		_textZH = textZH;
-		_textEN = textEN;
+		_nameBigEN = textEN;
 	}
 private:
-	std::string _textZH, _textEN;
+	std::string _textZH, _nameBigEN;
 };

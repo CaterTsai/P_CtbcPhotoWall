@@ -31,20 +31,24 @@ string dataHolder::getCategoryName(ePhotoPrimaryCategory eCategory, bool isZH)
 }
 
 //--------------------------------------------------------------
-textUnit dataHolder::getCategoryName(ePhotoPrimaryCategory eCategory)
+string dataHolder::getCategorySubtitle(ePhotoPrimaryCategory eCategory, bool isZH)
 {
-	return _categoryName[eCategory];
+	return _categorySubtitle[eCategory].getText(isZH);
 }
 
+
 //--------------------------------------------------------------
-void dataHolder::setPhotoCategoryName(Json::Value & root)
+void dataHolder::setPhotoCategory(Json::Value & root)
 {
 	int size_ = root.size();
 	for (int idx_ = 0; idx_ < size_; idx_++)
 	{
 		string zhName_ = root[idx_].get("zhName", 0).asString();
 		string enName_ = root[idx_].get("enName", 0).asString();
+		string zhSubtitle_ = root[idx_].get("zhSubTitle", 0).asString();
+		string enSubtitle_ = root[idx_].get("enSubTitle", 0).asString();
 		_categoryName[(ePhotoPrimaryCategory)idx_] = textUnit(zhName_, enName_);
+		_categorySubtitle[(ePhotoPrimaryCategory)idx_] = textUnit(zhSubtitle_, enSubtitle_);
 	}
 	_categorySetup = true;
 }
@@ -356,7 +360,7 @@ void dataHolder::handleActive(string active, Json::Value& root)
 	Json::Reader reader_;
 	if (active == NAME_MGR::S_ReqInitData)
 	{
-		setPhotoCategoryName(root.get("CategoryList", 0));
+		setPhotoCategory(root.get("CategoryList", 0));
 		setPhotoTypeName(root.get("TypeList", 0));
 
 	}

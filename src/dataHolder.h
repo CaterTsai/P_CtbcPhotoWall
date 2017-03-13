@@ -20,13 +20,14 @@ public:
 #pragma region Photo Category
 public:
 	string getCategoryName(ePhotoPrimaryCategory eCategory, bool isZH);
-	textUnit getCategoryName(ePhotoPrimaryCategory eCategory);
+	string getCategorySubtitle(ePhotoPrimaryCategory eCategory, bool isZH);
 
 private:
-	void setPhotoCategoryName(Json::Value& root);
+	void setPhotoCategory(Json::Value& root);
 private:
 	bool _categorySetup;
 	map<ePhotoPrimaryCategory, textUnit>	_categoryName;
+	map<ePhotoPrimaryCategory, textUnit>	_categorySubtitle;
 #pragma endregion
 
 #pragma region Photo Type

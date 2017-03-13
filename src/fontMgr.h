@@ -7,12 +7,18 @@ enum eFontType : int
 {
 	eFontMainUIZH = 0
 	,eFontMainUIEN
+	,eFontMainUISubtitleZH
+	,eFontMainUISubtitleEN
+	,eFontMainUISmallZH
+	,eFontMainUISmallEN
 	,eFontTextUIZH
 	,eFontTextUIEN
 	,eFontTextUIContextZH
 	,eFontTextUIContextEN
-	,eFontMenuUIZH
-	,eFontMenuUIEN
+	,eFontMenuUITitleZH
+	,eFontMenuUITitleEN
+	,eFontMenuUIContextZH
+	,eFontMenuUIContextEN
 	,eFontNum
 };
 

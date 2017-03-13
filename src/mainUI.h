@@ -15,10 +15,13 @@ private:
 	class baseUnit {
 	public:
 		baseUnit() {};
-		baseUnit(ofImage& zhText, ofRectangle& zhRect, ofImage& enText, ofRectangle& enRect, ofColor c);
+		baseUnit(ofColor c);
 
 		void update(float delta);
-		void draw(ofVec2f pos, int width, int height, bool displayZH = true);
+		void draw(bool isBig, ofVec2f pos, int width, int height, bool displayZH = true);
+
+		void setNameBig(ofImage & zhText, ofImage & enText);
+		void setNameSmall(ofImage & zhText, ofImage & enText);
 
 		void open();
 		void close();
@@ -27,6 +30,9 @@ private:
 
 		void directOpen();
 		void directClose();
+	private:
+		ofRectangle getDrawRect(bool isBig, int width, int height, bool displayZH);
+
 	private:
 		enum eAnimState
 		{
@@ -39,8 +45,8 @@ private:
 		}_eState;
 
 		ofColor _color;
-		ofImage _textZH, _textEN;
-		ofRectangle	_textRectZH, _textRectEN;
+		ofImage _nameBigZH, _nameBigEN;
+		ofImage _nameSmallZH, _nameSmallEN;
 		ofxAnimatableFloat	_animTextWidth, _animBackplaneWidth;
 	};
 #pragma endregion
@@ -62,9 +68,8 @@ public:
 private:
 	bool setupUI();
 	void resetUI();
-	void createTextImg(string text, ofImage& img, ofRectangle& textRect);
-	void createTextImgEN(string text, ofImage& img, ofRectangle& textRect);
-
+	void createTextImg(string text, eFontType eType, ofImage& img);
+	ofImage combineUIName(ofImage& name, ofImage& subtitle);
 private:
 	enum eMainUIState
 	{

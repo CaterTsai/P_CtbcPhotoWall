@@ -3,7 +3,7 @@
 #include "constParameter.h"
 #include "inputEventMgr.h"
 #include "ofxAnimatableFloat.h"
-
+#include "imageRender.h"
 class wallMgr;
 class closeUI : public inputEvent
 {
