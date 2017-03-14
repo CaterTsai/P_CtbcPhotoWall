@@ -34,6 +34,7 @@ void ofCtbcPhotoWall::setup()
 #ifndef _DEBUG
 	ofHideCursor();
 	ofToggleFullscreen();
+	//ofLogToFile(ofGetTimestampString("log/%Y%m%d%H%M%S.log"));
 #endif // !_DEBUG
 }
 

@@ -18,14 +18,13 @@ void fontMgr::setup(string fontPath)
 	_isSetup &= _fontList[eFontMainUISubtitleZH].loadFont(fontPath + "meidium.otf", cMainUIFontSubtitleSize);
 
 	_fontList[eFontMainUISubtitleEN].setGlobalDpi(72);
-	_fontList[eFontMainUISubtitleEN].setLetterSpacing(0.9);
 	_isSetup &= _fontList[eFontMainUISubtitleEN].loadFont(fontPath + "en_meidium.ttf", cMainUIFontSubtitleENSize);
 
 	_fontList[eFontMainUISmallZH].setGlobalDpi(72);
 	_isSetup &= _fontList[eFontMainUISmallZH].loadFont(fontPath + "meidium.otf", cMainUIFontSmallSize);
 
 	_fontList[eFontMainUISmallEN].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMainUISmallEN].loadFont(fontPath + "en_black.ttf", cMainUIFontSmallENSize);
+	_isSetup &= _fontList[eFontMainUISmallEN].loadFont(fontPath + "en_meidium.ttf", cMainUIFontSmallENSize);
 
 	//--------------------------------------------------
 
@@ -54,15 +53,13 @@ void fontMgr::setup(string fontPath)
 	_isSetup &= _fontList[eFontMenuUITitleZH].loadFont(fontPath + "meidium.otf", cScrollUITitleFontSize);
 
 	_fontList[eFontMenuUITitleEN].setGlobalDpi(72);
-	_fontList[eFontMenuUITitleEN].setLetterSpacing(0.9);
-	_isSetup &= _fontList[eFontMenuUITitleEN].loadFont(fontPath + "en_black.ttf", cScrollUITitleFontENSize);
+	_isSetup &= _fontList[eFontMenuUITitleEN].loadFont(fontPath + "en_meidium.ttf", cScrollUITitleFontENSize);
 
 	_fontList[eFontMenuUIContextZH].setGlobalDpi(72);	
 	_isSetup &= _fontList[eFontMenuUIContextZH].loadFont(fontPath + "meidium.otf", cScrollUIContextFontSize);
 
 	_fontList[eFontMenuUIContextEN].setGlobalDpi(72);
-	_fontList[eFontMenuUIContextEN].setLetterSpacing(0.9);
-	_isSetup &= _fontList[eFontMenuUIContextEN].loadFont(fontPath + "en_meidium.ttf", cScrollUIContextFontENSize);
+	_isSetup &= _fontList[eFontMenuUIContextEN].loadFont(fontPath + "regular.otf", cScrollUIContextFontENSize);
 	if (!_isSetup)
 	{
 		ofLog(OF_LOG_ERROR, "[fontMgr::setup]load font failed");
@@ -85,6 +82,7 @@ void fontMgr::drawString(eFontType type, string msg, ofVec2f pos)
 	catch (const std::exception& e)
 	{
 		ofLog(OF_LOG_ERROR, "[fontMgr::drawString]failed");
+		ofLog(OF_LOG_ERROR, e.what());
 	}	
 }
 
@@ -123,6 +121,7 @@ ofRectangle fontMgr::getStringBoundingBox(eFontType type, string msg)
 	catch (const std::exception& e)
 	{
 		ofLog(OF_LOG_ERROR, "[fontMgr::getStringBoundingBox]failed");
+		ofLog(OF_LOG_ERROR, e.what());
 	}
 	return stringBoundingBox_;
 }
@@ -135,9 +134,10 @@ vector<int> fontMgr::getEachWordWidth(eFontType type, string msg)
 	{
 		_fontList.at(type).getEachWordWidth(msg, eachWordWidth_);
 	}
-	catch (const std::exception&)
+	catch (const std::exception& e)
 	{
-		ofLog(OF_LOG_ERROR, "[fontMgr::getStringBoundingBox]failed");
+		ofLog(OF_LOG_ERROR, "[fontMgr::getEachWordWidth]failed");
+		ofLog(OF_LOG_ERROR, e.what());
 	}
 	return eachWordWidth_;
 }

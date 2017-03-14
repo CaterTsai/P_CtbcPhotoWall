@@ -5,7 +5,7 @@
 #include "ctbcEvent.h"
 
 #pragma region Define
-#define USE_MOUSE
+//#define USE_MOUSE
 
 #ifndef USE_MOUSE
 //#define USE_TUIO
@@ -83,7 +83,7 @@ struct stPhotoHeader
 #pragma endregion
 
 #pragma region const parameter
-const int cWindowWidth = 1920;
+const int cWindowWidth = 3840;
 const int cWindowHeight = cWindowWidth * 0.421875;
 const int cPhotoWallCategoryWidth = cWindowWidth * 0.25;
 
@@ -120,7 +120,7 @@ const float cSelectAnimLength = 0.5f;
 const int cSelectWidth = cPhotoWallCategoryWidth * 0.4f;
 const int cMaxSelectPhotoDisplayNum = (int)ceil(cWindowHeight / (cSelectWidth * 9.0 / 16.0));
 const int cSelectShdowWidth = cSelectWidth * 3.0;
-const int cCategoryNum = 1;
+const int cCategoryNum = 4;
 
 //Main UI
 const int cMainUIWidth = cPhotoWallCategoryWidth * 0.74;
@@ -136,12 +136,12 @@ const int cMainUIBtnHeight = cMainUIBtnWidth;
 const int cMainUIFontSize = cMainUIHeight * 0.22;
 const int cMainUIFontENSize = cMainUIHeight * 0.3;
 const int cMainUIFontSubtitleSize = cMainUIFontSize * 0.8;
-const int cMainUIFontSubtitleENSize = cMainUIFontENSize * 0.5;
+const int cMainUIFontSubtitleENSize = cMainUIFontENSize * 0.4;
 
 const int cMainSmallUIWidth = cMinimumPhotoWidth;
 const int cMainSmallUIHeight = cMinimumPhotoHeight;
 const int cMainUIFontSmallSize = cMainSmallUIHeight * 0.5;
-const int cMainUIFontSmallENSize = cMainSmallUIHeight * 0.5;
+const int cMainUIFontSmallENSize = cMainSmallUIHeight * 0.25;
 //Text UI
 const int cTextUIWidth = cSelectWidth;
 const int cTextUIHeight = cTextUIWidth * 0.5f;
@@ -152,9 +152,9 @@ const float cTextUIAnimDuration = 0.3f;
 
 //Scroll UI
 const int cScrollUIWidth = cSelectWidth * 0.6;
-const int cScrollUIHeight = cScrollUIWidth * 1.5;
+const int cScrollUIHeight = cScrollUIWidth * 1.6;
 const int cScrollUIAlpha = 255 * 0.95;
-const int cScrollUIItemHeight = cScrollUIHeight * 0.2;
+const int cScrollUIItemHeight = cScrollUIHeight * 0.16;
 const int cScrollUIItemStartPosY = cScrollUIItemHeight;
 const ofColor cScrollUIItemColor = ofColor(20, cScrollUIAlpha);
 const ofColor cScrollUIItemSelectColor = ofColor(100, cScrollUIAlpha);

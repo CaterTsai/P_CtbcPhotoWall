@@ -388,7 +388,7 @@ void mainUI::createTextImg(string text, eFontType eType, ofImage& img)
 
 	_canvas.begin();
 	{
-		ofClear(0);
+		ofClear(255);
 		ofPushMatrix();
 
 		ofSetColor(255);
@@ -420,7 +420,7 @@ ofImage mainUI::combineUIName(ofImage & name, ofImage & subtitle)
 
 		subtitle.draw(
 			(cMainUIUnitWidth - subtitle.getWidth()) * 0.5f,
-			(cMainUIUnitHeight - name.getHeight()) * 0.5 + cMainUIUnitHeight * 0.15
+			(cMainUIUnitHeight - name.getHeight()) * 0.5 + cMainUIUnitHeight * 0.2
 		);
 
 	}

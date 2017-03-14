@@ -74,7 +74,7 @@ void blurShader::end()
 	_fboBlurOnePass.end();
 	
 	_fboBlurTwoPass.begin();
-	ofClear(ofColor(0));
+	ofClear(ofColor());
 	_shaderBlurY.begin();
 	_shaderBlurY.setUniform1f("blurAmnt", _blurLevel);
 	{

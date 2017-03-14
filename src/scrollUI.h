@@ -39,7 +39,7 @@ private:
 	bool _isSetup, _isZH, _isRight;
 	ePhotoPrimaryCategory _eCategory;
 	wallMgr*	_parent;
-	ofImage	_titleImg;
+	ofImage	_titleImg, _itemImg;
 	ofFbo	_displayCanvas;
 	ofxAnimatableFloat	_animRotate;
 

@@ -15,7 +15,7 @@ scrollUI::scrollUI()
 void scrollUI::setup(wallMgr * parent)
 {
 	_parent = parent;
-	_displayCanvas.allocate(cScrollUIWidth, cScrollUIHeight);
+	_displayCanvas.allocate(cScrollUIWidth, cScrollUIHeight, GL_RGBA);
 
 	_animRotate.setDuration(cScrollUIAnimDuration);
 	_animRotate.setRepeatType(AnimRepeat::PLAY_ONCE);
@@ -129,7 +129,7 @@ void scrollUI::updateCanvas()
 {
 	_displayCanvas.begin();
 	{
-		ofClear(0);
+		ofClear(255);
 		drawItemList();	
 		
 		ofSetColor(getCategoryColor(_eCategory), cScrollUIAlpha);
@@ -145,6 +145,12 @@ void scrollUI::updateCanvas()
 		ofPopMatrix();
 	}
 	_displayCanvas.end();
+
+	ofPixels pixel_;
+	_displayCanvas.readToPixels(pixel_);
+	_itemImg.setFromPixels(pixel_);
+	
+	_itemImg.saveImage("test.png");
 }
 
 //---------------------------------
@@ -229,14 +235,15 @@ void scrollUI::itemUnit::draw(ofVec2f pos, ePhotoPrimaryCategory eCategory, bool
 		//Backplace
 		_isSelect ? ofSetColor(cScrollUIItemSelectColor) : ofSetColor(cScrollUIItemColor);
 		ofRect(cScrollUIWidth * -0.5, cScrollUIItemHeight * -0.5, cScrollUIWidth, cScrollUIItemHeight);
-		
+
 		//Text
 		auto eFontType_ = (isZH ? eFontMenuUIContextZH : eFontMenuUIContextEN);
 		string itemName_ = dataHolder::GetInstance()->getTypeName(eCategory, _photoType, isZH);
 		auto bounding_ = fontMgr::GetInstance()->getStringBoundingBox(eFontType_, itemName_);
 		ofSetColor(255);
-		fontMgr::GetInstance()->drawString(eFontType_, itemName_, ofVec2f(bounding_.getWidth() * -0.5, bounding_.getHeight() * 0.5));
-		
+		//fontMgr::GetInstance()->drawString(eFontType_, itemName_, ofVec2f(bounding_.getWidth() * -0.5, bounding_.getHeight() * 0.5));
+		fontMgr::GetInstance()->drawString(eFontType_, itemName_, ofVec2f(bounding_.getWidth() * -0.5, bounding_.getHeight() * 0.4));
+
 	}
 	ofPopMatrix();
 	ofPopStyle();
@@ -280,7 +287,7 @@ void scrollUI::updateItemList(ePhotoPrimaryCategory eCategory)
 	}
 
 	_itemListDrawY = 0;
-	int temp_ = -( int(_itemList.size() * cScrollUIItemHeight) - cScrollUIHeight);
+	int temp_ = -( int(_itemList.size() * cScrollUIItemHeight) - (cScrollUIHeight - cScrollUIItemHeight));
 	_itemListDrawYMin = MIN(0, temp_);
 }
 
@@ -289,7 +296,8 @@ bool scrollUI::moveDrawPosY(int delta)
 {
 	int afterMove_ = _itemListDrawY + delta;
 	afterMove_ = MAX(MIN(afterMove_, 0), _itemListDrawYMin);
-
+	
+	
 	if (_itemListDrawY == afterMove_)
 	{
 		return false;
