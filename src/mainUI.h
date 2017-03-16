@@ -68,7 +68,7 @@ public:
 private:
 	bool setupUI();
 	void resetUI();
-	void createTextImg(string text, eFontType eType, ofImage& img);
+	void createTextImg(string text, eFontType eType, bool isZH, ofImage& img);
 	ofImage combineUIName(ofImage& name, ofImage& subtitle);
 private:
 	enum eMainUIState

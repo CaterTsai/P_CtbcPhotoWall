@@ -54,13 +54,13 @@ void textUI::draw(ofVec2f pos)
 //---------------------------------
 void textUI::updateText(string & title, string & context, bool isZH)
 {
-	auto titleFontType_ = isZH ? eFontTextUIZH : eFontTextUIEN;
-	auto titleBoundingBox_ = fontMgr::GetInstance()->getStringBoundingBox(titleFontType_, title);
+	auto titleFontType_ = isZH ? eFontTextUI : eFontTextUI;
+	auto titleBoundingBox_ = fontMgr::GetInstance()->getStringBoundingBox(titleFontType_, title, isZH);
 	
-	auto contextFontType_ = isZH ? eFontTextUIContextZH : eFontTextUIContextEN;
-	auto eachWordWidth_ = fontMgr::GetInstance()->getEachWordWidth(contextFontType_, context);
+	auto contextFontType_ = isZH ? eFontTextUIContext : eFontTextUIContext;
+	auto eachWordWidth_ = fontMgr::GetInstance()->getEachWordWidth(contextFontType_, context, isZH);
 	string processContext_ = reconstructMsg(cTextUIContextLimitWidth, context, eachWordWidth_);
-	auto contextBoundingBox_ = fontMgr::GetInstance()->getStringBoundingBox(contextFontType_, processContext_);
+	auto contextBoundingBox_ = fontMgr::GetInstance()->getStringBoundingBox(contextFontType_, processContext_, isZH);
 
 	_textCanvas.clear();
 	_textCanvas.allocate(
@@ -70,11 +70,12 @@ void textUI::updateText(string & title, string & context, bool isZH)
 
 	_textCanvas.begin();
 	ofSetColor(255);
-	fontMgr::GetInstance()->drawString(titleFontType_, title, -titleBoundingBox_.getPosition());
+	fontMgr::GetInstance()->drawString(titleFontType_, title, -titleBoundingBox_.getPosition(), isZH);
 	fontMgr::GetInstance()->drawString(
 		contextFontType_,
 		processContext_,
-		ofVec2f(-contextBoundingBox_.getX(), titleBoundingBox_.getHeight() * 0.2 -(titleBoundingBox_.getY() + contextBoundingBox_.getY()))
+		ofVec2f(-contextBoundingBox_.getX(), titleBoundingBox_.getHeight() * 0.2 -(titleBoundingBox_.getY() + contextBoundingBox_.getY())),
+		isZH
 	);
 	_textCanvas.end();
 

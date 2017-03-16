@@ -146,11 +146,6 @@ void scrollUI::updateCanvas()
 	}
 	_displayCanvas.end();
 
-	ofPixels pixel_;
-	_displayCanvas.readToPixels(pixel_);
-	_itemImg.setFromPixels(pixel_);
-	
-	_itemImg.saveImage("test.png");
 }
 
 //---------------------------------
@@ -187,10 +182,10 @@ void scrollUI::animStateCheck()
 void scrollUI::updateTitle(ePhotoPrimaryCategory eCategory)
 {
 	_titleImg.clear();
-	auto eFontType_ = (_isZH ? eFontMenuUITitleZH : eFontMenuUITitleEN);
+	auto eFontType_ = (_isZH ? eFontMenuUITitle : eFontMenuUITitle);
 	string titleName_ = dataHolder::GetInstance()->getCategoryName(eCategory, _isZH);
 
-	auto titleRect_ = fontMgr::GetInstance()->getStringBoundingBox(eFontType_, titleName_);
+	auto titleRect_ = fontMgr::GetInstance()->getStringBoundingBox(eFontType_, titleName_, _isZH);
 	ofFbo	_canvas;
 	_canvas.allocate(titleRect_.getWidth(), titleRect_.getHeight(), GL_RGBA);
 
@@ -199,7 +194,7 @@ void scrollUI::updateTitle(ePhotoPrimaryCategory eCategory)
 		ofClear(255);
 
 		ofSetColor(255);
-		fontMgr::GetInstance()->drawString(eFontType_, titleName_, ofVec2f(-titleRect_.x, -titleRect_.y));
+		fontMgr::GetInstance()->drawString(eFontType_, titleName_, ofVec2f(-titleRect_.x, -titleRect_.y), _isZH);
 	}
 	_canvas.end();
 
@@ -237,12 +232,11 @@ void scrollUI::itemUnit::draw(ofVec2f pos, ePhotoPrimaryCategory eCategory, bool
 		ofRect(cScrollUIWidth * -0.5, cScrollUIItemHeight * -0.5, cScrollUIWidth, cScrollUIItemHeight);
 
 		//Text
-		auto eFontType_ = (isZH ? eFontMenuUIContextZH : eFontMenuUIContextEN);
+		auto eFontType_ = (isZH ? eFontMenuUIContext : eFontMenuUIContext);
 		string itemName_ = dataHolder::GetInstance()->getTypeName(eCategory, _photoType, isZH);
-		auto bounding_ = fontMgr::GetInstance()->getStringBoundingBox(eFontType_, itemName_);
+		auto bounding_ = fontMgr::GetInstance()->getStringBoundingBox(eFontType_, itemName_, isZH);
 		ofSetColor(255);
-		//fontMgr::GetInstance()->drawString(eFontType_, itemName_, ofVec2f(bounding_.getWidth() * -0.5, bounding_.getHeight() * 0.5));
-		fontMgr::GetInstance()->drawString(eFontType_, itemName_, ofVec2f(bounding_.getWidth() * -0.5, bounding_.getHeight() * 0.4));
+		fontMgr::GetInstance()->drawString(eFontType_, itemName_, ofVec2f(bounding_.getWidth() * -0.5, bounding_.getHeight() * 0.4), isZH);
 
 	}
 	ofPopMatrix();

@@ -805,7 +805,14 @@ void wallList::initWallUnits(bool isSmile)
 
 	try
 	{
-		random_shuffle(photoIDList_.begin(), photoIDList_.end());
+		if ( photoIDList_.size() > 0)
+		{
+			random_shuffle(photoIDList_.begin(), photoIDList_.end());
+		}
+		else
+		{
+			ofLog(OF_LOG_ERROR, "[initWallUnits]photoIDList size is 0");
+		}
 
 		int idx_ = 0;
 		for (auto& iter_ : photoIDList_)
@@ -823,7 +830,7 @@ void wallList::initWallUnits(bool isSmile)
 		}
 		updateWallTotalHeight();
 	}
-	catch (const std::exception&)
+	catch (const std::exception& e)
 	{
 		ofLog(OF_LOG_ERROR, "[initWallUnits]Get photoIDList exception");
 	}

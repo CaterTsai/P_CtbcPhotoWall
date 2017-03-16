@@ -4,10 +4,10 @@
 void dataHolder::setup()
 {	
 	setupServer();
+	loadSmilePhoto();
+
 	postToServer(NAME_MGR::S_ReqInitData);
 	postToServer(NAME_MGR::S_ReqPhotoList);
-
-	loadSmilePhoto();
 	_timer = cPhotoSmileCheckTime;
 }
 
@@ -127,6 +127,12 @@ void dataHolder::loadSmilePhoto()
 	dir_.allowExt("png");
 	dir_.listDir();
 	
+	if (dir_.numFiles() == 0)
+	{
+		ofLog(OF_LOG_ERROR, "[dataHolder::loadSmilePhoto]Smile Photo number is zero");
+		return;
+	}
+
 	_smileBaseID = (ePhotoCategory_4 << 28) + (_smileType << 20) + (ePhotoWideVertical << 16);
 	for (int idx_ = 0; idx_ < dir_.numFiles(); idx_++)
 	{
@@ -142,6 +148,7 @@ void dataHolder::loadSmilePhoto()
 
 		addPhotoMap(header_);
 	}
+	ofLog(OF_LOG_NOTICE, "[dataHolder::loadSmilePhoto]Finish");
 }
 
 //--------------------------------------------------------------
@@ -182,8 +189,7 @@ void dataHolder::addSmileHeader(string order)
 	header_.category = ePhotoCategory_4;
 	header_.thumbnailPath = configMgr::exSmilePath + configMgr::exThumbFolderName + fileName_;
 	header_.sourcePath = configMgr::exSmilePath + configMgr::exSourceFolderName + fileName_;
-
-
+	header_.titleZH = "Smile Photo";
 	addPhotoMap(header_);
 	
 	ofNotifyEvent(_onNewSmilePhoto, header_);

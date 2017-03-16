@@ -4,62 +4,60 @@
 void fontMgr::setup(string fontPath)
 {
 	_isSetup = true;
-
 	//------------------------------------------------
 	//MainUI
-	_fontList[eFontMainUIZH].setGlobalDpi(72);
-	_fontList[eFontMainUIZH].setLetterSpacing(1.2f);
-	_isSetup &= _fontList[eFontMainUIZH].loadFont(fontPath + "black.otf", cMainUIFontSize);
+	_fontList[eFontMainUI].setGlobalDpi(72);
+	_fontList[eFontMainUI].setLetterSpacing(1.2f);
+	_isSetup &= _fontList[eFontMainUI].loadFont(fontPath + "black.otf", cMainUIFontSize);
 
-	_fontList[eFontMainUIEN].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMainUIEN].loadFont(fontPath + "en_black.ttf", cMainUIFontENSize);
+	_fontENList[eFontMainUI].setGlobalDpi(72);
+	_isSetup &= _fontENList[eFontMainUI].loadFont(fontPath + "en_black.ttf", cMainUIFontENSize);
 
-	_fontList[eFontMainUISubtitleZH].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMainUISubtitleZH].loadFont(fontPath + "meidium.otf", cMainUIFontSubtitleSize);
+	_fontList[eFontMainUISubtitle].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontMainUISubtitle].loadFont(fontPath + "meidium.otf", cMainUIFontSubtitleSize);
 
-	_fontList[eFontMainUISubtitleEN].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMainUISubtitleEN].loadFont(fontPath + "en_meidium.ttf", cMainUIFontSubtitleENSize);
+	_fontENList[eFontMainUISubtitle].setGlobalDpi(72);
+	_isSetup &= _fontENList[eFontMainUISubtitle].loadFont(fontPath + "en_meidium.ttf", cMainUIFontSubtitleENSize);
 
-	_fontList[eFontMainUISmallZH].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMainUISmallZH].loadFont(fontPath + "meidium.otf", cMainUIFontSmallSize);
+	_fontList[eFontMainUISmall].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontMainUISmall].loadFont(fontPath + "meidium.otf", cMainUIFontSmallSize);
 
-	_fontList[eFontMainUISmallEN].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMainUISmallEN].loadFont(fontPath + "en_meidium.ttf", cMainUIFontSmallENSize);
+	_fontENList[eFontMainUISmall].setGlobalDpi(72);
+	_isSetup &= _fontENList[eFontMainUISmall].loadFont(fontPath + "en_meidium.ttf", cMainUIFontSmallENSize);
 
 	//--------------------------------------------------
 
-	_fontList[eFontMainUIZH].setGlobalDpi(72);
-	_fontList[eFontMainUIZH].setLetterSpacing(1.2f);
-	_isSetup &= _fontList[eFontMainUIZH].loadFont(fontPath + "black.otf", cMainUIFontSize);
+	_fontList[eFontMainUI].setGlobalDpi(72);
+	_fontList[eFontMainUI].setLetterSpacing(1.2f);
+	_isSetup &= _fontList[eFontMainUI].loadFont(fontPath + "black.otf", cMainUIFontSize);
 
-	_fontList[eFontMainUIEN].setGlobalDpi(72);
-	_fontList[eFontMainUIEN].setSpaceSize(0.5);
-	_isSetup &= _fontList[eFontMainUIEN].loadFont(fontPath + "english.TTF", cMainUIFontENSize);
+	_fontENList[eFontMainUI].setGlobalDpi(72);
+	_isSetup &= _fontENList[eFontMainUI].loadFont(fontPath + "en_meidium.ttf", cMainUIFontENSize);
 
 
-	_fontList[eFontTextUIZH].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontTextUIZH].loadFont(fontPath + "regular.otf", cTextUIFontSize);
+	_fontList[eFontTextUI].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontTextUI].loadFont(fontPath + "regular.otf", cTextUIFontSize);
 
-	_fontList[eFontTextUIEN].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontTextUIEN].loadFont(fontPath + "regular.otf", cTextUIFontSize);
+	_fontENList[eFontTextUI].setGlobalDpi(72);
+	_isSetup &= _fontENList[eFontTextUI].loadFont(fontPath + "en_meidium.ttf", cTextUIFontSize);
 
-	_fontList[eFontTextUIContextZH].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontTextUIContextZH].loadFont(fontPath + "regular.otf", cTextUIContextFontSize);
+	_fontList[eFontTextUIContext].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontTextUIContext].loadFont(fontPath + "regular.otf", cTextUIContextFontSize);
 
-	_fontList[eFontTextUIContextEN].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontTextUIContextEN].loadFont(fontPath + "regular.otf", cTextUIContextFontSize);
+	_fontENList[eFontTextUIContext].setGlobalDpi(72);
+	_isSetup &= _fontENList[eFontTextUIContext].loadFont(fontPath + "en_meidium.ttf", cTextUIContextFontSize);
 
-	_fontList[eFontMenuUITitleZH].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMenuUITitleZH].loadFont(fontPath + "meidium.otf", cScrollUITitleFontSize);
+	_fontList[eFontMenuUITitle].setGlobalDpi(72);
+	_isSetup &= _fontList[eFontMenuUITitle].loadFont(fontPath + "meidium.otf", cScrollUITitleFontSize);
 
-	_fontList[eFontMenuUITitleEN].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMenuUITitleEN].loadFont(fontPath + "en_meidium.ttf", cScrollUITitleFontENSize);
+	_fontENList[eFontMenuUITitle].setGlobalDpi(72);
+	_isSetup &= _fontENList[eFontMenuUITitle].loadFont(fontPath + "en_meidium.ttf", cScrollUITitleFontENSize);
 
-	_fontList[eFontMenuUIContextZH].setGlobalDpi(72);	
-	_isSetup &= _fontList[eFontMenuUIContextZH].loadFont(fontPath + "meidium.otf", cScrollUIContextFontSize);
+	_fontList[eFontMenuUIContext].setGlobalDpi(72);	
+	_isSetup &= _fontList[eFontMenuUIContext].loadFont(fontPath + "meidium.otf", cScrollUIContextFontSize);
 
-	_fontList[eFontMenuUIContextEN].setGlobalDpi(72);
-	_isSetup &= _fontList[eFontMenuUIContextEN].loadFont(fontPath + "regular.otf", cScrollUIContextFontENSize);
+	_fontENList[eFontMenuUIContext].setGlobalDpi(72);
+	_isSetup &= _fontENList[eFontMenuUIContext].loadFont(fontPath + "en_meidium.ttf", cScrollUIContextFontENSize);
 	if (!_isSetup)
 	{
 		ofLog(OF_LOG_ERROR, "[fontMgr::setup]load font failed");
@@ -68,7 +66,7 @@ void fontMgr::setup(string fontPath)
 }
 
 //-----------------------------------------------------------------------------
-void fontMgr::drawString(eFontType type, string msg, ofVec2f pos)
+void fontMgr::drawString(eFontType type, string msg, ofVec2f pos, bool isZH)
 {
 	if (!_isSetup)
 	{
@@ -77,7 +75,15 @@ void fontMgr::drawString(eFontType type, string msg, ofVec2f pos)
 
 	try
 	{
-		_fontList.at(type).drawString(msg, pos.x, pos.y);
+		if (isZH)
+		{
+			_fontList.at(type).drawString(msg, pos.x, pos.y);
+		}
+		else
+		{
+			_fontENList.at(type).drawString(msg, pos.x, pos.y);
+		}
+		
 	}
 	catch (const std::exception& e)
 	{
@@ -88,7 +94,7 @@ void fontMgr::drawString(eFontType type, string msg, ofVec2f pos)
 
 
 //-----------------------------------------------------------------------------
-void fontMgr::setFontLetterSpace(eFontType type, float size)
+void fontMgr::setFontLetterSpace(eFontType type, float size, bool isZH)
 {
 	if (!_isSetup)
 	{
@@ -97,7 +103,15 @@ void fontMgr::setFontLetterSpace(eFontType type, float size)
 
 	try
 	{
-		_fontList.at(type).setLetterSpacing(size);
+		if (isZH)
+		{
+			_fontList.at(type).setLetterSpacing(size);
+		}
+		else
+		{
+			_fontENList.at(type).setLetterSpacing(size);
+		}
+		
 	}
 	catch (const std::exception& e)
 	{
@@ -106,7 +120,7 @@ void fontMgr::setFontLetterSpace(eFontType type, float size)
 }
 
 //-----------------------------------------------------------------------------
-ofRectangle fontMgr::getStringBoundingBox(eFontType type, string msg)
+ofRectangle fontMgr::getStringBoundingBox(eFontType type, string msg, bool isZH)
 {
 	if (!_isSetup)
 	{
@@ -116,7 +130,15 @@ ofRectangle fontMgr::getStringBoundingBox(eFontType type, string msg)
 	ofRectangle stringBoundingBox_;
 	try
 	{
-		stringBoundingBox_ = _fontList.at(type).getStringBoundingBox(msg, 0, 0);
+		if (isZH)
+		{
+			stringBoundingBox_ = _fontList.at(type).getStringBoundingBox(msg, 0, 0);
+		}
+		else
+		{
+			stringBoundingBox_ = _fontENList.at(type).getStringBoundingBox(msg, 0, 0);
+		}
+		
 	}
 	catch (const std::exception& e)
 	{
@@ -127,12 +149,20 @@ ofRectangle fontMgr::getStringBoundingBox(eFontType type, string msg)
 }
 
 //-----------------------------------------------------------------------------
-vector<int> fontMgr::getEachWordWidth(eFontType type, string msg)
+vector<int> fontMgr::getEachWordWidth(eFontType type, string msg, bool isZH)
 {
 	vector<int> eachWordWidth_;
 	try
 	{
-		_fontList.at(type).getEachWordWidth(msg, eachWordWidth_);
+		if (isZH)
+		{
+			_fontList.at(type).getEachWordWidth(msg, eachWordWidth_);
+		}
+		else
+		{
+			_fontENList.at(type).getEachWordWidth(msg, eachWordWidth_);
+		}
+		
 	}
 	catch (const std::exception& e)
 	{

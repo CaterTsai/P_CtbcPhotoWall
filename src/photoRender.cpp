@@ -234,13 +234,6 @@ void photoRender::threadedFunction()
 				_imgNeedUpdate.push(imgEntry_);
 				unlock();
 			}
-
-			if (!imgEntry_.isThumbanil)
-			{
-				renderEvent event_;
-				event_.photoID = imgEntry_.photoId;
-				ofNotifyEvent(onLoadFinish, event_, this);
-			}
 		}
 		else
 		{

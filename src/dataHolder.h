@@ -102,6 +102,7 @@ private:
 		:_headerSetup(false)
 		,_categorySetup(false)
 		,_typeSetup(false)
+		, _smileType(2)
 	{};
 	~dataHolder() {
 		_server.stop();

@@ -5,35 +5,30 @@
 
 enum eFontType : int
 {
-	eFontMainUIZH = 0
-	,eFontMainUIEN
-	,eFontMainUISubtitleZH
-	,eFontMainUISubtitleEN
-	,eFontMainUISmallZH
-	,eFontMainUISmallEN
-	,eFontTextUIZH
-	,eFontTextUIEN
-	,eFontTextUIContextZH
-	,eFontTextUIContextEN
-	,eFontMenuUITitleZH
-	,eFontMenuUITitleEN
-	,eFontMenuUIContextZH
-	,eFontMenuUIContextEN
+	eFontMainUI = 0
+	,eFontMainUISubtitle
+	,eFontMainUISmall
+	,eFontTextUI
+	,eFontTextUIContext
+	,eFontMenuUITitle
+	,eFontMenuUIContext
 	,eFontNum
 };
 
 class fontMgr
 {
 public:
+	
 	void setup(string fontPath);	
 	
-	void drawString(eFontType type, string msg, ofVec2f pos);
-	void setFontLetterSpace(eFontType type, float spaceSize);
-	ofRectangle getStringBoundingBox(eFontType type, string msg);
-	vector<int> getEachWordWidth(eFontType type, string msg);
+	void drawString(eFontType type, string msg, ofVec2f pos, bool isZH);
+	void setFontLetterSpace(eFontType type, float spaceSize, bool isZH);
+	ofRectangle getStringBoundingBox(eFontType type, string msg, bool isZH);
+	vector<int> getEachWordWidth(eFontType type, string msg, bool isZH);
 private:
 	bool _isSetup;
 	array<ofxTrueTypeFontUC, eFontNum>	_fontList;
+	array<ofTrueTypeFont, eFontNum> _fontENList;
 
 public:
 	static string ws2s(const wstring& wstr);

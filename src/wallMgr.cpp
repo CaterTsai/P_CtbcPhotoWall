@@ -304,7 +304,9 @@ void wallMgr::updateTextUI(int photoID)
 	string title_, msg_;
 	title_ = msg_ = "Loading";
 	dataHolder::GetInstance()->getPhotoText(photoID, _isDisplayZH, title_, msg_);
-	_textUI.updateText(title_, msg_, _isDisplayZH);
+	
+	//TODO always ZH
+	_textUI.updateText(title_, msg_, true);
 	
 }
 

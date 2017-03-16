@@ -348,16 +348,15 @@ bool mainUI::setupUI()
 		ofImage nameSmallZH_, nameSmallEN_;
 
 
-		createTextImg(nameTextZH_, eFontType::eFontMainUIZH, nameBigZH_);
-		createTextImg(nameTextEN_, eFontType::eFontMainUIEN, nameBigEN_);
-		createTextImg(subtitleTextZH_, eFontType::eFontMainUISubtitleZH, subtitleZH_);
-		createTextImg(subtitleTextEN_, eFontType::eFontMainUISubtitleEN, subtitleEN_);
+		createTextImg(nameTextZH_, eFontType::eFontMainUI, true, nameBigZH_);
+		createTextImg(nameTextEN_, eFontType::eFontMainUI, false, nameBigEN_);
+		createTextImg(subtitleTextZH_, eFontType::eFontMainUISubtitle, true, subtitleZH_);
+		createTextImg(subtitleTextEN_, eFontType::eFontMainUISubtitle, false, subtitleEN_);
 		fullUIZH_ = combineUIName(nameBigZH_, subtitleZH_);
 		fullUIEN_ = combineUIName(nameBigEN_, subtitleEN_);
 
-		subtitleZH_.saveImage("test.png");
-		createTextImg(nameTextZH_, eFontType::eFontMainUISmallZH, nameSmallZH_);
-		createTextImg(nameTextEN_, eFontType::eFontMainUISmallEN, nameSmallEN_);
+		createTextImg(nameTextZH_, eFontType::eFontMainUISmall, true, nameSmallZH_);
+		createTextImg(nameTextEN_, eFontType::eFontMainUISmall, false, nameSmallEN_);
 
 		baseUnit newUnit_(getCategoryColor(type_));
 		newUnit_.setNameBig(fullUIZH_, fullUIEN_);
@@ -378,11 +377,11 @@ void mainUI::resetUI()
 }
 
 //-----------------------------------------------------------------------------
-void mainUI::createTextImg(string text, eFontType eType, ofImage& img)
+void mainUI::createTextImg(string text, eFontType eType, bool isZH, ofImage& img)
 {
 	img.clear();
 
-	auto textRect_ = fontMgr::GetInstance()->getStringBoundingBox(eType, text);
+	auto textRect_ = fontMgr::GetInstance()->getStringBoundingBox(eType, text, isZH);
 	ofFbo	_canvas;
 	_canvas.allocate(textRect_.getWidth(), textRect_.getHeight(), GL_RGBA);
 
@@ -392,7 +391,7 @@ void mainUI::createTextImg(string text, eFontType eType, ofImage& img)
 		ofPushMatrix();
 
 		ofSetColor(255);
-		fontMgr::GetInstance()->drawString(eType, text, ofVec2f(-textRect_.x, -textRect_.y));
+		fontMgr::GetInstance()->drawString(eType, text, ofVec2f(-textRect_.x, -textRect_.y), isZH);
 		ofPopMatrix();
 	}
 	_canvas.end();
