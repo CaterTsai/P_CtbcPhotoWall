@@ -184,7 +184,15 @@ void photoRender::addImage(int id, string path, bool isThumb)
 	photoEntry entry_;
 	entry_.isThumbanil = isThumb;
 	entry_.path = path;
-	_thumbChecker.insert(id);
+	if (isThumb)
+	{
+		_thumbChecker.insert(id);
+	}
+	else
+	{
+		_sourceChecker.insert(id);
+	}
+	
 	entry_.photoId = id;
 	
 	_imgQueue.push(entry_);

@@ -11,9 +11,7 @@ wallMgr::wallMgr()
 	, _needUpdateText(false)
 	, _isDisplayZH(true)
 	, _canSelect(true)
-{
-	
-}
+{}
 
 //--------------------------------
 wallMgr::~wallMgr()
@@ -296,6 +294,8 @@ void wallMgr::textUIout()
 void wallMgr::setTextUIVisible(bool val)
 {
 	_isTextUIVisible = val;
+
+	val ? _textUI.enableInput() : _textUI.disableInput();
 }
 
 //--------------------------------
@@ -305,8 +305,18 @@ void wallMgr::updateTextUI(int photoID)
 	title_ = msg_ = "Loading";
 	dataHolder::GetInstance()->getPhotoText(photoID, _isDisplayZH, title_, msg_);
 	
-	//TODO always ZH
-	_textUI.updateText(title_, msg_, true);
+	//TODO
+	if (_isDisplayZH)
+	{
+		_textUI.updateText(title_, msg_, true);
+	}
+	else
+	{
+		title_ = " ";
+		msg_ = " ";
+		//_textUI.updateText(title_, msg_, false);
+	}
+	
 	
 }
 
@@ -382,6 +392,7 @@ void wallMgr::scrollUIout()
 void wallMgr::setScrollUIVisible(bool val)
 {
 	_isScrollUIVisible = val;
+	val ? _scrollUI.enableInput() : _scrollUI.disableInput();
 }
 
 //--------------------------------
@@ -449,6 +460,7 @@ void wallMgr::closeUIout()
 void wallMgr::setCloseUIVisible(bool val)
 {
 	_isCloseUIVidible = val;
+	val ? _closeUI.enableInput() : _closeUI.disableInput();
 }
 
 //--------------------------------

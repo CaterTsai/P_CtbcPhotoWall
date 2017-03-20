@@ -4,8 +4,12 @@
 void dataHolder::setup()
 {	
 	setupServer();
-	loadSmilePhoto();
+	if (configMgr::exConnectSmile)
+	{
+		loadSmilePhoto();
 
+	}
+	
 	postToServer(NAME_MGR::S_ReqInitData);
 	postToServer(NAME_MGR::S_ReqPhotoList);
 	_timer = cPhotoSmileCheckTime;

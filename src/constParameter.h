@@ -134,9 +134,9 @@ const int cMainUIUnitMinHeight = cMainUIHeight * 0.334;
 const int cMainUIBtnWidth = cMainUIWidth * 0.15;
 const int cMainUIBtnHeight = cMainUIBtnWidth;
 const int cMainUIFontSize = cMainUIHeight * 0.22;
-const int cMainUIFontENSize = cMainUIHeight * 0.3;
+const int cMainUIFontENSize = cMainUIHeight * 0.25;
 const int cMainUIFontSubtitleSize = cMainUIFontSize * 0.8;
-const int cMainUIFontSubtitleENSize = cMainUIFontENSize * 0.4;
+const int cMainUIFontSubtitleENSize = cMainUIFontENSize * 0.5;
 
 const int cMainSmallUIWidth = cMinimumPhotoWidth;
 const int cMainSmallUIHeight = cMinimumPhotoHeight;
@@ -151,7 +151,7 @@ const int cTextUIContextFontSize = cTextUIFontSize * 0.5f;
 const float cTextUIAnimDuration = 0.3f;
 
 //Scroll UI
-const int cScrollUIWidth = cSelectWidth * 0.6;
+const int cScrollUIWidth = cSelectWidth * 0.7;
 const int cScrollUIHeight = cScrollUIWidth * 1.6;
 const int cScrollUIAlpha = 255 * 0.95;
 const int cScrollUIItemHeight = cScrollUIHeight * 0.16;

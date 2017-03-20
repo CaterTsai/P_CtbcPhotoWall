@@ -296,6 +296,11 @@ int wallList::getCenterUnitPosYFromSelect()
 	{
 		for (int idx_ = 0; idx_ < _selectWallUnit.id; idx_++)
 		{
+			if (idx_ == _wallUnitList.size())
+			{
+				ofLog(OF_LOG_ERROR, "[wallList::getCenterUnitPosYFromSelect]over index");
+				break;
+			}
 			returnVal_ -= _wallUnitList[idx_]->getHeight();
 		}
 	}
@@ -361,6 +366,11 @@ bool wallList::select(ofVec2f& pos)
 	{	
 		_selectWallUnit = foundWallUnit(pos);
 
+		if (_selectWallUnit.id < 0)
+		{
+			ofLog(OF_LOG_ERROR, "[wallList::select]WHAT!?");
+		}
+
 		_wallUnitList[_selectWallUnit.id]->setClick(true);
 		
 		//trigger animation
@@ -403,8 +413,16 @@ int wallList::getSelectPhotoID()
 	}
 	else
 	{
-		auto selectUnit_ = dynamic_cast<photoUnit*>(_wallUnitList[_selectWallUnit.id].get());
-		return selectUnit_->getPhotoHeader().id;
+		if (_selectWallUnit.id >= 0 && _selectWallUnit.id < _wallUnitList.size())
+		{
+			auto selectUnit_ = dynamic_cast<photoUnit*>(_wallUnitList[_selectWallUnit.id].get());
+			return selectUnit_->getPhotoHeader().id;
+		}
+		else
+		{
+			return -1;
+		}
+		
 	}
 }
 
@@ -527,7 +545,6 @@ void wallList::checkMoveCenterYState()
 			_parent->setTextUIVisible(true);
 			_parent->setScrollUIVisible(true);
 			_parent->setCloseUIVisible(true);
-	
 		}
 
 		if (_needRemove)
@@ -542,7 +559,6 @@ void wallList::checkMoveCenterYState()
 void wallList::removeWallUnitCheck()
 {
 	//TODO
-	int fixID_, fixPosY_;
 	int insertNum_ = _insertEnd - _insertStart + 1;
 
 	if (_wallUnitList.size() - insertNum_ >= cDefaultPhotoListNum)
@@ -553,18 +569,19 @@ void wallList::removeWallUnitCheck()
 		if (getIsSelect())
 		{
 			_selectWallUnit.id -= _insertStart;
-			fixID_ = _selectWallUnit.id;
-			fixPosY_ = _selectWallUnit.pos.y;
+			fixCenterUnitPosByUnit(_selectWallUnit.id, _selectWallUnit.pos.y);
 		}
 		else if (getIsDeselect())
 		{
-			int id_ = (insertNum_) * 0.5;
-			fixID_ = id_;
-			fixPosY_ = _baseArea.getHeight() * 0.5;
-		}
 
-		
-		fixCenterUnitPosByUnit(fixID_, fixPosY_);
+			fixCenterUnitPosByUnit((insertNum_) * 0.5, _baseArea.getHeight() * 0.5);
+		}
+		else
+		{
+			_selectWallUnit.id -= _insertStart;
+			fixCenterUnitPosByUnit(_selectWallUnit.id, _selectWallUnit.pos.y);
+			ofLog(OF_LOG_ERROR, "[wallList::removeWallUnitCheck]Whyyyyy");
+		}
 	}
 }
 

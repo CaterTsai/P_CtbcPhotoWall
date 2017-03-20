@@ -15,7 +15,7 @@ scrollUI::scrollUI()
 void scrollUI::setup(wallMgr * parent)
 {
 	_parent = parent;
-	_displayCanvas.allocate(cScrollUIWidth, cScrollUIHeight, GL_RGBA);
+	_displayCanvas.allocate(cScrollUIWidth * 1.5, cScrollUIHeight * 1.5, GL_RGBA);
 
 	_animRotate.setDuration(cScrollUIAnimDuration);
 	_animRotate.setRepeatType(AnimRepeat::PLAY_ONCE);
@@ -119,7 +119,7 @@ void scrollUI::drawLeft()
 	ofScale(-1, 1);
 	{
 		ofSetColor(255);
-		_displayCanvas.draw(-_displayCanvas.getWidth(), 0);
+		_displayCanvas.draw(-cScrollUIWidth, 0);
 	}
 	ofPopMatrix();
 }
@@ -146,6 +146,7 @@ void scrollUI::updateCanvas()
 	}
 	_displayCanvas.end();
 
+	
 }
 
 //---------------------------------
@@ -232,11 +233,13 @@ void scrollUI::itemUnit::draw(ofVec2f pos, ePhotoPrimaryCategory eCategory, bool
 		ofRect(cScrollUIWidth * -0.5, cScrollUIItemHeight * -0.5, cScrollUIWidth, cScrollUIItemHeight);
 
 		//Text
-		auto eFontType_ = (isZH ? eFontMenuUIContext : eFontMenuUIContext);
 		string itemName_ = dataHolder::GetInstance()->getTypeName(eCategory, _photoType, isZH);
-		auto bounding_ = fontMgr::GetInstance()->getStringBoundingBox(eFontType_, itemName_, isZH);
+		auto bounding_ = fontMgr::GetInstance()->getStringBoundingBox(eFontMenuUIContext, itemName_, isZH);
 		ofSetColor(255);
-		fontMgr::GetInstance()->drawString(eFontType_, itemName_, ofVec2f(bounding_.getWidth() * -0.5, bounding_.getHeight() * 0.4), isZH);
+		fontMgr::GetInstance()->drawString(
+			eFontMenuUIContext, itemName_,
+			ofVec2f((bounding_.getWidth() * 0.5 + bounding_.getX()) * -1, (bounding_.getHeight() * 0.5 + bounding_.getY()) * -1),
+			isZH);
 
 	}
 	ofPopMatrix();
@@ -307,17 +310,16 @@ bool scrollUI::moveDrawPosY(int delta)
 int scrollUI::getSelectIndex(ofVec2f pos)
 {
 	int rVal_ = -1;
-	auto localPos_ = pos - getDrawPos();
-	localPos_.y -= cScrollUIItemStartPosY;
+	auto localPos_ = pos - getDrawPos();	
 	if (localPos_.x > 0 && localPos_.x < cScrollUIWidth &&
 		localPos_.y > 0 && localPos_.y < cScrollUIHeight)
 	{
+		localPos_.y -= cScrollUIItemStartPosY;
 		float dist_ = localPos_.y - _itemListDrawY;
 		rVal_ = static_cast<int>(dist_ / cScrollUIItemHeight);
 
-		if (rVal_ < 0 || rVal_ > _itemList.size())
+		if (rVal_ < 0 || rVal_ >= _itemList.size())
 		{
-			ofLog(OF_LOG_ERROR, "[scrollUI::getSelectIndex]Wrong compute");
 			rVal_ = -1;
 		}
 	}
@@ -361,7 +363,7 @@ void scrollUI::inputRelease(inputEventArgs e)
 	if (e.holdTime <= cInputHoldLimit && abs(e.diffPos.y) < cInputTriggerDiffLimit)
 	{
 		int newSelectIdx_ = getSelectIndex(e.pos);
-		if (newSelectIdx_ != -1 && _selectItemIdx != newSelectIdx_)
+		if (newSelectIdx_ != -1 && newSelectIdx_ < _itemList.size() && _selectItemIdx != newSelectIdx_ )
 		{
 			if (_selectItemIdx != -1)
 			{

@@ -15,5 +15,5 @@ public:
 	static string exSmilePath;
 	static string exServerUrl;
 	static float exIdleTime;
-
+	static bool exConnectSmile;
 };

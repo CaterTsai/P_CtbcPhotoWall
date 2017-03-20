@@ -34,7 +34,7 @@ void ofCtbcPhotoWall::setup()
 #ifndef _DEBUG
 	ofHideCursor();
 	ofToggleFullscreen();
-	//ofLogToFile(ofGetTimestampString("log/%Y%m%d%H%M%S.log"));
+	ofLogToFile(ofGetTimestampString("log/%Y%m%d%H%M%S.log"));
 #endif // !_DEBUG
 }
 
@@ -157,7 +157,9 @@ void ofCtbcPhotoWall::setupWallMgr()
 		);
 
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
-		_photoWall[idx_].addWallList(cMinimumPhotoWidth * 2, true);		
+
+		
+		_photoWall[idx_].addWallList(cMinimumPhotoWidth * 2, configMgr::exConnectSmile);
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
