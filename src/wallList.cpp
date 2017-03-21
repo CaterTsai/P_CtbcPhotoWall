@@ -1026,8 +1026,15 @@ void wallList::inputDrag(inputEventArgs e)
 {
 	if (_eSelectState != eZoomIn && _eSelectState != eZoomOut && _eMoveCenterYState != eMove)
 	{	
-
+		
 		_centerUnitPos.y += e.delta.y;
+		//TODO
+		if (_selectWallUnit.id >= _wallUnitList.size())
+		{
+			ofLog(OF_LOG_ERROR, "[wallList::inputDrag]select id failed");
+			return;
+		}
+
 
 		if (getIsSelect() && abs(e.diffPos.y) > cInputTriggerDiffLimit && _wallUnitList[_selectWallUnit.id]->getClick())
 		{
