@@ -10,7 +10,7 @@ private:
 		ofImage img;
 		string path;
 		int photoId;
-		//TODO Deadtime
+		float aliveT;
 	};
 
 public:
@@ -32,6 +32,7 @@ public:
 private:
 	void updateImage();
 	void updateTexture(ofImage& img);
+	void checkSourceAlive(float delta);
 	void checkSignal(float delta);
 	void insertToMap(map<int, photoEntry>& map, photoEntry& entry);
 private:

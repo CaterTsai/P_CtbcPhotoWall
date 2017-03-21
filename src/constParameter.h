@@ -89,6 +89,7 @@ const int cPhotoWallCategoryWidth = cWindowWidth * 0.25;
 
 //Photo Render
 const float cSingnalCheckTime = 0.5f;
+const float cPhotoAliveTime = 60.0f * 1.0; // 1 min
 
 //Data Holder
 const float cPhotoSmileCheckTime = 5.0f;

@@ -18,8 +18,9 @@ void photoRender::update(ofEventArgs& e)
 	_mainTimer += delta_;
 
 	updateImage();
+	checkSourceAlive(delta_);
 	checkSignal(delta_);
-
+	
 }
 
 //--------------------------------------------------------------
@@ -67,6 +68,7 @@ void photoRender::drawPhoto(stPhotoHeader & photoheader, ofVec3f pos, float widt
 	if (Iter_ != _sourceMap.end() && Iter_->second.img.isAllocated())
 	{
 		Iter_->second.img.draw(pos, width, height);
+		Iter_->second.aliveT = cPhotoAliveTime;
 	}
 	else
 	{
@@ -103,6 +105,7 @@ void photoRender::updateImage()
 		}
 		else
 		{
+			photoEntry_.aliveT = cPhotoAliveTime;
 			insertToMap(_sourceMap, photoEntry_);
 			_sourceChecker.erase(photoEntry_.photoId);
 		}
@@ -121,6 +124,26 @@ void photoRender::updateTexture(ofImage & img)
 
 	img.setUseTexture(true);
 	img.update();
+}
+
+//--------------------------------------------------------------
+void photoRender::checkSourceAlive(float delta)
+{
+	list<int> deadList_;
+	for (auto& iter_ : _sourceMap)
+	{
+		iter_.second.aliveT -= delta;
+		if (iter_.second.aliveT <= 0.0f)
+		{
+			iter_.second.img.clear();
+			deadList_.push_back(iter_.first);
+		}
+	}
+
+	for (auto& iter_ : deadList_)
+	{
+		_sourceMap.erase(iter_);
+	}
 }
 
 //--------------------------------------------------------------
