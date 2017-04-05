@@ -53,9 +53,10 @@ void ofCtbcPhotoWall::update()
 	float delta_ = ofGetElapsedTimef() - _timer;
 	_timer += delta_;
 
+	inputEventMgr::GetInstance()->idleCheck(delta_);
 	updateWallMgr(delta_);
 	dataHolder::GetInstance()->update(delta_);
-	inputEventMgr::GetInstance()->idleCheck(delta_);
+	
 	ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
 
@@ -157,7 +158,6 @@ void ofCtbcPhotoWall::setupWallMgr()
 		);
 
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth);
-
 		
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth * 2, configMgr::exConnectSmile);
 		_photoWall[idx_].addWallList(cMinimumPhotoWidth);

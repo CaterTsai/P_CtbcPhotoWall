@@ -64,8 +64,9 @@ public:
 	stPhotoHeader& getPhotoHeader(int photoId);
 	bool getPhotoText(int photoID, bool isZH, string& title, string& msg);
 
-	vector<int> getPhotoID(ePhotoPrimaryCategory eCategory);
+	vector<int> getPhotoID(ePhotoPrimaryCategory eCategory);	
 	vector<int> getPhotoID(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type);
+	vector<int> getPhotoIDWithoutType(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type);
 private:	
 	void setPhotoHeader(Json::Value& root);
 	void setPhotoHeaderData(int photoID, Json::Value& root);

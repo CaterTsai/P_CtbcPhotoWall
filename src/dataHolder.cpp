@@ -268,6 +268,22 @@ vector<int> dataHolder::getPhotoID(ePhotoPrimaryCategory eCategory, PHOTO_TYPE t
 }
 
 //--------------------------------------------------------------
+vector<int> dataHolder::getPhotoIDWithoutType(ePhotoPrimaryCategory eCategory, PHOTO_TYPE type)
+{
+	setupCheck();
+	vector<int> rVal_;
+
+	for (auto& iter_ : _typeToPhotoID[eCategory])
+	{
+		if (iter_.first != type)
+		{
+			rVal_.insert(rVal_.end(), iter_.second.begin(), iter_.second.end());
+		}
+	}
+	return rVal_;
+}
+
+//--------------------------------------------------------------
 void dataHolder::setPhotoHeader(Json::Value & root)
 {
 	int size_ = root.size();

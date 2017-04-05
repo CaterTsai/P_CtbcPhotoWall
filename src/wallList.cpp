@@ -16,7 +16,7 @@ wallList::wallList(wallMgr* parent, ePhotoPrimaryCategory eCategroy, ofRectangle
 {
 	_defaultSmile = defaultSmile;
 	setupAnimation(drawArea.getCenter().x, _baseArea.getWidth());
-	initWallUnits((eCategroy == ePhotoCategory_4) && defaultSmile);
+	initWallUnits((eCategroy != ePhotoCategory_4), (eCategroy == ePhotoCategory_4) && defaultSmile);
 	resetCenter();
 }
 
@@ -803,7 +803,7 @@ void wallList::addWallUnit(int index, ofPtr<wallUnit> newUnil)
 }
 
 //--------------------------------------
-void wallList::initWallUnits(bool isSmile)
+void wallList::initWallUnits(bool noSmile, bool isSmile)
 {
 	vector<int> photoIDList_;
 
@@ -817,7 +817,17 @@ void wallList::initWallUnits(bool isSmile)
 	}
 	else
 	{
-		photoIDList_ = dataHolder::GetInstance()->getPhotoID(_eCategroy);
+		if (noSmile)
+		{
+			photoIDList_ = dataHolder::GetInstance()->getPhotoID(_eCategroy);
+		}
+		else
+		{
+			photoIDList_ = dataHolder::GetInstance()->getPhotoIDWithoutType(
+				_eCategroy,
+				dataHolder::GetInstance()->getSmileType()
+			);
+		}
 	}
 
 	try
@@ -882,7 +892,18 @@ int wallList::insertWallUnits(int index, PHOTO_TYPE type)
 //--------------------------------------
 int wallList::insertWallUnits(int index)
 {
-	auto photoIDList_ = dataHolder::GetInstance()->getPhotoID(_eCategroy);
+	vector<int> photoIDList_;
+	if (_eCategroy == ePhotoCategory_4)
+	{
+		photoIDList_ = dataHolder::GetInstance()->getPhotoIDWithoutType(
+			_eCategroy
+			, dataHolder::GetInstance()->getSmileType()
+			);
+	}
+	else
+	{
+		photoIDList_ = dataHolder::GetInstance()->getPhotoID(_eCategroy);
+	}
 
 	random_shuffle(photoIDList_.begin(), photoIDList_.end());
 
@@ -1026,15 +1047,13 @@ void wallList::inputDrag(inputEventArgs e)
 {
 	if (_eSelectState != eZoomIn && _eSelectState != eZoomOut && _eMoveCenterYState != eMove)
 	{	
-		
 		_centerUnitPos.y += e.delta.y;
 		//TODO
-		if (_selectWallUnit.id >= _wallUnitList.size())
+		if (_selectWallUnit.id >= (int)_wallUnitList.size())
 		{
 			ofLog(OF_LOG_ERROR, "[wallList::inputDrag]select id failed");
 			return;
 		}
-
 
 		if (getIsSelect() && abs(e.diffPos.y) > cInputTriggerDiffLimit && _wallUnitList[_selectWallUnit.id]->getClick())
 		{

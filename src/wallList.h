@@ -122,7 +122,7 @@ private:
 
 	void addWallUnit(ofPtr<wallUnit> newUnil);
 	void addWallUnit(int index, ofPtr<wallUnit> newUnil);
-	void initWallUnits(bool isSmile);
+	void initWallUnits(bool noSmile, bool isSmile);
 	int insertWallUnits(int index, PHOTO_TYPE type);
 	int insertWallUnits(int index);
 	void insertWallUnit(int index, stPhotoHeader newPhotoHeader);
