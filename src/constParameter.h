@@ -100,9 +100,10 @@ const int cInputEventLevel = 10;
 const float cInputHoldLimit = 0.5f;
 const float cInputTriggerDiffLimit = cPhotoWallCategoryWidth * 0.05f;
 const ofVec2f cInputToWindow(1.0, cWindowHeight / 2160.0);
+const float cInputMinDist = cPhotoWallCategoryWidth * 0.02;
 
 const int cInputTUIOPort = 3333;
-const int cInputTUIOCircleSize = cWindowHeight * 0.02;
+const int cInputTUIOCircleSize = cWindowHeight * 0.05;
 
 //Wall
 const float cWallListMoveVecMax = 6.0f;

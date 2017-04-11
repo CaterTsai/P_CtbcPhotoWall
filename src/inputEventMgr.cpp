@@ -221,7 +221,7 @@ void inputEventMgr::touchDown(ofTouchEventArgs& e)
 	inputEventParam _newParam;
 	ofTouchEventArgs fixArgs_ = modifyTouchPos(e);
 	
-	if (pressCheck(fixArgs_, _newParam))
+	if (touchDistanceCheck(fixArgs_) && pressCheck(fixArgs_, _newParam))
 	{
 		_inputEventParamMgr.insert(make_pair(e.id, _newParam));
 	}
@@ -266,7 +266,21 @@ void inputEventMgr::displayTouch()
 	ofPopStyle();
 }
 
-#endif // USE_MOUSE
+//--------------------------------
+bool inputEventMgr::touchDistanceCheck(ofTouchEventArgs & e)
+{
+	bool rVal_ = true;
+
+	for (auto& iter_ : _inputEventParamMgr)
+	{
+		if (iter_.second._pressPos.distance(e) < cInputMinDist)
+		{
+			rVal_ = false;
+			break;
+		}
+	}
+	return rVal_;
+}
 
 //--------------------------------
 ofTouchEventArgs inputEventMgr::modifyTouchPos(ofTouchEventArgs e)
@@ -281,6 +295,9 @@ ofTouchEventArgs inputEventMgr::modifyTouchPos(ofTouchEventArgs e)
 #endif // USE_TUIO	
 	return rVal_;
 }
+#endif // USE_MOUSE
+
+
 
 #ifdef USE_TUIO
 //--------------------------------

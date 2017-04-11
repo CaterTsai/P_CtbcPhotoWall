@@ -106,10 +106,15 @@ public:
 	void touchMoved(ofTouchEventArgs& e);
 	void touchUp(ofTouchEventArgs& e);
 	void displayTouch();
+
+private:
+	bool touchDistanceCheck(ofTouchEventArgs& e);
+	ofTouchEventArgs modifyTouchPos(ofTouchEventArgs e);
+
+
 #endif // USE_MOUSE
 	
-private:
-	ofTouchEventArgs modifyTouchPos(ofTouchEventArgs e);
+
 
 
 #ifdef USE_TUIO
